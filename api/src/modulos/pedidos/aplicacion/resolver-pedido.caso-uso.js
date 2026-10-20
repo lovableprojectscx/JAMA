@@ -1,4 +1,4 @@
-import { NoEncontradoError } from '../../../compartido/dominio/errores.js';
+import { NoEncontradoError, ReglaNegocioError } from '../../../compartido/dominio/errores.js';
 
 export class ResolverPedido {
   constructor({ unidadDeTrabajo, reloj, codigos, reservaDeStock }) {
@@ -17,6 +17,12 @@ export class ResolverPedido {
       // Inexistente o de otro negocio responde igual: 404, nunca 403.
       if (!codigoCanje || !codigoCanje.perteneceA(negocioId)) {
         throw new NoEncontradoError('Código no encontrado');
+      }
+
+      // Corrección: si ya venció (aunque ExpirarReservas todavía no haya
+      // corrido), no se puede confirmar ni rechazar; que expire el cron.
+      if (codigoCanje.estaVencido(ahora)) {
+        throw new ReglaNegocioError('El código ya venció');
       }
 
       if (concretado) {
