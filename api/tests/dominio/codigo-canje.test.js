@@ -22,6 +22,16 @@ describe('CodigoCanje.reservar', () => {
   });
 });
 
+describe('CodigoCanje.reservar guarda el precio vigente', () => {
+  test('guarda el precio que vio el cliente al pedir', () => {
+    const codigo = CodigoCanje.reservar(
+      { id: 'c-1', codigo: 'K7P2', ofertaId: 'of-1', negocioId: 'neg-1', precio: 18 },
+      AHORA
+    );
+    assert.equal(codigo.precio, 18);
+  });
+});
+
 describe('CodigoCanje.perteneceA', () => {
   test('RN-10: identifica si el código es de un negocio dado', () => {
     const codigo = nuevoCodigo();

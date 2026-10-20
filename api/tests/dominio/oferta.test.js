@@ -101,3 +101,152 @@ describe('Oferta.estaVigente', () => {
     assert.equal(oferta.estaVigente(new Date(EN_UNA_HORA.getTime() + 1)), false);
   });
 });
+
+describe('Oferta.publicar tramos de precio (RN-11)', () => {
+  test('rechaza un tramo con hora inválida', () => {
+    assert.throws(
+      () => Oferta.publicar(datosValidos({ tramosPrecio: [{ desde: '25:00', descuentoPct: 10 }] }), AHORA),
+      ReglaNegocioError
+    );
+  });
+
+  test('rechaza un descuento fuera de 1-99', () => {
+    assert.throws(
+      () => Oferta.publicar(datosValidos({ tramosPrecio: [{ desde: '17:00', descuentoPct: 100 }] }), AHORA),
+      ReglaNegocioError
+    );
+  });
+
+  test('rechaza dos tramos que empiezan a la misma hora', () => {
+    assert.throws(
+      () =>
+        Oferta.publicar(
+          datosValidos({
+            tramosPrecio: [
+              { desde: '17:00', descuentoPct: 10 },
+              { desde: '17:00', descuentoPct: 20 },
+            ],
+          }),
+          AHORA
+        ),
+      ReglaNegocioError
+    );
+  });
+
+  test('ordena los tramos por hora sin importar el orden de entrada', () => {
+    const oferta = Oferta.publicar(
+      datosValidos({
+        tramosPrecio: [
+          { desde: '18:30', descuentoPct: 50 },
+          { desde: '17:00', descuentoPct: 30 },
+        ],
+      }),
+      AHORA
+    );
+    assert.deepEqual(
+      oferta.tramosPrecio.map((t) => t.desde),
+      ['17:00', '18:30']
+    );
+  });
+
+  test('sin tramos, publica con tramosPrecio vacío', () => {
+    const oferta = Oferta.publicar(datosValidos(), AHORA);
+    assert.deepEqual(oferta.tramosPrecio, []);
+  });
+});
+
+describe('Oferta.precioVigente (RN-11, hora de Lima)', () => {
+  const PUBLICADA_A_MEDIANOCHE = new Date('2026-10-20T00:00:00.000Z');
+
+  function ofertaConTramos() {
+    return Oferta.publicar(
+      datosValidos({
+        precioCarta: 20,
+        precioOferta: 15,
+        tramosPrecio: [
+          { desde: '17:00', descuentoPct: 30 },
+          { desde: '18:30', descuentoPct: 50 },
+        ],
+      }),
+      PUBLICADA_A_MEDIANOCHE
+    );
+  }
+
+  test('sin tramos, el precio vigente es el precio de oferta fijo', () => {
+    const oferta = Oferta.publicar(datosValidos(), AHORA);
+    assert.equal(oferta.precioVigente(AHORA), oferta.precioOferta);
+  });
+
+  test('antes del primer tramo, usa el precio de oferta fijo', () => {
+    const oferta = ofertaConTramos();
+    // 16:00 de Lima = 21:00 UTC, antes del tramo de las 17:00.
+    assert.equal(oferta.precioVigente(new Date('2026-10-20T21:00:00.000Z')), 15);
+  });
+
+  test('a las 17:15 de Lima (22:15 UTC) se aplica el tramo de las 17:00 (-30%)', () => {
+    const oferta = ofertaConTramos();
+    assert.equal(oferta.precioVigente(new Date('2026-10-20T22:15:00.000Z')), 14);
+  });
+
+  test('corrección: a las 18:45 de Lima (23:45 UTC) se aplica el tramo de las 18:30 (-50%)', () => {
+    const oferta = ofertaConTramos();
+    assert.equal(oferta.precioVigente(new Date('2026-10-20T23:45:00.000Z')), 10);
+  });
+
+  test('el precio vigente siempre es menor al precio de carta', () => {
+    const oferta = ofertaConTramos();
+    for (const instante of ['2026-10-20T21:00:00.000Z', '2026-10-20T22:15:00.000Z', '2026-10-20T23:45:00.000Z']) {
+      assert.ok(oferta.precioVigente(new Date(instante)) < oferta.precioCarta);
+    }
+  });
+});
+
+describe('Oferta.proximoTramo', () => {
+  const PUBLICADA_A_MEDIANOCHE = new Date('2026-10-20T00:00:00.000Z');
+
+  function ofertaConTramos() {
+    return Oferta.publicar(
+      datosValidos({
+        precioCarta: 20,
+        precioOferta: 15,
+        tramosPrecio: [
+          { desde: '17:00', descuentoPct: 30 },
+          { desde: '18:30', descuentoPct: 50 },
+        ],
+      }),
+      PUBLICADA_A_MEDIANOCHE
+    );
+  }
+
+  test('avisa la hora y el precio del siguiente tramo', () => {
+    const oferta = ofertaConTramos();
+    // 16:00 de Lima = 21:00 UTC: el próximo tramo es el de las 17:00.
+    assert.deepEqual(oferta.proximoTramo(new Date('2026-10-20T21:00:00.000Z')), { desde: '17:00', precio: 14 });
+  });
+
+  test('corrección: a las 19:30 de Lima (00:30 UTC del día siguiente) ya no hay próximo tramo', () => {
+    const oferta = ofertaConTramos();
+    assert.equal(oferta.proximoTramo(new Date('2026-10-21T00:30:00.000Z')), null);
+  });
+});
+
+describe('Oferta.cambiarEstado (panel: pausar / reanudar)', () => {
+  test('pausa una oferta ACTIVA', () => {
+    const oferta = Oferta.publicar(datosValidos(), AHORA);
+    oferta.cambiarEstado(EstadoOferta.PAUSADA, AHORA);
+    assert.equal(oferta.estado, EstadoOferta.PAUSADA);
+  });
+
+  test('reanuda una oferta PAUSADA', () => {
+    const oferta = Oferta.publicar(datosValidos(), AHORA);
+    oferta.cambiarEstado(EstadoOferta.PAUSADA, AHORA);
+    oferta.cambiarEstado(EstadoOferta.ACTIVA, AHORA);
+    assert.equal(oferta.estado, EstadoOferta.ACTIVA);
+  });
+
+  test('no permite cambiar el estado de una oferta AGOTADA', () => {
+    const oferta = Oferta.publicar(datosValidos({ stock: 1 }), AHORA);
+    oferta.reservarUnidad(AHORA);
+    assert.throws(() => oferta.cambiarEstado(EstadoOferta.PAUSADA, AHORA), ReglaNegocioError);
+  });
+});

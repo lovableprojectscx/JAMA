@@ -48,8 +48,8 @@ export async function crearOfertaDePrueba(pool, negocioId, overrides = {}) {
   const { rows } = await pool.query(
     `INSERT INTO ofertas
        (negocio_id, titulo, descripcion, foto_url, precio_carta, precio_oferta,
-        stock, hora_elaboracion, hora_limite, estado)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        stock, hora_elaboracion, hora_limite, estado, tramos_precio)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
      RETURNING id, stock, estado`,
     [
       negocioId,
@@ -62,6 +62,7 @@ export async function crearOfertaDePrueba(pool, negocioId, overrides = {}) {
       overrides.horaElaboracion ?? ahora,
       horaLimite,
       overrides.estado ?? 'ACTIVA',
+      JSON.stringify(overrides.tramosPrecio ?? []),
     ]
   );
   return rows[0];
