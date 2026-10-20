@@ -1,0 +1,357 @@
+.panel {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--crema);
+  padding-bottom: 76px;
+}
+
+.panel-cabecera {
+  background: var(--azul-marino);
+  color: var(--blanco);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  gap: 12px;
+}
+
+.panel-cabecera__logo {
+  height: 36px;
+  width: auto;
+}
+
+.panel-cabecera__negocio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.panel-cabecera__salir {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: underline;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  padding: 0;
+  cursor: pointer;
+}
+
+.panel-contenido {
+  flex: 1;
+  padding: 16px;
+}
+
+.panel-pantalla__titulo {
+  font-size: 20px;
+  font-weight: 900;
+  margin: 0 0 12px;
+  color: var(--azul-marino);
+}
+
+.panel-pantalla__subtitulo {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 20px 0 10px;
+  color: var(--azul-marino);
+}
+
+.panel-login {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px;
+  max-width: 420px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.panel-login__titulo {
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--azul-marino);
+  margin: 0 0 4px;
+  text-align: center;
+}
+
+.panel-login__subtitulo {
+  color: var(--gris-texto);
+  text-align: center;
+  margin: 0 0 24px;
+}
+
+.panel-login__formulario,
+.panel-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panel-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.panel-campo__etiqueta {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--azul-marino);
+}
+
+.panel-campo__input {
+  font-family: inherit;
+  font-size: 16px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 2px solid #d9d5c5;
+  background: var(--blanco);
+  color: var(--azul-marino);
+}
+
+.panel-campo__input:focus {
+  outline: none;
+  border-color: var(--azul-marino);
+}
+
+.panel-campo__input--textarea {
+  min-height: 80px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.panel-campo__input--codigo {
+  font-size: 28px;
+  font-weight: 900;
+  text-align: center;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.panel-fila {
+  display: flex;
+  gap: 12px;
+}
+
+.panel-fila .panel-campo {
+  flex: 1;
+  min-width: 0;
+}
+
+.panel-boton {
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 900;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  min-height: 52px;
+}
+
+.panel-boton--primario {
+  background: var(--azul-marino);
+  color: var(--blanco);
+  width: 100%;
+}
+
+.panel-boton--secundario {
+  background: var(--blanco);
+  color: var(--azul-marino);
+  border: 2px solid var(--azul-marino);
+  width: 100%;
+}
+
+.panel-boton--peligro {
+  background: var(--blanco);
+  color: var(--rojo-aviso);
+  border: 2px solid var(--rojo-aviso);
+  width: 100%;
+}
+
+.panel-boton--quitar {
+  background: #fdecea;
+  color: var(--rojo-aviso);
+  border-radius: 10px;
+  padding: 10px 14px;
+  min-height: auto;
+}
+
+.panel-boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.panel-aviso {
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+.panel-aviso--error {
+  background: #fdecea;
+  color: var(--rojo-aviso);
+}
+
+.panel-aviso--exito {
+  background: #eaf3e0;
+  color: #2f6b1f;
+}
+
+.panel-estado {
+  text-align: center;
+  color: var(--gris-texto);
+  padding: 24px 0;
+}
+
+.panel-estado--error {
+  color: var(--rojo-aviso);
+}
+
+.panel-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panel-tarjeta {
+  background: var(--blanco);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 10px rgba(30, 43, 77, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.panel-tarjeta__cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-tarjeta__titulo {
+  font-size: 17px;
+  font-weight: 900;
+  margin: 0;
+  color: var(--azul-marino);
+}
+
+.panel-tarjeta__linea {
+  margin: 0;
+  color: var(--azul-marino);
+  font-weight: 700;
+}
+
+.panel-tarjeta__detalle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--gris-texto);
+}
+
+.panel-chip {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* El lima solo se usa de fondo, nunca como texto sobre blanco. */
+.panel-chip--activa,
+.panel-chip--reservado {
+  background: var(--lima);
+  color: var(--azul-marino);
+}
+
+.panel-chip--pausada,
+.panel-chip--finalizada {
+  background: #e4e4e4;
+  color: var(--gris-texto);
+}
+
+.panel-chip--agotada {
+  background: #fdecea;
+  color: var(--rojo-aviso);
+}
+
+.panel-codigo {
+  background: var(--blanco);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 10px rgba(30, 43, 77, 0.08);
+}
+
+.panel-codigo__botones {
+  display: flex;
+  gap: 12px;
+}
+
+.panel-codigo__botones .panel-boton {
+  flex: 1;
+}
+
+.panel-tramos {
+  border: 2px dashed #d9d5c5;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.panel-tramos__fila {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.panel-tramos__fila .panel-campo__input {
+  flex: 1;
+  min-width: 0;
+}
+
+.panel-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background: var(--blanco);
+  border-top: 1px solid #e3e0d2;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.panel-nav__boton {
+  flex: 1;
+  background: none;
+  border: none;
+  border-top: 3px solid transparent;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gris-texto);
+  padding: 14px 8px;
+  cursor: pointer;
+}
+
+.panel-nav__boton--activo {
+  color: var(--azul-marino);
+  border-top-color: var(--azul-marino);
+}
