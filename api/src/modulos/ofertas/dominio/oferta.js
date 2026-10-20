@@ -14,12 +14,17 @@ function calcularPrecioConDescuento(precioCarta, descuentoPct) {
   return Number((Number(precioCarta) * (1 - descuentoPct / 100)).toFixed(2));
 }
 
-/** RN-11: valida y ordena los tramos de precio opcionales de una oferta. */
-function validarTramos(tramos, precioCarta) {
+/**
+ * RN-11: valida y ordena los tramos de precio opcionales de una oferta.
+ * El precio solo puede bajar con la hora: cada tramo debe ser más barato
+ * que el precio de oferta fijo, y más barato que el tramo anterior.
+ */
+function validarTramos(tramos, precioCarta, precioOferta) {
   if (tramos == null || tramos.length === 0) return [];
 
   const ordenados = [...tramos].sort((a, b) => (a.desde < b.desde ? -1 : 1));
   const vistos = new Set();
+  let descuentoAnterior = 0;
 
   for (const tramo of ordenados) {
     if (!PATRON_HORA.test(tramo.desde)) {
@@ -33,8 +38,19 @@ function validarTramos(tramos, precioCarta) {
     if (!Number.isInteger(tramo.descuentoPct) || tramo.descuentoPct < 1 || tramo.descuentoPct > 99) {
       throw new ReglaNegocioError('RN-11: el descuento de un tramo debe ser un entero entre 1 y 99');
     }
-    if (!(calcularPrecioConDescuento(precioCarta, tramo.descuentoPct) < Number(precioCarta))) {
-      throw new ReglaNegocioError('RN-11: el precio de un tramo debe ser menor al precio de carta');
+
+    if (tramo.descuentoPct <= descuentoAnterior) {
+      throw new ReglaNegocioError(
+        `RN-11: el tramo de las ${tramo.desde} debe tener un descuento mayor al del tramo anterior (el precio solo puede bajar con la hora, nunca subir)`
+      );
+    }
+    descuentoAnterior = tramo.descuentoPct;
+
+    const precioTramo = calcularPrecioConDescuento(precioCarta, tramo.descuentoPct);
+    if (!(precioTramo < Number(precioOferta))) {
+      throw new ReglaNegocioError(
+        `RN-11: el precio del tramo de las ${tramo.desde} (S/ ${precioTramo.toFixed(2)}) debe ser menor al precio de oferta (S/ ${Number(precioOferta).toFixed(2)})`
+      );
     }
   }
 
@@ -103,7 +119,7 @@ export class Oferta {
       estado: EstadoOferta.ACTIVA,
       creadoEn: ahora,
       actualizadoEn: ahora,
-      tramosPrecio: validarTramos(tramosPrecio, precioCarta),
+      tramosPrecio: validarTramos(tramosPrecio, precioCarta, precioOferta),
     });
   }
 

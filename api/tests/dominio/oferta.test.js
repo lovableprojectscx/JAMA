@@ -123,8 +123,8 @@ describe('Oferta.publicar tramos de precio (RN-11)', () => {
         Oferta.publicar(
           datosValidos({
             tramosPrecio: [
-              { desde: '17:00', descuentoPct: 10 },
-              { desde: '17:00', descuentoPct: 20 },
+              { desde: '17:00', descuentoPct: 60 },
+              { desde: '17:00', descuentoPct: 70 },
             ],
           }),
           AHORA
@@ -137,8 +137,8 @@ describe('Oferta.publicar tramos de precio (RN-11)', () => {
     const oferta = Oferta.publicar(
       datosValidos({
         tramosPrecio: [
-          { desde: '18:30', descuentoPct: 50 },
-          { desde: '17:00', descuentoPct: 30 },
+          { desde: '18:30', descuentoPct: 70 },
+          { desde: '17:00', descuentoPct: 60 },
         ],
       }),
       AHORA
@@ -146,6 +146,43 @@ describe('Oferta.publicar tramos de precio (RN-11)', () => {
     assert.deepEqual(
       oferta.tramosPrecio.map((t) => t.desde),
       ['17:00', '18:30']
+    );
+  });
+
+  test('rechaza un tramo cuyo precio no es menor al precio de oferta fijo (el precio no puede subir)', () => {
+    // carta 40, oferta 20: 17:00 con 30% de descuento da S/ 28, que es MAYOR al precio de oferta (20).
+    assert.throws(
+      () =>
+        Oferta.publicar(
+          datosValidos({
+            precioCarta: 40,
+            precioOferta: 20,
+            tramosPrecio: [{ desde: '17:00', descuentoPct: 30 }],
+          }),
+          AHORA
+        ),
+      ReglaNegocioError
+    );
+  });
+
+  test('rechaza tramos cuyo descuento no es estrictamente creciente en el tiempo (el precio no puede subir entre tramos)', () => {
+    // carta 40, oferta 20: 17:00 (-30% => 28) ya se rechaza antes, así que usamos
+    // descuentos que sí bajan del precio de oferta pero sin seguir subiendo el descuento:
+    // 17:00 -50% (20) y 18:30 -40% (24): el segundo tramo es MÁS CARO que el primero.
+    assert.throws(
+      () =>
+        Oferta.publicar(
+          datosValidos({
+            precioCarta: 40,
+            precioOferta: 20,
+            tramosPrecio: [
+              { desde: '17:00', descuentoPct: 55 },
+              { desde: '18:30', descuentoPct: 40 },
+            ],
+          }),
+          AHORA
+        ),
+      ReglaNegocioError
     );
   });
 

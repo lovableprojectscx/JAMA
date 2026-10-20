@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { publicarOferta } from '../api.js';
 
+// Los errores de reglas de negocio llegan con un prefijo técnico ("RN-11: ...");
+// se quita para mostrarle al dueño solo el mensaje en español.
+function mensajeAmigable(mensaje) {
+  return mensaje?.replace(/^RN-\d+:\s*/, '') ?? 'No pudimos publicar la oferta.';
+}
+
 function datosIniciales() {
   return {
     titulo: '',
@@ -62,7 +68,7 @@ export default function PublicarOfertaPantalla({ token }) {
       setDatos(datosIniciales());
       setTramos([]);
     } catch (err) {
-      setError(err.message ?? 'No pudimos publicar la oferta.');
+      setError(mensajeAmigable(err.message));
     } finally {
       setEnviando(false);
     }
