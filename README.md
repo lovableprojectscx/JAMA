@@ -50,6 +50,10 @@ npm install
 npm run dev                # http://localhost:5173
 ```
 
+- `/` — vitrina pública del cliente.
+- `/panel` — panel del negocio (mobile-first). Entra con el negocio de
+  prueba del `npm run seed`: `panaderia@jama.pe` / `demo1234`.
+
 ### 4. Pruebas
 
 ```bash
