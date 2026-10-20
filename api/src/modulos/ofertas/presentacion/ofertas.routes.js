@@ -7,8 +7,11 @@ export function crearRutasOfertasPublicas(controller) {
   return router;
 }
 
+/** Se monta en /api/v1/negocios/me/ofertas (negocio autenticado). */
 export function crearRutasOfertasNegocio(controller, requireAuth) {
   const router = Router();
   router.post('/', requireAuth, (req, res, next) => controller.publicar(req, res, next));
+  router.get('/', requireAuth, (req, res, next) => controller.listarMisDeHoy(req, res, next));
+  router.patch('/:id', requireAuth, (req, res, next) => controller.cambiarEstado(req, res, next));
   return router;
 }

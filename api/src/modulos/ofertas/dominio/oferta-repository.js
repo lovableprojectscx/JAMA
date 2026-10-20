@@ -24,4 +24,14 @@ export class OfertaRepository {
   async listarVigentes(ahora) {
     throw new Error('OfertaRepository.listarVigentes() no implementado');
   }
+
+  // eslint-disable-next-line no-unused-vars
+  async listarPorNegocio(negocioId) {
+    throw new Error('OfertaRepository.listarPorNegocio() no implementado');
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  async obtenerPorIdYNegocio(id, negocioId) {
+    throw new Error('OfertaRepository.obtenerPorIdYNegocio() no implementado');
+  }
 }

@@ -1,4 +1,5 @@
 import { ReglaNegocioError, OfertaAgotadaError, OfertaNoVigenteError } from '../../../compartido/dominio/errores.js';
+import { horaMinutoLima } from '../../../compartido/dominio/fechas.js';
 
 export const EstadoOferta = Object.freeze({
   ACTIVA: 'ACTIVA',
@@ -6,6 +7,39 @@ export const EstadoOferta = Object.freeze({
   AGOTADA: 'AGOTADA',
   FINALIZADA: 'FINALIZADA',
 });
+
+const PATRON_HORA = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+function calcularPrecioConDescuento(precioCarta, descuentoPct) {
+  return Number((Number(precioCarta) * (1 - descuentoPct / 100)).toFixed(2));
+}
+
+/** RN-11: valida y ordena los tramos de precio opcionales de una oferta. */
+function validarTramos(tramos, precioCarta) {
+  if (tramos == null || tramos.length === 0) return [];
+
+  const ordenados = [...tramos].sort((a, b) => (a.desde < b.desde ? -1 : 1));
+  const vistos = new Set();
+
+  for (const tramo of ordenados) {
+    if (!PATRON_HORA.test(tramo.desde)) {
+      throw new ReglaNegocioError(`RN-11: "${tramo.desde}" no es una hora válida (formato HH:MM)`);
+    }
+    if (vistos.has(tramo.desde)) {
+      throw new ReglaNegocioError(`RN-11: hay dos tramos que empiezan a las ${tramo.desde}`);
+    }
+    vistos.add(tramo.desde);
+
+    if (!Number.isInteger(tramo.descuentoPct) || tramo.descuentoPct < 1 || tramo.descuentoPct > 99) {
+      throw new ReglaNegocioError('RN-11: el descuento de un tramo debe ser un entero entre 1 y 99');
+    }
+    if (!(calcularPrecioConDescuento(precioCarta, tramo.descuentoPct) < Number(precioCarta))) {
+      throw new ReglaNegocioError('RN-11: el precio de un tramo debe ser menor al precio de carta');
+    }
+  }
+
+  return ordenados.map(({ desde, descuentoPct }) => ({ desde, descuentoPct }));
+}
 
 export class Oferta {
   constructor({
@@ -22,6 +56,7 @@ export class Oferta {
     estado,
     creadoEn,
     actualizadoEn,
+    tramosPrecio,
   }) {
     this.id = id;
     this.negocioId = negocioId;
@@ -36,6 +71,7 @@ export class Oferta {
     this.estado = estado;
     this.creadoEn = creadoEn;
     this.actualizadoEn = actualizadoEn;
+    this.tramosPrecio = tramosPrecio ?? [];
   }
 
   /**
@@ -43,7 +79,7 @@ export class Oferta {
    * RN-03: la hora límite debe ser futura y la oferta debe tener al menos 1 unidad.
    */
   static publicar(datos, ahora) {
-    const { negocioId, titulo, precioCarta, precioOferta, stock, horaElaboracion, horaLimite } = datos;
+    const { negocioId, titulo, precioCarta, precioOferta, stock, horaElaboracion, horaLimite, tramosPrecio } = datos;
 
     if (!(Number(precioOferta) < Number(precioCarta))) {
       throw new ReglaNegocioError('RN-01: el precio de oferta debe ser menor que el precio de carta');
@@ -67,7 +103,32 @@ export class Oferta {
       estado: EstadoOferta.ACTIVA,
       creadoEn: ahora,
       actualizadoEn: ahora,
+      tramosPrecio: validarTramos(tramosPrecio, precioCarta),
     });
+  }
+
+  /** RN-11: precio que paga el cliente ahora mismo, en hora de Lima. */
+  precioVigente(ahora) {
+    const tramo = this.#tramoActivo(ahora);
+    if (!tramo) return Number(this.precioOferta);
+    return calcularPrecioConDescuento(this.precioCarta, tramo.descuentoPct);
+  }
+
+  /** El próximo tramo que todavía no se activa (para avisar en la vitrina), o null. */
+  proximoTramo(ahora) {
+    const horaActual = horaMinutoLima(ahora);
+    const siguiente = this.tramosPrecio.find((tramo) => tramo.desde > horaActual);
+    if (!siguiente) return null;
+    return { desde: siguiente.desde, precio: calcularPrecioConDescuento(this.precioCarta, siguiente.descuentoPct) };
+  }
+
+  #tramoActivo(ahora) {
+    const horaActual = horaMinutoLima(ahora);
+    let activo = null;
+    for (const tramo of this.tramosPrecio) {
+      if (tramo.desde <= horaActual) activo = tramo;
+    }
+    return activo;
   }
 
   /** RF01/ADR-005: una oferta vigente está ACTIVA, con stock y dentro de su hora límite. */
@@ -87,6 +148,18 @@ export class Oferta {
     if (this.stock === 0) {
       this.estado = EstadoOferta.AGOTADA;
     }
+    this.actualizadoEn = ahora;
+  }
+
+  /** El dueño pausa o reanuda manualmente su oferta desde el panel. */
+  cambiarEstado(nuevoEstado, ahora) {
+    if (![EstadoOferta.ACTIVA, EstadoOferta.PAUSADA].includes(nuevoEstado)) {
+      throw new ReglaNegocioError('Solo se puede cambiar una oferta a ACTIVA o PAUSADA');
+    }
+    if (![EstadoOferta.ACTIVA, EstadoOferta.PAUSADA].includes(this.estado)) {
+      throw new ReglaNegocioError(`No se puede cambiar el estado de una oferta ${this.estado}`);
+    }
+    this.estado = nuevoEstado;
     this.actualizadoEn = ahora;
   }
 

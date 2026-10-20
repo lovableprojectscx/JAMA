@@ -17,6 +17,7 @@ function filaAOferta(fila) {
     estado: fila.estado,
     creadoEn: fila.creado_en,
     actualizadoEn: fila.actualizado_en,
+    tramosPrecio: fila.tramos_precio,
   });
 }
 
@@ -31,8 +32,8 @@ export class OfertaRepositoryPg extends OfertaRepository {
     await ejecutor.query(
       `INSERT INTO ofertas
          (id, negocio_id, titulo, descripcion, foto_url, precio_carta, precio_oferta,
-          stock, hora_elaboracion, hora_limite, estado, creado_en, actualizado_en)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+          stock, hora_elaboracion, hora_limite, estado, creado_en, actualizado_en, tramos_precio)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
       [
         oferta.id,
         oferta.negocioId,
@@ -47,6 +48,7 @@ export class OfertaRepositoryPg extends OfertaRepository {
         oferta.estado,
         oferta.creadoEn,
         oferta.actualizadoEn,
+        JSON.stringify(oferta.tramosPrecio),
       ]
     );
   }
@@ -80,5 +82,22 @@ export class OfertaRepositoryPg extends OfertaRepository {
       [ahora]
     );
     return rows.map(filaAOferta);
+  }
+
+  async listarPorNegocio(negocioId) {
+    const { rows } = await this.pool.query(
+      `SELECT * FROM ofertas WHERE negocio_id = $1 ORDER BY hora_elaboracion DESC`,
+      [negocioId]
+    );
+    return rows.map(filaAOferta);
+  }
+
+  /** RN-10: para que el panel del negocio nunca pueda leer ni tocar la oferta de otro. */
+  async obtenerPorIdYNegocio(id, negocioId) {
+    const { rows } = await this.pool.query(`SELECT * FROM ofertas WHERE id = $1 AND negocio_id = $2`, [
+      id,
+      negocioId,
+    ]);
+    return filaAOferta(rows[0]);
   }
 }

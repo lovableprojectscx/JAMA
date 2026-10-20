@@ -1,7 +1,11 @@
 import { ReglaNegocioError, NoEncontradoError } from '../../../compartido/dominio/errores.js';
 
-function serializarOferta(oferta) {
-  const descuento = Math.round((1 - oferta.precioOferta / oferta.precioCarta) * 100);
+/** Vitrina pública: precio vigente por tramo horario y aviso del próximo tramo. */
+function serializarOferta(oferta, ahora) {
+  const precioVigente = oferta.precioVigente(ahora);
+  const descuento = Math.round((1 - precioVigente / oferta.precioCarta) * 100);
+  const proximoTramo = oferta.proximoTramo(ahora);
+
   return {
     id: oferta.id,
     titulo: oferta.titulo,
@@ -9,7 +13,9 @@ function serializarOferta(oferta) {
     fotoUrl: oferta.fotoUrl,
     precioCarta: oferta.precioCarta,
     precioOferta: oferta.precioOferta,
+    precioVigente,
     porcentajeDescuento: descuento,
+    proximoTramo,
     stock: oferta.stock,
     horaElaboracion: oferta.horaElaboracion,
     horaLimite: oferta.horaLimite,
@@ -17,17 +23,33 @@ function serializarOferta(oferta) {
   };
 }
 
+/** Panel del negocio: además del detalle público, incluye los tramos configurados. */
+function serializarOfertaDeNegocio(oferta, ahora) {
+  return { ...serializarOferta(oferta, ahora), tramosPrecio: oferta.tramosPrecio };
+}
+
 export class OfertasController {
-  constructor({ publicarOferta, listarOfertasVigentes, obtenerOferta }) {
+  constructor({
+    publicarOferta,
+    listarOfertasVigentes,
+    obtenerOferta,
+    listarMisOfertasDeHoy,
+    cambiarEstadoDeOferta,
+    reloj,
+  }) {
     this.publicarOferta = publicarOferta;
     this.listarOfertasVigentes = listarOfertasVigentes;
     this.obtenerOferta = obtenerOferta;
+    this.listarMisOfertasDeHoy = listarMisOfertasDeHoy;
+    this.cambiarEstadoDeOferta = cambiarEstadoDeOferta;
+    this.reloj = reloj;
   }
 
   async listar(req, res, next) {
     try {
       const ofertas = await this.listarOfertasVigentes.ejecutar();
-      return res.status(200).json(ofertas.map(serializarOferta));
+      const ahora = this.reloj.ahora();
+      return res.status(200).json(ofertas.map((oferta) => serializarOferta(oferta, ahora)));
     } catch (error) {
       return next(error);
     }
@@ -36,7 +58,7 @@ export class OfertasController {
   async detalle(req, res, next) {
     try {
       const oferta = await this.obtenerOferta.ejecutar({ id: req.params.id });
-      return res.status(200).json(serializarOferta(oferta));
+      return res.status(200).json(serializarOferta(oferta, this.reloj.ahora()));
     } catch (error) {
       if (error instanceof NoEncontradoError) {
         return res.status(404).json({ error: error.message });
@@ -48,8 +70,17 @@ export class OfertasController {
   async publicar(req, res, next) {
     try {
       const negocioId = req.usuario.negocioId;
-      const { titulo, descripcion, fotoUrl, precioCarta, precioOferta, stock, horaElaboracion, horaLimite } =
-        req.body ?? {};
+      const {
+        titulo,
+        descripcion,
+        fotoUrl,
+        precioCarta,
+        precioOferta,
+        stock,
+        horaElaboracion,
+        horaLimite,
+        tramosPrecio,
+      } = req.body ?? {};
 
       const oferta = await this.publicarOferta.ejecutar({
         negocioId,
@@ -61,12 +92,53 @@ export class OfertasController {
         stock: Number(stock),
         horaElaboracion: new Date(horaElaboracion),
         horaLimite: new Date(horaLimite),
+        tramosPrecio,
       });
 
-      return res.status(201).json(serializarOferta(oferta));
+      return res.status(201).json(serializarOfertaDeNegocio(oferta, this.reloj.ahora()));
     } catch (error) {
       if (error instanceof ReglaNegocioError) {
         return res.status(400).json({ error: error.message });
+      }
+      return next(error);
+    }
+  }
+
+  async listarMisDeHoy(req, res, next) {
+    try {
+      const dia = req.query.dia ?? 'hoy';
+      if (dia !== 'hoy') {
+        return res.status(400).json({ error: 'El parámetro dia solo acepta el valor "hoy"' });
+      }
+
+      const ofertas = await this.listarMisOfertasDeHoy.ejecutar({ negocioId: req.usuario.negocioId });
+      const ahora = this.reloj.ahora();
+      return res.status(200).json(ofertas.map((oferta) => serializarOfertaDeNegocio(oferta, ahora)));
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async cambiarEstado(req, res, next) {
+    try {
+      const { estado } = req.body ?? {};
+      if (estado !== 'ACTIVA' && estado !== 'PAUSADA') {
+        return res.status(400).json({ error: 'estado debe ser ACTIVA o PAUSADA' });
+      }
+
+      const oferta = await this.cambiarEstadoDeOferta.ejecutar({
+        id: req.params.id,
+        negocioId: req.usuario.negocioId,
+        nuevoEstado: estado,
+      });
+
+      return res.status(200).json(serializarOfertaDeNegocio(oferta, this.reloj.ahora()));
+    } catch (error) {
+      if (error instanceof NoEncontradoError) {
+        return res.status(404).json({ error: error.message });
+      }
+      if (error instanceof ReglaNegocioError) {
+        return res.status(409).json({ error: error.message });
       }
       return next(error);
     }
