@@ -13,6 +13,7 @@ export function crearApp({ apiAcceso, apiOfertas, pedidosModule }) {
   v1.use('/ofertas', apiOfertas.routerPublico);
   v1.use('/ofertas', pedidosModule.routerPublico);
   v1.use('/negocios/me/ofertas', apiOfertas.routerNegocio);
+  v1.use('/negocios/me/pedidos', pedidosModule.routerMeNegocio);
   v1.use('/pedidos', pedidosModule.routerNegocio);
 
   app.use('/api/v1', v1);

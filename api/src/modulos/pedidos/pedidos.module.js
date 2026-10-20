@@ -1,12 +1,21 @@
 import { CodigoCanjeRepositoryPg } from './infraestructura/codigo-canje-repository-pg.js';
 import { WaMeEnlaceAdapter } from './infraestructura/wame-enlace.adapter.js';
 import { GeneradorCodigoAleatorio } from './infraestructura/generador-codigo-aleatorio.js';
-import { ReservaDeStockConOfertas, ContactoNegocioConNegocios } from './infraestructura/modulos-vecinos.adapters.js';
+import {
+  ReservaDeStockConOfertas,
+  ContactoNegocioConNegocios,
+  ResumenDeOfertasConOfertas,
+} from './infraestructura/modulos-vecinos.adapters.js';
 import { PedirOferta } from './aplicacion/pedir-oferta.caso-uso.js';
 import { ResolverPedido } from './aplicacion/resolver-pedido.caso-uso.js';
 import { ExpirarReservas } from './aplicacion/expirar-reservas.caso-uso.js';
+import { ListarPedidosPorConfirmar } from './aplicacion/listar-pedidos-por-confirmar.caso-uso.js';
 import { PedidosController } from './presentacion/pedidos.controller.js';
-import { crearRutasPedidosPublicas, crearRutasPedidosNegocio } from './presentacion/pedidos.routes.js';
+import {
+  crearRutasPedidosPublicas,
+  crearRutasPedidosNegocio,
+  crearRutasPedidosMeNegocio,
+} from './presentacion/pedidos.routes.js';
 
 /**
  * Raíz de composición del módulo Pedidos. Nada más depende de Pedidos
@@ -25,6 +34,7 @@ export function crearModuloPedidos({
   const codigoCanjeRepository = new CodigoCanjeRepositoryPg(pool);
   const reservaDeStock = new ReservaDeStockConOfertas(apiOfertas);
   const contactoNegocio = new ContactoNegocioConNegocios(apiNegocios);
+  const resumenDeOfertas = new ResumenDeOfertasConOfertas(apiOfertas);
   const mensajeria = new WaMeEnlaceAdapter();
   const generadorCodigo = new GeneradorCodigoAleatorio();
 
@@ -52,11 +62,18 @@ export function crearModuloPedidos({
     reservaDeStock,
   });
 
-  const controller = new PedidosController({ pedirOferta, resolverPedido });
+  const listarPedidosPorConfirmar = new ListarPedidosPorConfirmar({
+    codigos: codigoCanjeRepository,
+    reloj,
+    resumenDeOfertas,
+  });
+
+  const controller = new PedidosController({ pedirOferta, resolverPedido, listarPedidosPorConfirmar });
 
   return {
     routerPublico: crearRutasPedidosPublicas(controller, limitarPedidos),
     routerNegocio: crearRutasPedidosNegocio(controller, requireAuth),
+    routerMeNegocio: crearRutasPedidosMeNegocio(controller, requireAuth),
     expirarReservas,
   };
 }

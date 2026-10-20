@@ -5,10 +5,29 @@ import {
   ReglaNegocioError,
 } from '../../../compartido/dominio/errores.js';
 
+function serializarPedidoPorConfirmar({ codigoCanje, oferta, minutosRestantes }) {
+  return {
+    codigo: codigoCanje.codigo,
+    precio: codigoCanje.precio,
+    minutosRestantes,
+    oferta: { id: oferta.id, titulo: oferta.titulo },
+  };
+}
+
 export class PedidosController {
-  constructor({ pedirOferta, resolverPedido }) {
+  constructor({ pedirOferta, resolverPedido, listarPedidosPorConfirmar }) {
     this.pedirOferta = pedirOferta;
     this.resolverPedido = resolverPedido;
+    this.listarPedidosPorConfirmar = listarPedidosPorConfirmar;
+  }
+
+  async listarPorConfirmar(req, res, next) {
+    try {
+      const pedidos = await this.listarPedidosPorConfirmar.ejecutar({ negocioId: req.usuario.negocioId });
+      return res.status(200).json(pedidos.map(serializarPedidoPorConfirmar));
+    } catch (error) {
+      return next(error);
+    }
   }
 
   async pedir(req, res, next) {

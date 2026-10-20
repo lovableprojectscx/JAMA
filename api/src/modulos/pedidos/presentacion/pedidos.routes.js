@@ -13,3 +13,10 @@ export function crearRutasPedidosNegocio(controller, requireAuth) {
   router.patch('/:codigo', requireAuth, (req, res, next) => controller.resolver(req, res, next));
   return router;
 }
+
+/** Se monta en /api/v1/negocios/me/pedidos → GET (negocio autenticado). */
+export function crearRutasPedidosMeNegocio(controller, requireAuth) {
+  const router = Router();
+  router.get('/', requireAuth, (req, res, next) => controller.listarPorConfirmar(req, res, next));
+  return router;
+}
