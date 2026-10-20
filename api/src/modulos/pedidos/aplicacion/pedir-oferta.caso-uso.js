@@ -23,7 +23,7 @@ export class PedirOferta {
 
       const codigo = await this.#codigoUnico(tx);
       const codigoCanje = CodigoCanje.reservar(
-        { id: randomUUID(), codigo, ofertaId, negocioId: reserva.negocioId },
+        { id: randomUUID(), codigo, ofertaId, negocioId: reserva.negocioId, precio: reserva.precioVigente },
         ahora
       );
       await this.codigos.guardar(codigoCanje, tx);
@@ -32,7 +32,7 @@ export class PedirOferta {
       const mensaje = `Hola ${contacto.nombre}, vi tu oferta "${reserva.titulo}" en JAMA. Quiero recogerla hoy. Mi código es ${codigo}.`;
       const enlaceWhatsapp = this.mensajeria.generarEnlace(contacto.whatsapp, mensaje);
 
-      return { codigo, enlaceWhatsapp, expiraEn: codigoCanje.expiraEn };
+      return { codigo, enlaceWhatsapp, expiraEn: codigoCanje.expiraEn, precio: codigoCanje.precio };
     });
   }
 

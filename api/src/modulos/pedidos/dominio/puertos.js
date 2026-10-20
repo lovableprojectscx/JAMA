@@ -18,6 +18,11 @@ export class CodigoCanjeRepository {
   async listarReservadosVencidos(ahora, tx) {
     throw new Error('CodigoCanjeRepository.listarReservadosVencidos() no implementado');
   }
+
+  // eslint-disable-next-line no-unused-vars
+  async listarPorNegocioYEstado(negocioId, estado) {
+    throw new Error('CodigoCanjeRepository.listarPorNegocioYEstado() no implementado');
+  }
 }
 
 /** Lo que Pedidos necesita de Ofertas, sin conocer su dominio. */
@@ -30,6 +35,14 @@ export class ReservaDeStock {
   // eslint-disable-next-line no-unused-vars
   async liberar(ofertaId, tx, ahora) {
     throw new Error('ReservaDeStock.liberar() no implementado');
+  }
+}
+
+/** Lo que Pedidos necesita de Ofertas para mostrar el título en "pedidos por confirmar". */
+export class ResumenDeOfertas {
+  // eslint-disable-next-line no-unused-vars
+  async obtenerResumen(ofertaId) {
+    throw new Error('ResumenDeOfertas.obtenerResumen() no implementado');
   }
 }
 

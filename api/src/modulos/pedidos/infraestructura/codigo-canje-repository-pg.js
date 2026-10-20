@@ -12,6 +12,7 @@ function filaACodigoCanje(fila) {
     creadoEn: fila.creado_en,
     expiraEn: fila.expira_en,
     historial: fila.historial,
+    precio: fila.precio == null ? null : Number(fila.precio),
   });
 }
 
@@ -24,8 +25,8 @@ export class CodigoCanjeRepositoryPg extends CodigoCanjeRepository {
   async guardar(codigoCanje, tx) {
     const ejecutor = tx ?? this.pool;
     await ejecutor.query(
-      `INSERT INTO codigos_canje (id, codigo, oferta_id, negocio_id, estado, creado_en, expira_en, historial)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `INSERT INTO codigos_canje (id, codigo, oferta_id, negocio_id, estado, creado_en, expira_en, historial, precio)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        ON CONFLICT (id) DO UPDATE
          SET estado = EXCLUDED.estado,
              historial = EXCLUDED.historial`,
@@ -38,6 +39,7 @@ export class CodigoCanjeRepositoryPg extends CodigoCanjeRepository {
         codigoCanje.creadoEn,
         codigoCanje.expiraEn,
         JSON.stringify(codigoCanje.historial),
+        codigoCanje.precio,
       ]
     );
   }
@@ -68,6 +70,15 @@ export class CodigoCanjeRepositoryPg extends CodigoCanjeRepository {
         WHERE estado = 'RESERVADO' AND expira_en <= $1
         FOR UPDATE SKIP LOCKED`,
       [ahora]
+    );
+    return rows.map(filaACodigoCanje);
+  }
+
+  /** RN-10: el panel del negocio solo ve los códigos de su propio negocio. */
+  async listarPorNegocioYEstado(negocioId, estado) {
+    const { rows } = await this.pool.query(
+      `SELECT * FROM codigos_canje WHERE negocio_id = $1 AND estado = $2 ORDER BY expira_en ASC`,
+      [negocioId, estado]
     );
     return rows.map(filaACodigoCanje);
   }

@@ -1,4 +1,4 @@
-import { ReservaDeStock, ContactoNegocio } from '../dominio/puertos.js';
+import { ReservaDeStock, ContactoNegocio, ResumenDeOfertas } from '../dominio/puertos.js';
 
 /** Traduce el puerto ReservaDeStock de Pedidos a la API pública de Ofertas. */
 export class ReservaDeStockConOfertas extends ReservaDeStock {
@@ -13,6 +13,18 @@ export class ReservaDeStockConOfertas extends ReservaDeStock {
 
   async liberar(ofertaId, tx, ahora) {
     return this.apiOfertas.liberarUnidad(ofertaId, tx, ahora);
+  }
+}
+
+/** Traduce el puerto ResumenDeOfertas de Pedidos a la API pública de Ofertas. */
+export class ResumenDeOfertasConOfertas extends ResumenDeOfertas {
+  constructor(apiOfertas) {
+    super();
+    this.apiOfertas = apiOfertas;
+  }
+
+  async obtenerResumen(ofertaId) {
+    return this.apiOfertas.obtenerResumen(ofertaId);
   }
 }
 

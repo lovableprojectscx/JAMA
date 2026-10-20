@@ -10,7 +10,7 @@ export const EstadoCodigo = Object.freeze({
 const MINUTOS_RESERVA = 30;
 
 export class CodigoCanje {
-  constructor({ id, codigo, ofertaId, negocioId, estado, creadoEn, expiraEn, historial }) {
+  constructor({ id, codigo, ofertaId, negocioId, estado, creadoEn, expiraEn, historial, precio }) {
     this.id = id;
     this.codigo = codigo;
     this.ofertaId = ofertaId;
@@ -19,16 +19,23 @@ export class CodigoCanje {
     this.creadoEn = creadoEn;
     this.expiraEn = expiraEn;
     this.historial = historial ?? [];
+    this.precio = precio;
   }
 
-  /** RN-06: una reserva vence a los 30 minutos. */
-  static reservar({ id, codigo, ofertaId, negocioId }, ahora) {
+  /**
+   * RN-06: una reserva vence a los 30 minutos.
+   * `precio` es el precio vigente que el cliente vio al pedir (ya sea el
+   * tramo activo en ese instante o el precio de oferta fijo): el cliente
+   * paga lo que vio, aunque el precio siga bajando después.
+   */
+  static reservar({ id, codigo, ofertaId, negocioId, precio }, ahora) {
     const expiraEn = new Date(ahora.getTime() + MINUTOS_RESERVA * 60_000);
     return new CodigoCanje({
       id,
       codigo,
       ofertaId,
       negocioId,
+      precio,
       estado: EstadoCodigo.RESERVADO,
       creadoEn: ahora,
       expiraEn,
