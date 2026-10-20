@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { obtenerOfertasDeHoy, pedirOferta } from './api.js';
 import OfertaCard from './components/OfertaCard.jsx';
+import logoJama from './assets/jama-logo.png';
 
 export default function App() {
   const [ofertas, setOfertas] = useState([]);
@@ -52,7 +53,7 @@ export default function App() {
   return (
     <div className="pagina">
       <header className="cabecera">
-        <span className="cabecera__marca">JAMA</span>
+        <img className="cabecera__logo" src={logoJama} alt="JAMA" width="220" height="105" />
         <p className="cabecera__subtitulo">Ofertas de cierre en Ayacucho · recojo de 6 a 7 pm</p>
       </header>
 

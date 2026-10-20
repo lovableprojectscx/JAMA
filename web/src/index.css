@@ -39,10 +39,11 @@ body {
   text-align: center;
 }
 
-.cabecera__marca {
-  font-size: 28px;
-  font-weight: 900;
-  letter-spacing: 1px;
+.cabecera__logo {
+  display: block;
+  width: 160px;
+  height: auto;
+  margin: 0 auto;
 }
 
 .cabecera__subtitulo {
