@@ -3,7 +3,7 @@
   --azul-marino: #1e2b4d;
   --crema: #faf8ef;
   --blanco: #ffffff;
-  --gris-texto: #5b6472;
+  --gris-texto: #5b6478;
   --rojo-aviso: #b3261e;
 
   font-family: 'Nunito', system-ui, sans-serif;
@@ -41,7 +41,7 @@ body {
 
 .cabecera__marca {
   font-size: 28px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 1px;
 }
 
@@ -70,7 +70,7 @@ body {
   border-radius: 10px;
   padding: 12px 16px;
   margin-bottom: 16px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .aviso--error {
@@ -88,7 +88,7 @@ body {
 
 .confirmacion__titulo {
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 900;
   margin: 0 0 6px;
 }
 
@@ -148,7 +148,7 @@ body {
   left: 10px;
   background: var(--lima);
   color: var(--azul-marino);
-  font-weight: 800;
+  font-weight: 700;
   font-size: 13px;
   padding: 4px 10px;
   border-radius: 999px;
@@ -163,6 +163,7 @@ body {
 
 .oferta-card__titulo {
   font-size: 18px;
+  font-weight: 900;
   margin: 0;
 }
 
@@ -188,7 +189,7 @@ body {
 .oferta-card__precio-oferta {
   color: var(--azul-marino);
   font-size: 22px;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .oferta-card__detalle {
@@ -206,7 +207,7 @@ body {
   padding: 12px;
   font-family: inherit;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 900;
   cursor: pointer;
   text-align: center;
   text-decoration: none;
