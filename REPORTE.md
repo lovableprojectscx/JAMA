@@ -41,11 +41,17 @@ el reloj inyectado, convirtiendo `ahora` a hora de Lima con
 `Date` crudo del servidor) — ver `compartido/dominio/fechas.js`. Sin tramos
 vigentes todavía, se usa el precio de oferta fijo. Cada tramo se valida al
 publicar: hora `HH:MM` válida, descuento entero 1–99 %, sin horas
-duplicadas, y el precio resultante siempre menor al precio de carta. La
-vitrina pública muestra `precioVigente` y, si hay un tramo siguiente, el
-aviso ("Baja a S/ X a las HH:MM"). Al pedir, el precio vigente de ese
-instante se guarda en el código de canje (nueva columna `codigos_canje.precio`)
-— el cliente paga lo que vio, aunque el precio siga bajando después.
+duplicadas, el precio del tramo **menor al precio de oferta fijo** (no solo
+al de carta) y el descuento **estrictamente creciente** según la hora —así
+el precio solo puede bajar, nunca subir, entre tramos. (Esto corrigió un bug
+real que encontré después de la primera entrega: con carta=40, oferta=20 y
+tramos 17:00→30%/18:30→20%, el precio terminaba subiendo a S/28 y S/32 en
+vez de bajar; ahora ambos se rechazan al publicar con un mensaje que le dice
+al dueño qué tramo y por qué.) La vitrina pública muestra `precioVigente` y,
+si hay un tramo siguiente, el aviso ("Baja a S/ X a las HH:MM"). Al pedir, el
+precio vigente de ese instante se guarda en el código de canje (nueva
+columna `codigos_canje.precio`) — el cliente paga lo que vio, aunque el
+precio siga bajando después.
 
 **Endpoints nuevos** (JWT, siempre filtrados por el negocio del token; una
 oferta o un código de otro negocio responde 404, nunca 403):
@@ -119,9 +125,9 @@ formulario limpio) y el dueño cambia de pestaña cuando quiere.
 ## 3. Resultado de `npm test`
 
 ```
-# tests 60
+# tests 62
 # suites 17
-# pass 60
+# pass 62
 # fail 0
 ```
 
@@ -130,7 +136,7 @@ para confirmar que las pruebas de integración son idempotentes.
 
 | Suite | Pruebas | Qué cubre |
 |---|---|---|
-| `tests/dominio/oferta.test.js` | 27 | RN-01, RN-03, RN-05, RN-08, vigencia, RN-11 (tramos de precio: validación, orden, `precioVigente`, `proximoTramo`, incluye el caso 18:45/19:30 Lima) y `cambiarEstado` — sin base de datos |
+| `tests/dominio/oferta.test.js` | 29 | RN-01, RN-03, RN-05, RN-08, vigencia, RN-11 (tramos de precio: validación, orden, el precio de cada tramo menor al de oferta fijo, descuento estrictamente creciente, `precioVigente`, `proximoTramo`, incluye el caso 18:45/19:30 Lima) y `cambiarEstado` — sin base de datos |
 | `tests/dominio/codigo-canje.test.js` | 10 | RN-06, RN-07, RN-10, máquina de estados, precio guardado al reservar — sin base de datos |
 | `tests/dominio/fechas.test.js` | 5 | `horaMinutoLima` / `esMismoDiaLima` en zona America/Lima con `Intl`, incluyendo el caso de corrección (19:30 Lima = 00:30 UTC del día siguiente, mismo día) |
 | `tests/expiracion/expirar-reservas.test.js` | 3 | Expiración a los 30 min con `RelojFijo` inyectable (antes/justo después del límite; no toca códigos ya resueltos) |
