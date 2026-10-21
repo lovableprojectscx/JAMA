@@ -35,6 +35,7 @@ export class OfertasController {
     obtenerOferta,
     listarMisOfertasDeHoy,
     cambiarEstadoDeOferta,
+    subirFotoOferta,
     reloj,
   }) {
     this.publicarOferta = publicarOferta;
@@ -42,6 +43,7 @@ export class OfertasController {
     this.obtenerOferta = obtenerOferta;
     this.listarMisOfertasDeHoy = listarMisOfertasDeHoy;
     this.cambiarEstadoDeOferta = cambiarEstadoDeOferta;
+    this.subirFotoOferta = subirFotoOferta;
     this.reloj = reloj;
   }
 
@@ -115,6 +117,26 @@ export class OfertasController {
       const ahora = this.reloj.ahora();
       return res.status(200).json(ofertas.map((oferta) => serializarOfertaDeNegocio(oferta, ahora)));
     } catch (error) {
+      return next(error);
+    }
+  }
+
+  async subirFoto(req, res, next) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'Debes adjuntar una foto' });
+      }
+
+      const { fotoUrl } = await this.subirFotoOferta.ejecutar({
+        buffer: req.file.buffer,
+        mimeType: req.file.mimetype,
+      });
+
+      return res.status(201).json({ fotoUrl });
+    } catch (error) {
+      if (error instanceof ReglaNegocioError) {
+        return res.status(400).json({ error: error.message });
+      }
       return next(error);
     }
   }

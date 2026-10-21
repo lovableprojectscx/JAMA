@@ -5,6 +5,7 @@ import { ListarOfertasVigentes } from './aplicacion/listar-ofertas-vigentes.caso
 import { ObtenerOferta } from './aplicacion/obtener-oferta.caso-uso.js';
 import { ListarMisOfertasDeHoy } from './aplicacion/listar-mis-ofertas-de-hoy.caso-uso.js';
 import { CambiarEstadoDeOferta } from './aplicacion/cambiar-estado-oferta.caso-uso.js';
+import { SubirFotoOferta } from './aplicacion/subir-foto-oferta.caso-uso.js';
 import { OfertasController } from './presentacion/ofertas.controller.js';
 import { crearRutasOfertasPublicas, crearRutasOfertasNegocio } from './presentacion/ofertas.routes.js';
 
@@ -13,7 +14,7 @@ import { crearRutasOfertasPublicas, crearRutasOfertasNegocio } from './presentac
  * puede llegar a las ofertas a través de `reservarUnidad` / `liberarUnidad`,
  * nunca leyendo la tabla `ofertas` directamente (ADR-001).
  */
-export function crearApiOfertas({ pool, reloj, requireAuth }) {
+export function crearApiOfertas({ pool, reloj, requireAuth, almacenImagenes }) {
   const ofertaRepository = new OfertaRepositoryPg(pool);
 
   const publicarOferta = new PublicarOferta({ ofertas: ofertaRepository, reloj });
@@ -21,6 +22,7 @@ export function crearApiOfertas({ pool, reloj, requireAuth }) {
   const obtenerOferta = new ObtenerOferta({ ofertas: ofertaRepository });
   const listarMisOfertasDeHoy = new ListarMisOfertasDeHoy({ ofertas: ofertaRepository, reloj });
   const cambiarEstadoDeOferta = new CambiarEstadoDeOferta({ ofertas: ofertaRepository, reloj });
+  const subirFotoOferta = new SubirFotoOferta({ almacenImagenes });
 
   const controller = new OfertasController({
     publicarOferta,
@@ -28,6 +30,7 @@ export function crearApiOfertas({ pool, reloj, requireAuth }) {
     obtenerOferta,
     listarMisOfertasDeHoy,
     cambiarEstadoDeOferta,
+    subirFotoOferta,
     reloj,
   });
 

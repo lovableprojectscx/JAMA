@@ -5,6 +5,7 @@ import { RelojSistema } from './compartido/infraestructura/relojes.js';
 import { crearApiNegocios } from './modulos/negocios/index.js';
 import { crearApiAcceso } from './modulos/acceso/index.js';
 import { crearApiOfertas } from './modulos/ofertas/index.js';
+import { SupabaseStorageAdapter } from './modulos/ofertas/infraestructura/supabase-storage-adapter.js';
 import { crearModuloPedidos } from './modulos/pedidos/pedidos.module.js';
 import { crearRequireAuth } from './api/middlewares/auth.middleware.js';
 import { limitarPedidos } from './api/middlewares/rate-limit.middleware.js';
@@ -22,7 +23,12 @@ const apiAcceso = crearApiAcceso({
   duracionToken: process.env.JWT_DURACION ?? '12h',
 });
 const requireAuth = crearRequireAuth(apiAcceso);
-const apiOfertas = crearApiOfertas({ pool, reloj, requireAuth });
+const almacenImagenes = new SupabaseStorageAdapter({
+  url: process.env.SUPABASE_URL,
+  serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  bucket: process.env.SUPABASE_STORAGE_BUCKET,
+});
+const apiOfertas = crearApiOfertas({ pool, reloj, requireAuth, almacenImagenes });
 const pedidosModule = crearModuloPedidos({
   pool,
   reloj,
