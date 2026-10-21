@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "builds": [{ "src": "src/entrada-vercel.js", "use": "@vercel/node" }],
+  "routes": [{ "src": "/(.*)", "dest": "src/entrada-vercel.js" }],
+  "crons": [{ "path": "/api/v1/cron/expirar-reservas", "schedule": "0 9 * * *" }]
+}
