@@ -1,7 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { obtenerOfertasDeHoy, pedirOferta } from './api.js';
 import OfertaCard from './components/OfertaCard.jsx';
-import logoJama from './assets/jama-logo.png';
+import Header from './components/Header.jsx';
+import Hero from './components/Hero.jsx';
+import ComoFunciona from './components/ComoFunciona.jsx';
+import Faq from './components/Faq.jsx';
+import CtaNegocio from './components/CtaNegocio.jsx';
+import EjemplosIlustrativos from './components/EjemplosIlustrativos.jsx';
 
 export default function App() {
   const [ofertas, setOfertas] = useState([]);
@@ -10,6 +15,7 @@ export default function App() {
   const [ofertaEnProceso, setOfertaEnProceso] = useState(null);
   const [confirmacion, setConfirmacion] = useState(null);
   const [avisoError, setAvisoError] = useState(null);
+  const refOfertas = useRef(null);
 
   async function cargarOfertas() {
     setCargandoLista(true);
@@ -50,14 +56,16 @@ export default function App() {
     }
   }
 
+  function handleVerOfertas() {
+    refOfertas.current?.scrollIntoView({ behavior: 'smooth' });
+  }
+
   return (
     <div className="pagina">
-      <header className="cabecera">
-        <img className="cabecera__logo" src={logoJama} alt="JAMA" width="220" height="105" />
-        <p className="cabecera__subtitulo">Ofertas de cierre en Ayacucho · recojo de 6 a 7 pm</p>
-      </header>
+      <Header />
+      <Hero onVerOfertas={handleVerOfertas} />
 
-      <main className="contenido">
+      <main className="contenido" id="ofertas" ref={refOfertas}>
         {avisoError && <div className="aviso aviso--error">{avisoError}</div>}
 
         {confirmacion && (
@@ -81,14 +89,11 @@ export default function App() {
           </div>
         )}
 
+        <h2 className="seccion__titulo">La JAMA de hoy</h2>
+
         {cargandoLista && <p className="estado">Cargando ofertas de hoy...</p>}
-
         {!cargandoLista && errorLista && <p className="estado estado--error">{errorLista}</p>}
-
-        {!cargandoLista && !errorLista && ofertas.length === 0 && (
-          <p className="estado">No hay ofertas disponibles por ahora. Vuelve más tarde.</p>
-        )}
-
+        {!cargandoLista && !errorLista && ofertas.length === 0 && <EjemplosIlustrativos />}
         {!cargandoLista && !errorLista && ofertas.length > 0 && (
           <div className="lista-ofertas">
             {ofertas.map((oferta) => (
@@ -102,6 +107,10 @@ export default function App() {
           </div>
         )}
       </main>
+
+      <ComoFunciona />
+      <Faq />
+      <CtaNegocio />
 
       <footer className="pie">El pago y la coordinación de la entrega se hacen por WhatsApp y Yape.</footer>
     </div>

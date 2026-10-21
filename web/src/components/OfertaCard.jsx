@@ -7,6 +7,10 @@ function formatearHora(fechaIso) {
 }
 
 export default function OfertaCard({ oferta, onPedir, cargando }) {
+  const precioVigente = oferta.precioVigente ?? oferta.precioOferta;
+  const descuentoVigente =
+    oferta.porcentajeDescuento ?? Math.round((1 - precioVigente / oferta.precioCarta) * 100);
+
   return (
     <article className="oferta-card">
       <div className="oferta-card__foto-contenedor">
@@ -22,7 +26,7 @@ export default function OfertaCard({ oferta, onPedir, cargando }) {
         ) : (
           <div className="oferta-card__foto oferta-card__foto--vacia" aria-hidden="true" />
         )}
-        <span className="oferta-card__descuento">-{oferta.porcentajeDescuento}%</span>
+        <span className="oferta-card__descuento">-{descuentoVigente}%</span>
       </div>
 
       <div className="oferta-card__cuerpo">
@@ -31,8 +35,14 @@ export default function OfertaCard({ oferta, onPedir, cargando }) {
 
         <div className="oferta-card__precios">
           <span className="oferta-card__precio-carta">{formatearPrecio(oferta.precioCarta)}</span>
-          <span className="oferta-card__precio-oferta">{formatearPrecio(oferta.precioOferta)}</span>
+          <span className="oferta-card__precio-oferta">{formatearPrecio(precioVigente)}</span>
         </div>
+
+        {oferta.proximoTramo && (
+          <p className="oferta-card__proximo-tramo">
+            Baja a {formatearPrecio(oferta.proximoTramo.precio)} a las {oferta.proximoTramo.desde}
+          </p>
+        )}
 
         <p className="oferta-card__detalle">
           Quedan {oferta.stock} · recojo hasta las {formatearHora(oferta.horaLimite)}

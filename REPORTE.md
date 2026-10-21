@@ -48,7 +48,9 @@ real que encontré después de la primera entrega: con carta=40, oferta=20 y
 tramos 17:00→30%/18:30→20%, el precio terminaba subiendo a S/28 y S/32 en
 vez de bajar; ahora ambos se rechazan al publicar con un mensaje que le dice
 al dueño qué tramo y por qué.) La vitrina pública muestra `precioVigente` y,
-si hay un tramo siguiente, el aviso ("Baja a S/ X a las HH:MM"). Al pedir, el
+si hay un tramo siguiente, el aviso ("Baja a S/ X a las HH:MM") — *nota: esto
+quedó pendiente en el frontend hasta la Etapa 6, ver más abajo; la tarjeta
+mostraba `precioOferta` fijo y nunca el aviso del próximo tramo.* Al pedir, el
 precio vigente de ese instante se guarda en el código de canje (nueva
 columna `codigos_canje.precio`) — el cliente paga lo que vio, aunque el
 precio siga bajando después.
@@ -141,6 +143,51 @@ verdad) con el correcto. Lo que no pude probar en esta sesión es el deploy
 real en Vercel (no tengo acceso a vercel.com desde este sandbox) ni la
 conexión real contra el pooler de Supabase con `DATABASE_URL` apuntando
 ahí — eso alguien tiene que confirmarlo hacienda el deploy de verdad.
+
+### Etapa 6 — Rediseño de la vitrina pública (esta sesión)
+
+El equipo compartió el diseño de un landing de referencia ("MVP del MVP",
+mismo brand kit) con secciones que la vitrina real todavía no tenía: hero,
+"Así de fácil", FAQ, CTA para negocios y ejemplos de ofertas. Se adaptó a
+cómo funciona JAMA de verdad (sin cuentas de cliente, sin carrito — por eso
+no se copiaron "Favoritos"/"Mi cuenta"/"Carrito" del diseño de referencia:
+no existen en el modelo de negocio real).
+
+**Bug encontrado y corregido de paso**: revisando `OfertaCard.jsx` antes de
+tocarlo, el componente mostraba `oferta.precioOferta` (el precio fijo) en
+vez de `oferta.precioVigente`, y nunca mostraba el aviso de `proximoTramo`
+— pese a que la API ya devolvía ambos campos (Etapa 3) y el REPORTE.md de
+esa etapa decía que ya estaba hecho. Ahora la tarjeta usa `precioVigente`
+(con `precioOferta` como respaldo si la API no lo manda) y muestra "Baja a
+S/ X a las HH:MM" cuando hay un tramo siguiente.
+
+**Secciones nuevas** (`web/src/components/`): `Header` (logo + "Publicar una
+oferta" → `/panel`, sin login de cliente), `Hero` (tagline, botón que hace
+scroll a las ofertas, 3 insignias de confianza), `ComoFunciona` (los 3 pasos
+reales: elegir, pedir sin registro, pagar y recoger), `Faq` (acordeón, 6
+preguntas con respuestas que describo abajo) y `CtaNegocio` (invita a
+publicar, enlaza a `/panel`).
+
+**Ejemplos ilustrativos** (`web/src/data/ejemplosIlustrativos.js` +
+`EjemplosIlustrativos`/`EjemploCard`): 20 productos de ejemplo (sazón,
+dulces, panadería, ensaladas) que solo se muestran cuando la lista real de
+`/ofertas` viene vacía — nunca se mezclan con datos reales de la API, y la
+sección siempre lleva un aviso visible ("estos son ejemplos ilustrativos,
+no ofertas reales") para que nadie los confunda con una oferta real.
+
+**Las 6 preguntas del FAQ** (escritas para esta sesión, basadas en cómo
+funciona JAMA, no copiadas del diseño de referencia que no traía
+respuestas): si hace falta cuenta para pedir, cómo se paga (Yape/efectivo
+por WhatsApp, JAMA no cobra), el horario de recojo (6–7 pm), qué hacer con
+el código de 4 caracteres, qué pasa si la oferta se agota antes de pedirla,
+y cómo publica un negocio sus ofertas.
+
+Verificado con `npm run build` y `npm run lint` en `/web` (sin errores
+nuevos) y con capturas de Playwright en móvil (390px) y escritorio
+(1280px): la vitrina sin ofertas reales (muestra los ejemplos con el
+aviso), con una oferta real con tramo de precio (precio vigente correcto +
+aviso "Baja a..."), con error de red, y el acordeón de FAQ abriendo y
+cerrando.
 
 ## 2. Cómo correrlo
 
