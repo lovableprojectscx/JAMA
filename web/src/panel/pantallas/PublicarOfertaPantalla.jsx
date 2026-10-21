@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { publicarOferta } from '../api.js';
+import { useEffect, useRef, useState } from 'react';
+import { publicarOferta, subirFoto } from '../api.js';
 
 // Los errores de reglas de negocio llegan con un prefijo técnico ("RN-11: ...");
 // se quita para mostrarle al dueño solo el mensaje en español.
@@ -26,9 +26,51 @@ export default function PublicarOfertaPantalla({ token }) {
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState(null);
   const [exito, setExito] = useState(false);
+  const [previewFoto, setPreviewFoto] = useState(null);
+  const [subiendoFoto, setSubiendoFoto] = useState(false);
+  const [errorFoto, setErrorFoto] = useState(null);
+  const previewFotoRef = useRef(null);
+
+  useEffect(() => {
+    previewFotoRef.current = previewFoto;
+  }, [previewFoto]);
+
+  // Libera el object URL de la vista previa al salir de esta pantalla.
+  useEffect(() => {
+    return () => {
+      if (previewFotoRef.current) URL.revokeObjectURL(previewFotoRef.current);
+    };
+  }, []);
 
   function actualizarCampo(campo, valor) {
     setDatos((actuales) => ({ ...actuales, [campo]: valor }));
+  }
+
+  function limpiarVistaPreviaFoto() {
+    if (previewFoto) URL.revokeObjectURL(previewFoto);
+    setPreviewFoto(null);
+  }
+
+  async function handleSeleccionarFoto(evento) {
+    const archivo = evento.target.files?.[0];
+    evento.target.value = ''; // permite volver a elegir el mismo archivo si falla
+    if (!archivo) return;
+
+    limpiarVistaPreviaFoto();
+    setPreviewFoto(URL.createObjectURL(archivo));
+    setErrorFoto(null);
+    setSubiendoFoto(true);
+    actualizarCampo('fotoUrl', '');
+
+    try {
+      const { fotoUrl } = await subirFoto(token, archivo);
+      actualizarCampo('fotoUrl', fotoUrl);
+    } catch (err) {
+      setErrorFoto(mensajeAmigable(err.message));
+      limpiarVistaPreviaFoto();
+    } finally {
+      setSubiendoFoto(false);
+    }
   }
 
   function agregarTramo() {
@@ -67,6 +109,7 @@ export default function PublicarOfertaPantalla({ token }) {
       setExito(true);
       setDatos(datosIniciales());
       setTramos([]);
+      limpiarVistaPreviaFoto();
     } catch (err) {
       setError(mensajeAmigable(err.message));
     } finally {
@@ -102,14 +145,19 @@ export default function PublicarOfertaPantalla({ token }) {
         </label>
 
         <label className="panel-campo">
-          <span className="panel-campo__etiqueta">Foto (URL)</span>
+          <span className="panel-campo__etiqueta">Foto</span>
+          {previewFoto && (
+            <img className="panel-foto-preview" src={previewFoto} alt="Vista previa de la oferta" />
+          )}
           <input
             className="panel-campo__input"
-            type="url"
-            placeholder="https://..."
-            value={datos.fotoUrl}
-            onChange={(e) => actualizarCampo('fotoUrl', e.target.value)}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleSeleccionarFoto}
           />
+          {subiendoFoto && <span className="panel-foto-estado">Subiendo foto...</span>}
+          {!subiendoFoto && datos.fotoUrl && <span className="panel-foto-estado panel-foto-estado--ok">Foto lista ✓</span>}
+          {errorFoto && <p className="panel-aviso panel-aviso--error">{errorFoto}</p>}
         </label>
 
         <div className="panel-fila">
@@ -221,8 +269,8 @@ export default function PublicarOfertaPantalla({ token }) {
           </button>
         </fieldset>
 
-        <button type="submit" className="panel-boton panel-boton--primario" disabled={enviando}>
-          {enviando ? 'Publicando...' : 'Publicar oferta'}
+        <button type="submit" className="panel-boton panel-boton--primario" disabled={enviando || subiendoFoto}>
+          {enviando ? 'Publicando...' : subiendoFoto ? 'Esperando la foto...' : 'Publicar oferta'}
         </button>
       </form>
     </div>

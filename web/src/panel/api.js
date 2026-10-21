@@ -37,6 +37,26 @@ export function publicarOferta(token, datos) {
   return solicitar('/negocios/me/ofertas', { method: 'POST', token, body: datos });
 }
 
+/** Multipart, no pasa por `solicitar`: el navegador pone el Content-Type con el boundary. */
+export async function subirFoto(token, archivo) {
+  const formData = new FormData();
+  formData.append('foto', archivo);
+
+  const respuesta = await fetch(`${API_URL}/negocios/me/ofertas/fotos`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+
+  const cuerpo = await respuesta.json().catch(() => null);
+  if (!respuesta.ok) {
+    const error = new Error(cuerpo?.error ?? 'No se pudo subir la foto');
+    error.status = respuesta.status;
+    throw error;
+  }
+  return cuerpo;
+}
+
 export function obtenerPedidosPorConfirmar(token) {
   return solicitar('/negocios/me/pedidos?estado=RESERVADO', { token });
 }
