@@ -67,7 +67,22 @@ body {
   background: var(--azul-marino);
   color: var(--blanco);
   padding: 8px 16px 32px;
+}
+
+.hero__grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.hero__imagen {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  margin-top: 20px;
 }
 
 .hero__titulo {
@@ -112,6 +127,34 @@ body {
   font-size: 13px;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.9);
+}
+
+@media (min-width: 760px) {
+  .hero__grid {
+    flex-direction: row;
+    text-align: left;
+    gap: 36px;
+    padding: 24px 0;
+  }
+
+  .hero__texto {
+    flex: 1;
+  }
+
+  .hero__subtitulo {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .hero__insignias {
+    justify-content: flex-start;
+  }
+
+  .hero__imagen {
+    margin-top: 0;
+    max-width: 280px;
+    flex-shrink: 0;
+  }
 }
 
 .contenido {
@@ -330,14 +373,25 @@ body {
 .ejemplo-card {
   background: var(--blanco);
   border-radius: 14px;
-  padding: 14px;
+  overflow: hidden;
   box-shadow: 0 2px 10px rgba(30, 43, 77, 0.08);
   opacity: 0.85;
 }
 
-.ejemplo-card__icono {
-  font-size: 28px;
-  margin-bottom: 6px;
+.ejemplo-card__foto-contenedor {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--crema);
+}
+
+.ejemplo-card__foto {
+  position: absolute;
+  max-width: none;
+}
+
+.ejemplo-card__cuerpo {
+  padding: 10px 12px 12px;
 }
 
 .ejemplo-card__titulo {

@@ -175,12 +175,37 @@ dulces, panadería, ensaladas) que solo se muestran cuando la lista real de
 sección siempre lleva un aviso visible ("estos son ejemplos ilustrativos,
 no ofertas reales") para que nadie los confunda con una oferta real.
 
+**Fotos reales del brand kit** (no emojis): el usuario compartió el repo
+público `AntonyParedes/jamaweb` (su propia "MVP del MVP" con el mismo
+brand kit) para reusar sus assets. De ahí salen `web/src/assets/jama-hero.webp`
+(el mockup de celular + torta que ahora ilustra el Hero) y
+`web/src/assets/jama-demo-foods.webp` (una sola imagen en grilla 5×4 con las
+20 fotos de los ejemplos ilustrativos, recortada por posición vía CSS en vez
+de cargar 20 archivos sueltos — la misma técnica que ya usaba ese repo en
+`ProductPhoto.tsx`, con los mismos cortes por fila/columna). Ambas se
+reexportaron a WebP y se comprimieron (el hero bajó de 1.2 MB a 61 KB, la
+grilla de 3 MB a 290 KB) antes de subirlas a este repo.
+
+*Bug encontrado al integrar las fotos*: la primera versión de `EjemploCard`
+le puso `object-fit: cover` a la imagen recortada, lo que rompe la técnica
+de recorte por porcentaje (hace que el navegador vuelva a calcular qué
+parte de la imagen mostrar según su propio aspect-ratio, en vez de respetar
+el recorte exacto) — el síntoma, visible en capturas, era que varias
+tarjetas mostraban dos platos distintos superpuestos en la misma foto. Se
+quitó esa propiedad (el repo de referencia tampoco la usa en el modo
+recortado) y se cambió el contenedor a `aspect-ratio: 1/1` como el original,
+para minimizar la distorsión.
+
 **Las 6 preguntas del FAQ** (escritas para esta sesión, basadas en cómo
-funciona JAMA, no copiadas del diseño de referencia que no traía
-respuestas): si hace falta cuenta para pedir, cómo se paga (Yape/efectivo
-por WhatsApp, JAMA no cobra), el horario de recojo (6–7 pm), qué hacer con
-el código de 4 caracteres, qué pasa si la oferta se agota antes de pedirla,
-y cómo publica un negocio sus ofertas.
+funciona JAMA): el repo de referencia sí trae un FAQ (4 preguntas, con
+respuestas genéricas tipo "coordina el horario con el vendedor"), pero ahí
+cada negocio define su propio horario de recojo — en JAMA es siempre fijo,
+6 a 7 pm, y JAMA sí define reglas propias (RN-11, el código de 4
+caracteres, el rate limit). Por eso el FAQ de la vitrina no es una copia:
+cubre si hace falta cuenta para pedir, cómo se paga (Yape/efectivo por
+WhatsApp, JAMA no cobra), el horario fijo de recojo, qué hacer con el
+código, qué pasa si la oferta se agota antes de pedirla, y cómo publica un
+negocio sus ofertas.
 
 Verificado con `npm run build` y `npm run lint` en `/web` (sin errores
 nuevos) y con capturas de Playwright en móvil (390px) y escritorio
