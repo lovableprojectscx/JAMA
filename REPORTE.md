@@ -145,7 +145,7 @@ formulario limpio) y el dueño cambia de pestaña cuando quiere.
 
 ### Cómo probar la subida de fotos
 
-Esto sí necesita credenciales reales de Supabase (no vienen en este repo):
+Necesita credenciales reales de Supabase (no vienen en este repo):
 
 1. En tu proyecto de Supabase: **Storage** → crea un bucket **público**
    (por ejemplo `fotos-ofertas`).
@@ -160,14 +160,20 @@ Esto sí necesita credenciales reales de Supabase (no vienen en este repo):
 4. Reinicia la API. En el panel → Publicar oferta, elige una foto: debería
    verse la vista previa y, segundos después, "Foto lista ✓".
 
-Sin esas credenciales, probé que el camino completo no se cae: con JWT pero
-sin archivo responde 400, con un archivo que no es imagen responde 400 con
-el mensaje de RN-12, y con una imagen válida pero sin configurar Supabase
-responde 500 con un mensaje de error claro en el log (no un error críptico)
-en vez de quedarse colgado. Lo que no pude probar en esta sesión es la
-subida real a un bucket de Supabase, porque no tengo esas credenciales —
-nadie debería tomar esto como "ya probado de punta a punta" hasta que
-alguien lo intente con un proyecto real.
+**Esto ya quedó probado de punta a punta en esta sesión**, con las
+credenciales reales del Supabase del usuario: subí una imagen real por
+`POST /negocios/me/ofertas/fotos`, la API la guardó en el bucket
+`fotos-ofertas` y devolvió su URL pública, y confirmé por separado que esa
+URL responde 200 con el `content-type` e igual cantidad de bytes que el
+archivo subido (es decir, la sirve cualquiera sin login, como necesita la
+vitrina). Borré esa imagen de prueba del bucket al terminar.
+
+Nota solo para quien corra esto en un entorno con proxy de salida
+restringido (como esta sandbox): el `fetch` nativo de Node no respeta
+`HTTPS_PROXY` por defecto, así que ahí hubo que levantar la API con
+`NODE_USE_ENV_PROXY=1 node src/server.js` para que la subida llegara a
+Supabase. No toqué el código de la API por esto — en un servidor con salida
+a internet directa (como será en producción) no hace falta esa variable.
 
 ## 3. Resultado de `npm test`
 
@@ -209,14 +215,6 @@ encontré y lo corregí en la sesión anterior).
   Tampoco implementé los planes Gratis/Pro (RF13) ni la suspensión de
   negocios (RN-09); la tabla `negocios` tiene la columna `estado` pensando
   en esto, pero ningún caso de uso la usa todavía.
-- **La subida de fotos (Etapa 4) no la probé con un Supabase Storage real**:
-  construí el endpoint, el adaptador y el panel, y verifiqué todos los
-  caminos de error (sin archivo, tipo inválido, sin credenciales
-  configuradas), pero no tengo en esta sesión las credenciales del proyecto
-  de Supabase del usuario para subir una imagen real y confirmar que el
-  bucket, los permisos y la URL pública funcionan de punta a punta. Falta
-  esa prueba manual con credenciales reales (ver "Cómo probar la subida de
-  fotos" arriba).
 - **No hay borrado de fotos huérfanas**: si el dueño elige otra imagen antes
   de terminar de publicar, o la oferta nunca se publica, la foto ya subida
   se queda en el bucket sin que nada la asocie ni la borre. Para un MVP de
