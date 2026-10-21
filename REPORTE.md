@@ -230,6 +230,47 @@ sombra. Las fotos de ejemplo ahora muestran además la etiqueta "Ejemplo ·
 foto ilustrativa" (igual que en el repo de referencia) en vez de solo
 bajar la opacidad de la tarjeta.
 
+### Etapa 7 — Bug en producción: `/panel` daba 404 (esta sesión)
+
+El usuario reportó, con captura de DevTools, que `jama-iota.vercel.app/panel`
+devolvía `404 NOT_FOUND` (`/` sí cargaba bien). Como este sandbox no tiene
+salida de red hacia `*.vercel.app`, no pude reproducirlo en vivo, pero sí
+pude leer la documentación oficial de Vercel Services (`vercel.com/docs/services/routing`,
+alcanzable desde aquí) para encontrar la causa exacta.
+
+**Causa**: al migrar a un solo proyecto Vercel con `services` (Etapa 5), se
+borró el `web/vercel.json` que tenía el rewrite típico de toda SPA
+(`"/(.*)" → "/index.html"`). La doc de Vercel lo confirma: *"Routing into a
+service is final. If no route matches inside the service, Vercel does not
+fall back to your other top-level rewrites. It returns the service's
+not-found response."* — es decir, el rewrite raíz sí mandaba `/panel` al
+servicio `web`, pero dentro de ese servicio (un build estático de Vite) no
+existe ningún archivo llamado `panel`, así que Vercel devolvía el 404 propio
+del servicio en vez de caer de vuelta a `index.html`. Por eso `/` funcionaba
+(coincide con un archivo real) y `/panel` no (no hay archivo, y el enrutado
+del cliente con React que decide qué mostrar según `window.location.pathname`
+nunca llegaba a ejecutarse).
+
+**Arreglo**: la misma doc dice que un service puede definir sus propios
+`rewrites` (misma sintaxis que los de nivel superior), que corren *después*
+de que el rewrite raíz ya enrutó la petición hacia él. Se agregó ese rewrite
+dentro de la definición del servicio `web` en `vercel.json`:
+
+```json
+"web": {
+  "root": "web",
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
+```
+
+**No pude confirmarlo con un deploy real** (mismo motivo: sin salida de red
+a Vercel ni a `*.vercel.app` desde este sandbox). Falta que alguien con
+acceso al dashboard de Vercel confirme que, tras el próximo deploy de este
+commit, `/panel` carga el panel del negocio en vez de dar 404.
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:
