@@ -102,6 +102,46 @@ archivo).
   `<input type="file">`: vista previa inmediata al elegir la foto, la sube
   sola, y el botón de publicar queda deshabilitado mientras tanto.
 
+### Etapa 5 — Despliegue en Vercel + Supabase (esta sesión)
+
+El usuario pidió desplegar en Vercel (plan gratis) con Supabase como base de
+datos, para probar el MVP. ADR-009 ya pedía que el frontend se sirviera como
+SPA estática separada del backend — Vercel encaja ahí sin tocar nada. La API
+sí necesitó tres ajustes, ninguno a la arquitectura por capas:
+
+1. **`server.js` se partió en dos**: `crear-aplicacion.js` (la raíz de
+   composición: arma los 4 módulos, igual que antes) y dos entradas finas —
+   `server.js` (local, con `app.listen`, sin cambios de comportamiento) y
+   `entrada-vercel.js` (exporta la app de Express para que Vercel la corra
+   como función serverless). Ningún módulo (Acceso/Negocios/Ofertas/Pedidos)
+   se tocó.
+2. **El cron de expiración pasa de `node-cron` a un endpoint**:
+   `GET /api/v1/cron/expirar-reservas`, que llama al mismo caso de uso
+   `ExpirarReservas` de siempre. Lo dispara un Vercel Cron Job (definido en
+   `api/vercel.json`, una vez al día porque el plan gratis no permite más
+   seguido). Está protegido: sin el header `Authorization: Bearer
+   <CRON_SECRET>` correcto responde 401 — y si `CRON_SECRET` no está
+   configurado, se cierra por defecto en vez de quedar abierto. En Vercel,
+   la plataforma genera y manda ese secreto sola al crear el cron job.
+3. **`DATABASE_URL` en Vercel debe ser el *pooler* de transacciones de
+   Supabase** (puerto 6543, usuario `postgres.<project-ref>`), no la
+   conexión directa: cada invocación serverless puede caer en un proceso
+   nuevo, y la conexión directa se queda sin cupo de conexiones rápido con
+   tráfico concurrente. Es solo la variable de entorno — mismo `pg.Pool`,
+   ningún código nuevo. Para `npm run migrate` sigue usándose la conexión
+   directa (puerto 5432) porque el modo transacción del pooler no lleva bien
+   los DDL.
+
+Probé los tres cambios localmente: `npm test` sigue en 73/73, el servidor
+local arranca igual que antes, `entrada-vercel.js` se probó sirviendo
+peticiones reales envuelto en un `http.createServer` propio (confirma que
+exporta un handler válido), y el endpoint del cron responde 401 sin
+secreto, 401 con uno incorrecto y 200 (ejecutando `ExpirarReservas` de
+verdad) con el correcto. Lo que no pude probar en esta sesión es el deploy
+real en Vercel (no tengo acceso a vercel.com desde este sandbox) ni la
+conexión real contra el pooler de Supabase con `DATABASE_URL` apuntando
+ahí — eso alguien tiene que confirmarlo hacienda el deploy de verdad.
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:
@@ -175,6 +215,41 @@ restringido (como esta sandbox): el `fetch` nativo de Node no respeta
 Supabase. No toqué el código de la API por esto — en un servidor con salida
 a internet directa (como será en producción) no hace falta esa variable.
 
+### Cómo desplegar en Vercel + Supabase
+
+**Web** (`/web`, ya tiene su `vercel.json`):
+1. Importa el repo en Vercel, **Root Directory = `web`**.
+2. Variable de entorno `VITE_API_URL` → la URL pública de tu API + `/api/v1`
+   (Vite la incrusta en el build, tiene que estar puesta antes de desplegar).
+3. Deploy. `/` y `/panel` funcionan con el mismo build (rewrite a
+   `index.html`, el cliente decide qué mostrar).
+
+**API** (`/api`, ya tiene su `vercel.json`):
+1. Importa el repo **de nuevo como otro proyecto de Vercel**, **Root
+   Directory = `api`** (son dos proyectos separados, como pide ADR-009).
+2. En Supabase → Database → Connection string, copia la del **pooler de
+   transacciones** (modo "Transaction", puerto 6543) tal cual la da el
+   diálogo — no la armes a mano. Esa va en `DATABASE_URL` en Vercel.
+3. Corre `npm run migrate -- "<conexión DIRECTA de Supabase, puerto 5432>"`
+   **desde tu máquina** (no desde Vercel) para crear las tablas ahí.
+4. Variables en Vercel: `DATABASE_URL` (el pooler), `JWT_SECRET`,
+   `JWT_DURACION`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`,
+   `SUPABASE_STORAGE_BUCKET`. `CRON_SECRET` no hace falta ponerlo a mano:
+   Vercel lo genera solo al ver el `crons` en `vercel.json`.
+5. Deploy. El cron de expiración queda en manos de Vercel (una vez al día
+   en el plan gratis; `ResolverPedido` igual rechaza un código vencido
+   aunque el cron todavía no haya corrido, así que esto no afecta a los
+   clientes — ver Etapa 3).
+
+**No alcancé a probar el deploy real** (ni Vercel ni el pooler de Supabase
+son alcanzables desde este sandbox). Sí probé, contra Postgres local, que
+`entrada-vercel.js` exporta un handler de Express válido (lo serví
+envuelto en un `http.createServer` propio y respondió 200) y que el
+endpoint del cron hace exactamente lo que debe: 401 sin secreto, 401 con
+uno incorrecto, 200 ejecutando `ExpirarReservas` con el correcto. El
+deploy en sí y la conexión real al pooler quedan por confirmar con el
+primer despliegue de verdad.
+
 ## 3. Resultado de `npm test`
 
 ```
@@ -210,6 +285,15 @@ encontré y lo corregí en la sesión anterior).
 
 ## 4. Pendiente o dudoso
 
+- **El deploy real en Vercel + Supabase no quedó probado**: construí y
+  verifiqué todo lo que pude sin salir de este sandbox (el handler de
+  Express para Vercel sirviendo peticiones reales, el endpoint del cron con
+  sus tres casos de auth, los 73 tests sin romperse), pero ni Vercel ni el
+  pooler de Supabase son alcanzables desde aquí. Falta confirmar, con un
+  deploy real: que el build encuentra `entrada-vercel.js`, que el pooler de
+  transacciones (puerto 6543) no tiene algún problema de SSL o de usuario
+  (`postgres.<project-ref>`, no `postgres` a secas), y que el Vercel Cron
+  Job efectivamente le pega al endpoint con el secreto correcto.
 - **Fuera de alcance a propósito** (como pidió la consigna): reportes,
   moderación, registro público de negocios (solo `npm run seed`) y pagos.
   Tampoco implementé los planes Gratis/Pro (RF13) ni la suspensión de

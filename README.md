@@ -64,3 +64,12 @@ npm test
 
 Ver [`REPORTE.md`](REPORTE.md) para el detalle de qué prueba cada suite y el
 resultado de la última corrida.
+
+## Desplegarlo (Vercel + Supabase)
+
+`api/` y `web/` se despliegan como **dos proyectos de Vercel separados**
+(ADR-009: la SPA vive independiente del backend), cada uno con su propio
+`vercel.json`. `api/vercel.json` también define el cron de expiración de
+reservas, que en producción corre como Vercel Cron Job en vez de
+`node-cron`. Detalle completo, paso a paso, en la sección "Cómo desplegar
+en Vercel + Supabase" de [`REPORTE.md`](REPORTE.md).
