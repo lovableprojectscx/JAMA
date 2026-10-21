@@ -81,6 +81,27 @@ los minutos que les quedan).
    tramo de las 18:30, y a las 19:30 de Lima (00:30 UTC del día siguiente)
    sigue siendo el mismo día de la oferta (`esMismoDiaLima`).
 
+### Etapa 4 — Subida de fotos (esta sesión)
+
+`fotoUrl` ya no es un campo de texto que el dueño escribe a mano: el panel
+sube la imagen real y la API la guarda en **Supabase Storage** (el ADR-007
+ya dejaba definido el puerto `AlmacenImagenes` pensando en Cloudinary; como
+el usuario ya tenía un proyecto de Supabase, el adaptador nuevo es
+`SupabaseStorageAdapter` — cambiar de proveedor otra vez solo tocaría ese
+archivo).
+
+- **`POST /negocios/me/ofertas/fotos`** (JWT, `multipart/form-data`, campo
+  `foto`): sube la imagen y devuelve `{ fotoUrl }` para usarla al publicar.
+- **RN-12**: la foto debe ser JPG, PNG o WEBP (se valida en el caso de uso
+  `SubirFotoOferta`, no en el middleware, para no duplicar la regla) y pesar
+  como máximo 5 MB (eso sí lo acota `multer`, es un límite de transporte, no
+  una regla de negocio).
+- El adaptador habla con la API REST de Storage directo por `fetch`, sin
+  agregar el SDK de Supabase como dependencia.
+- En el panel, "Publicar oferta" reemplaza el campo de URL por un
+  `<input type="file">`: vista previa inmediata al elegir la foto, la sube
+  sola, y el botón de publicar queda deshabilitado mientras tanto.
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:
@@ -122,12 +143,38 @@ mismo render en que mostraba "¡Publicada!", así que el mensaje de éxito
 nunca llegaba a verse; ahora la pantalla se queda en Publicar (con el
 formulario limpio) y el dueño cambia de pestaña cuando quiere.
 
+### Cómo probar la subida de fotos
+
+Esto sí necesita credenciales reales de Supabase (no vienen en este repo):
+
+1. En tu proyecto de Supabase: **Storage** → crea un bucket **público**
+   (por ejemplo `fotos-ofertas`).
+2. En **Project Settings → API**, copia la URL del proyecto y la
+   `service_role key` (no la `anon`/`public`).
+3. En `api/.env`, agrega:
+   ```
+   SUPABASE_URL=https://tu-proyecto.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=<la service_role key>
+   SUPABASE_STORAGE_BUCKET=fotos-ofertas
+   ```
+4. Reinicia la API. En el panel → Publicar oferta, elige una foto: debería
+   verse la vista previa y, segundos después, "Foto lista ✓".
+
+Sin esas credenciales, probé que el camino completo no se cae: con JWT pero
+sin archivo responde 400, con un archivo que no es imagen responde 400 con
+el mensaje de RN-12, y con una imagen válida pero sin configurar Supabase
+responde 500 con un mensaje de error claro en el log (no un error críptico)
+en vez de quedarse colgado. Lo que no pude probar en esta sesión es la
+subida real a un bucket de Supabase, porque no tengo esas credenciales —
+nadie debería tomar esto como "ya probado de punta a punta" hasta que
+alguien lo intente con un proyecto real.
+
 ## 3. Resultado de `npm test`
 
 ```
-# tests 62
-# suites 17
-# pass 62
+# tests 73
+# suites 21
+# pass 73
 # fail 0
 ```
 
@@ -145,6 +192,8 @@ para confirmar que las pruebas de integración son idempotentes.
 | `tests/concurrencia/pedir-oferta.concurrencia.test.js` | 1 | **Contra PostgreSQL real**: 50 `PedirOferta.ejecutar()` simultáneos sobre una oferta con stock=3 → exactamente 3 reservas, 47 rechazos `OfertaAgotadaError`, stock final en la base = 0, 3 códigos `RESERVADO` en la tabla |
 | `tests/integracion/precio-vigente.test.js` | 2 | **Contra PostgreSQL real**: el precio vigente al pedir (con y sin tramo activo) queda guardado en `codigos_canje.precio` |
 | `tests/seguridad/aislamiento-negocios.test.js` | 7 | **Contra PostgreSQL real**: negocio B no puede resolver un código de negocio A, ni ver/pausar sus ofertas, ni ver sus pedidos reservados (404 a nivel de caso de uso y de controlador, nunca 403); el dueño sí puede |
+| `tests/dominio/supabase-storage-adapter.test.js` | 5 | URLs de subida y públicas del adaptador de Storage (funciones puras, sin red) |
+| `tests/dominio/subir-foto-oferta.test.js` | 6 | RN-12 (tipo de archivo) en `SubirFotoOferta` con un `AlmacenImagenes` falso, y el controlador: sin archivo → 400, archivo inválido → 400, válido → 201 |
 
 Nota técnica: las pruebas de concurrencia y seguridad crean su propio
 negocio/oferta con UUID y evitan `TRUNCATE` global a propósito, porque
@@ -155,12 +204,23 @@ encontré y lo corregí en la sesión anterior).
 
 ## 4. Pendiente o dudoso
 
-- **Fuera de alcance a propósito** (como pidió la consigna): subida de
-  fotos (`fotoUrl` sigue siendo un campo de texto libre), reportes,
+- **Fuera de alcance a propósito** (como pidió la consigna): reportes,
   moderación, registro público de negocios (solo `npm run seed`) y pagos.
   Tampoco implementé los planes Gratis/Pro (RF13) ni la suspensión de
   negocios (RN-09); la tabla `negocios` tiene la columna `estado` pensando
   en esto, pero ningún caso de uso la usa todavía.
+- **La subida de fotos (Etapa 4) no la probé con un Supabase Storage real**:
+  construí el endpoint, el adaptador y el panel, y verifiqué todos los
+  caminos de error (sin archivo, tipo inválido, sin credenciales
+  configuradas), pero no tengo en esta sesión las credenciales del proyecto
+  de Supabase del usuario para subir una imagen real y confirmar que el
+  bucket, los permisos y la URL pública funcionan de punta a punta. Falta
+  esa prueba manual con credenciales reales (ver "Cómo probar la subida de
+  fotos" arriba).
+- **No hay borrado de fotos huérfanas**: si el dueño elige otra imagen antes
+  de terminar de publicar, o la oferta nunca se publica, la foto ya subida
+  se queda en el bucket sin que nada la asocie ni la borre. Para un MVP de
+  una ciudad el costo de almacenamiento es marginal, pero es una fuga real.
 - **"Hoy" en `GET /negocios/me/ofertas?dia=hoy`** lo definí como "el día
   calendario de Lima de `horaElaboracion`". Es una interpretación razonable
   (la hora de elaboración representa el lote del día), pero la consigna no
