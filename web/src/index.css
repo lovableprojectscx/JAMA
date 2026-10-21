@@ -93,9 +93,7 @@ body {
 }
 
 .hero {
-  background: var(--azul-marino);
-  color: var(--blanco);
-  padding: 28px 16px 36px;
+  padding: 28px 16px 8px;
 }
 
 .hero__grid {
@@ -133,7 +131,7 @@ body {
 .hero__subtitulo {
   margin: 0 0 20px;
   font-size: 16px;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--gris-texto);
   max-width: 520px;
   margin-left: auto;
   margin-right: auto;
@@ -143,8 +141,8 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--lima);
-  color: var(--azul-marino);
+  background: var(--azul-marino);
+  color: var(--blanco);
   border: none;
   border-radius: 999px;
   padding: 15px 26px;
@@ -174,13 +172,13 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: var(--blanco);
+  box-shadow: var(--sombra-suave);
   border-radius: 16px;
   padding: 10px 6px;
   font-size: 12px;
   font-weight: 800;
-  color: var(--blanco);
+  color: var(--azul-marino);
 }
 
 .hero__insignia svg {

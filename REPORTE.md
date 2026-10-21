@@ -271,6 +271,35 @@ a Vercel ni a `*.vercel.app` desde este sandbox). Falta que alguien con
 acceso al dashboard de Vercel confirme que, tras el próximo deploy de este
 commit, `/panel` carga el panel del negocio en vez de dar 404.
 
+### Etapa 8 — Corrección de color: el claro debe predominar (esta sesión)
+
+El usuario señaló, viendo el deploy, que el diseño se veía "horrible"
+comparado con el repo de referencia y que el azul marino no debería ser
+color de fondo. Revisando de nuevo el código fuente de ese repo
+(`index.tsx`), es exactamente así: ahí el azul marino **nunca** cubre una
+sección completa — solo aparece como color de texto, en botones puntuales,
+y en una sola caja contenida al final (el CTA de negocio). El fondo
+dominante en toda la página es crema/blanco.
+
+La Etapa 6 de este rediseño se había equivocado justo en eso: el `Hero`
+quedó con `background: var(--azul-marino)` de pared a pared, lo que lo
+hacía ver pesado y distinto al original. Se corrigió:
+
+- El `Hero` ya no tiene fondo de sección: hereda el crema del body, con el
+  título en azul marino y el span destacado en lima.
+- El botón principal del Hero ("Ver ofertas de hoy") pasó de lima a azul
+  marino con texto blanco — así lo hace el repo de referencia para el CTA
+  primario; lima queda para botones secundarios (como "Publicar una
+  oferta" del CTA de negocio) y acentos pequeños (badges, íconos de pasos).
+- Las insignias de confianza pasaron de "pastillas translúcidas sobre
+  fondo oscuro" a tarjetas blancas con sombra sobre el fondo crema, igual
+  que las `bg-card shadow-soft` del repo real.
+
+La caja de CTA de negocio (`cta-negocio__caja`) ya estaba bien: es una
+caja azul *contenida*, no una sección de pared a pared, así que no
+necesitó cambios — es el único lugar donde el repo de referencia también
+usa azul como fondo.
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:
