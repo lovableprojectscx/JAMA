@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 
 const PREGUNTAS = [
   {
@@ -50,9 +51,10 @@ export default function Faq() {
                 onClick={() => setAbierta(estaAbierta ? null : indice)}
               >
                 {item.pregunta}
-                <span className="faq__icono" aria-hidden="true">
-                  {estaAbierta ? '−' : '+'}
-                </span>
+                <ChevronDown
+                  aria-hidden="true"
+                  className={`faq__icono ${estaAbierta ? 'faq__icono--abierta' : ''}`}
+                />
               </button>
               {estaAbierta && <p className="faq__respuesta">{item.respuesta}</p>}
             </div>

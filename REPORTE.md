@@ -214,6 +214,22 @@ aviso), con una oferta real con tramo de precio (precio vigente correcto +
 aviso "Baja a..."), con error de red, y el acordeón de FAQ abriendo y
 cerrando.
 
+**Segunda pasada: sistema visual** — la primera versión de estas secciones
+usaba CSS genérico (texto plano, emoji como íconos) y, al compararla con el
+repo de referencia, se veía notablemente menos pulida. Se rehizo el sistema
+de diseño para igualar el del repo de referencia manteniendo los colores de
+marca de JAMA: se agregó `lucide-react` (iconos reales en vez de emoji en
+insignias, pasos, FAQ y botones), se copiaron del repo de referencia los
+valores de sombra (`shadow-soft`), radios de borde y el efecto "press"
+(`transform: scale(0.96)` al tocar un botón), y las tarjetas de oferta y de
+ejemplo pasaron a un formato tipo `ProductCard` (foto cuadrada, badge de
+descuento en píldora lima arriba-izquierda, grid responsive 2/3/4
+columnas). El encabezado ahora es `sticky` con fondo translúcido, y el FAQ
+usa un acordeón con línea divisoria y chevron en vez de tarjetas con
+sombra. Las fotos de ejemplo ahora muestran además la etiqueta "Ejemplo ·
+foto ilustrativa" (igual que en el repo de referencia) en vez de solo
+bajar la opacidad de la tarjeta.
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:

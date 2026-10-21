@@ -1,3 +1,5 @@
+import { Clock3 } from 'lucide-react';
+
 function formatearPrecio(valor) {
   return new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(valor);
 }
@@ -21,7 +23,7 @@ export default function OfertaCard({ oferta, onPedir, cargando }) {
             alt={oferta.titulo}
             loading="lazy"
             width="400"
-            height="260"
+            height="400"
           />
         ) : (
           <div className="oferta-card__foto oferta-card__foto--vacia" aria-hidden="true" />
@@ -45,7 +47,8 @@ export default function OfertaCard({ oferta, onPedir, cargando }) {
         )}
 
         <p className="oferta-card__detalle">
-          Quedan {oferta.stock} · recojo hasta las {formatearHora(oferta.horaLimite)}
+          <Clock3 aria-hidden="true" />
+          Quedan {oferta.stock} · hasta las {formatearHora(oferta.horaLimite)}
         </p>
 
         <button

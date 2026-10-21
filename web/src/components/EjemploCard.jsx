@@ -21,6 +21,7 @@ export default function EjemploCard({ ejemplo }) {
             top: `${(-100 * recorteFoto.top) / recorteFoto.height}%`,
           }}
         />
+        <span className="oferta-card__descuento">-{ejemplo.porcentajeDescuento}%</span>
       </div>
       <div className="ejemplo-card__cuerpo">
         <h3 className="ejemplo-card__titulo">{ejemplo.titulo}</h3>
@@ -29,6 +30,7 @@ export default function EjemploCard({ ejemplo }) {
           <span className="ejemplo-card__precio-carta">{formatearPrecio(ejemplo.precioCarta)}</span>
           <span className="ejemplo-card__precio-oferta">{formatearPrecio(ejemplo.precioOferta)}</span>
         </div>
+        <p className="ejemplo-card__etiqueta">Ejemplo · foto ilustrativa</p>
       </div>
     </article>
   );
