@@ -23,6 +23,12 @@ Los requisitos funcionales expresan **lo que el sistema debe hacer** para satisf
 | RF15 | El sistema debe permitir al administrador verificar, activar, suspender y desactivar negocios. |
 | RF16 | El sistema debe permitir al administrador revisar y resolver los reportes de los clientes. |
 | RF17 | El sistema debe autenticar a los negocios y administradores, y restringir cada operación según su rol. |
+| RF18 | El sistema debe ofrecer una página pública de presentación para negocios (`/negocios`), separada de la vitrina de clientes, que explique la propuesta de valor, cómo funciona del lado del negocio y qué se necesita para unirse, con acceso al formulario de solicitud y al panel. |
+| RF19 | El sistema debe permitir que un negocio envíe una **solicitud de registro** sin intervención del administrador (nombre del negocio, responsable, tipo de negocio, WhatsApp, dirección, correo, contraseña y aceptación de la declaración de productos aptos). La cuenta se crea en estado **PENDIENTE**. |
+| RF20 | El sistema debe impedir que un negocio que no esté **ACTIVO** inicie sesión, publique ofertas o reciba pedidos, e informarle su estado (en revisión, rechazado con motivo, o suspendido). |
+| RF21 | El sistema debe permitir al administrador listar las solicitudes por estado y **aprobarlas** o **rechazarlas** indicando un motivo, registrando quién y cuándo lo hizo. |
+| RF22 | El sistema debe ofrecer al administrador un enlace `wa.me` con un mensaje prellenado para avisarle al negocio que su solicitud fue aprobada o rechazada. |
+| RF23 | El sistema debe limitar la cantidad de solicitudes de registro por IP y rechazar correos o números de WhatsApp ya registrados. |
 
 ## Relación entre HU y requisitos funcionales
 
@@ -41,6 +47,12 @@ Los requisitos funcionales expresan **lo que el sistema debe hacer** para satisf
 | HU11 Verificar negocios | RF15 |
 | HU12 Gestionar planes | RF13 |
 | HU13 Atender reportes y suspender | RF15, RF16 |
+| HU14 Conocer JAMA como negocio | RF18 |
+| HU15 Enviar solicitud de registro | RF19, RF23 |
+| HU16 Saber el estado de mi solicitud | RF20 |
+| HU17 Aprobar o rechazar solicitudes | RF15, RF17, RF21, RF22 |
+
+> *Agregado en octubre 2026:* RF18–RF23 detallan RF07 (registro) y RF15 (verificación por el administrador) para el alta de negocios por solicitud con aprobación ([ADR-010](../02-arquitectura-software/decisiones/ADR-010-alta-de-negocios-por-solicitud.md), [ADR-011](../02-arquitectura-software/decisiones/ADR-011-cuentas-de-administrador.md)). El plan de implementación está en [`plan-alta-de-negocios.md`](../03-diseno-de-software/plan-alta-de-negocios.md).
 
 ## Fuera del alcance del MVP
 - Alertas personalizadas ("avísame cuando haya pollo cerca").

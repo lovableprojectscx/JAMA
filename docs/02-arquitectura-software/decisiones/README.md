@@ -13,5 +13,7 @@ Un **ADR** (*Architecture Decision Record*) documenta una decisión importante d
 | [ADR-007](ADR-007-integraciones-puertos-adaptadores.md) | Integraciones mediante puertos y adaptadores | DA06, DA09 | Desacoplar los casos de uso de WhatsApp y del proveedor de imágenes. | Puertos `EnlaceMensajeria` y `AlmacenImagenes` con sus adaptadores. |
 | [ADR-008](ADR-008-cache-e-imagenes.md) | Caché del listado e imágenes optimizadas | DA05 | Responder rápido en la hora de cierre con datos móviles. | Caché en memoria de 30 s e imágenes comprimidas desde un CDN. |
 | [ADR-009](ADR-009-spa-separada-del-backend.md) | Aplicación web SPA (React + Vite) separada del backend | DA05, DA08 | El frontend y el backend se despliegan por separado; la interfaz es *mobile-first*. | Una SPA con vitrina pública, panel del negocio y panel de administración. |
+| [ADR-010](ADR-010-alta-de-negocios-por-solicitud.md) | Alta de negocios por solicitud con aprobación | DA04 | Que las tiendas se unan solas sin que publique nadie sin revisar (AC06). | Estado `PENDIENTE` → `ACTIVO`/`RECHAZADO` en la entidad `Negocio`; solo un negocio ACTIVO opera (RN-13). |
+| [ADR-011](ADR-011-cuentas-de-administrador.md) | Cuentas de administrador en tabla propia | DA04 | Aprobar solicitudes requiere un administrador real y trazable. | Tabla `administradores` en Acceso, creada por script; login y rutas separadas por rol. |
 
 **Estado de todas:** Aceptada · **Fecha:** octubre 2026
