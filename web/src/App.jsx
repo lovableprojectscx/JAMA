@@ -7,6 +7,7 @@ import ComoFunciona from './components/ComoFunciona.jsx';
 import Faq from './components/Faq.jsx';
 import CtaNegocio from './components/CtaNegocio.jsx';
 import EjemplosIlustrativos from './components/EjemplosIlustrativos.jsx';
+import logoJama from './assets/jama-logo.png';
 
 export default function App() {
   const [ofertas, setOfertas] = useState([]);
@@ -89,7 +90,11 @@ export default function App() {
           </div>
         )}
 
-        <h2 className="seccion__titulo">La JAMA de hoy</h2>
+        <div className="seccion__encabezado">
+          <p className="seccion__etiqueta">Ofertas de cierre</p>
+          <h2 className="seccion__titulo">La JAMA de hoy</h2>
+          <p className="seccion__bajada">Lo que quedó hoy en pastelerías y panaderías de Huamanga.</p>
+        </div>
 
         {cargandoLista && <p className="estado">Cargando ofertas de hoy...</p>}
         {!cargandoLista && errorLista && <p className="estado estado--error">{errorLista}</p>}
@@ -112,7 +117,11 @@ export default function App() {
       <Faq />
       <CtaNegocio />
 
-      <footer className="pie">El pago y la coordinación de la entrega se hacen por WhatsApp y Yape.</footer>
+      <footer className="pie">
+        <img className="pie__logo" src={logoJama} alt="JAMA" width="84" height="40" loading="lazy" />
+        <p className="pie__lema">Comida rica de hoy, más barata y cerca de ti.</p>
+        <p className="pie__nota">Huamanga, Ayacucho · Pago y coordinación por WhatsApp y Yape</p>
+      </footer>
     </div>
   );
 }

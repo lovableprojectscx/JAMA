@@ -5,10 +5,10 @@ export default function CtaNegocio() {
     <section className="cta-negocio">
       <div className="cta-negocio__caja">
         <div className="cta-negocio__contenido">
-          <div className="cta-negocio__encabezado">
+          <span className="cta-negocio__icono">
             <Store aria-hidden="true" />
-            <h2 className="cta-negocio__titulo">¿Tienes una pastelería o panadería?</h2>
-          </div>
+          </span>
+          <h2 className="cta-negocio__titulo">¿Tienes una pastelería o panadería?</h2>
           <p className="cta-negocio__texto">
             Publica lo que te queda al cierre del día y véndelo antes de perderlo. Gratis para empezar.
           </p>

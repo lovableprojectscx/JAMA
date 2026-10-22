@@ -325,6 +325,40 @@ página completa en 320, 414, 768, 1024 y 1920px — el grid de tarjetas pasa
 de 2 a 3 a 4 columnas sin saltos raros y el Hero no se ve apretado en
 ningún punto intermedio.
 
+### Etapa 10 — Pulido móvil: más aire y jerarquía (esta sesión)
+
+El usuario vio el deploy en el celular y dijo que todo se veía "muy
+pegado arriba". Pasada de diseño pensada primero para móvil:
+
+- **Hero**: más espacio arriba, una etiqueta "Huamanga · Recojo de 6 a 7
+  pm" antes del título, título en tres líneas fijas ("Lo rico del día," /
+  "antes de que" / resaltado "se acabe"), botón principal a todo el ancho,
+  y la imagen del celular dentro de una tarjeta redondeada con un degradé
+  lima suave (antes flotaba suelta y se notaba el corte recto del brazo).
+  Las tres insignias se montan sobre el borde inferior de esa tarjeta.
+- **Encabezados de sección** con etiqueta pequeña ("Ofertas de cierre",
+  "Cómo funciona", "Dudas"), título más grande y bajada; alineados a la
+  izquierda en móvil y centrados en escritorio. Secciones con 56px de
+  separación en vez de 32px.
+- **"Así de fácil"** en móvil pasó de tres columnas apretadas a una lista
+  de tarjetas (ícono numerado a la izquierda, texto a la derecha); en
+  escritorio sigue en tres columnas.
+- **Tarjetas**: el precio de oferta va primero y más grande, el de carta
+  tachado al lado; aviso de "ejemplos ilustrativos" con ícono.
+- **FAQ** dentro de una tarjeta blanca; el chevron va en un círculo que se
+  pone lima al abrir.
+- **CTA de negocio** con el ícono en un recuadro lima y botón a todo el
+  ancho en móvil. **Pie de página** con logo, lema y ubicación.
+- **Bug real arreglado**: "Ver ofertas de hoy" hacía scroll hasta la
+  sección pero el header fijo tapaba el título; ahora el `scroll-margin`
+  descuenta el alto del header.
+- La barra del navegador móvil (`theme-color`) era azul marino; ahora es
+  crema, para que combine con la página. Se cargan los pesos 600/800 de
+  Nunito que ya se usaban en el CSS (antes el navegador los aproximaba).
+
+Verificado con capturas a 390px y 320px (pantalla por pantalla) y 1280px,
+y sin desborde horizontal en los 13 anchos de 320 a 1920px.
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:

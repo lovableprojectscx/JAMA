@@ -4,13 +4,15 @@ import logoJama from '../assets/jama-logo.png';
 export default function Header() {
   return (
     <header className="header">
-      <a className="header__marca" href="/">
-        <img className="header__logo" src={logoJama} alt="JAMA" width="96" height="46" />
-      </a>
-      <a className="header__cta press" href="/panel">
-        <Store aria-hidden="true" />
-        Publicar una oferta
-      </a>
+      <div className="header__interior">
+        <a className="header__marca" href="/" aria-label="JAMA, inicio">
+          <img className="header__logo" src={logoJama} alt="JAMA" width="92" height="44" />
+        </a>
+        <a className="header__cta press" href="/panel">
+          <Store aria-hidden="true" />
+          Publicar oferta
+        </a>
+      </div>
     </header>
   );
 }

@@ -38,7 +38,10 @@ export default function Faq() {
 
   return (
     <section className="faq" id="faq">
-      <h2 className="seccion__titulo">Preguntas frecuentes</h2>
+      <div className="seccion__encabezado">
+        <p className="seccion__etiqueta">Dudas</p>
+        <h2 className="seccion__titulo">Preguntas frecuentes</h2>
+      </div>
       <div className="faq__lista">
         {PREGUNTAS.map((item, indice) => {
           const estaAbierta = abierta === indice;
