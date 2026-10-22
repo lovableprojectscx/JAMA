@@ -18,11 +18,20 @@ const password = 'demo1234';
 const passwordHash = await bcrypt.hash(password, 10);
 
 const { rows } = await client.query(
-  `INSERT INTO negocios (nombre, email, password_hash, whatsapp, yape, direccion)
-   VALUES ($1, $2, $3, $4, $5, $6)
-   ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash
-   RETURNING id, nombre, email`,
-  ['Panadería Ejemplo', email, passwordHash, '51987654321', '987654321', 'Jr. Lima 123, Huamanga']
+  `INSERT INTO negocios (nombre, email, password_hash, whatsapp, yape, direccion, responsable, tipo, estado)
+   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'ACTIVO')
+   ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash, estado = 'ACTIVO'
+   RETURNING id, nombre, email, estado`,
+  [
+    'Panadería Ejemplo',
+    email,
+    passwordHash,
+    '51987654321',
+    '987654321',
+    'Jr. Lima 123, Huamanga',
+    'Dueño de prueba',
+    'PANADERIA',
+  ]
 );
 
 console.log('Negocio de prueba listo:', rows[0]);

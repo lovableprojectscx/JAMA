@@ -1,4 +1,4 @@
-import { ReglaNegocioError, NoEncontradoError } from '../../../compartido/dominio/errores.js';
+import { ReglaNegocioError, NoEncontradoError, NegocioNoHabilitadoError } from '../../../compartido/dominio/errores.js';
 
 /** Vitrina pública: precio vigente por tramo horario y aviso del próximo tramo. */
 function serializarOferta(oferta, ahora) {
@@ -101,6 +101,9 @@ export class OfertasController {
     } catch (error) {
       if (error instanceof ReglaNegocioError) {
         return res.status(400).json({ error: error.message });
+      }
+      if (error instanceof NegocioNoHabilitadoError) {
+        return res.status(403).json({ error: error.message, codigo: error.codigo, motivo: error.motivo });
       }
       return next(error);
     }

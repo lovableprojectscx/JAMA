@@ -74,12 +74,14 @@ export class OfertaRepositoryPg extends OfertaRepository {
     );
   }
 
-  async listarVigentes(ahora) {
+  /** `negocioIds`: solo los negocios ACTIVO (RN-13), que Ofertas obtiene de la API de Negocios. */
+  async listarVigentes(ahora, negocioIds) {
     const { rows } = await this.pool.query(
       `SELECT * FROM ofertas
         WHERE estado = 'ACTIVA' AND stock > 0 AND hora_limite > $1
+          AND negocio_id = ANY($2::uuid[])
         ORDER BY hora_limite ASC`,
-      [ahora]
+      [ahora, negocioIds]
     );
     return rows.map(filaAOferta);
   }

@@ -1,5 +1,10 @@
-import { NoEncontradoError } from '../../compartido/dominio/errores.js';
+import {
+  NoEncontradoError,
+  NegocioNoHabilitadoError,
+  OfertaNoVigenteError,
+} from '../../compartido/dominio/errores.js';
 import { OfertaRepositoryPg } from './infraestructura/oferta-repository-pg.js';
+import { EstadoDeNegociosConNegocios } from './infraestructura/estado-de-negocios.adapter.js';
 import { PublicarOferta } from './aplicacion/publicar-oferta.caso-uso.js';
 import { ListarOfertasVigentes } from './aplicacion/listar-ofertas-vigentes.caso-uso.js';
 import { ObtenerOferta } from './aplicacion/obtener-oferta.caso-uso.js';
@@ -14,12 +19,13 @@ import { crearRutasOfertasPublicas, crearRutasOfertasNegocio } from './presentac
  * puede llegar a las ofertas a través de `reservarUnidad` / `liberarUnidad`,
  * nunca leyendo la tabla `ofertas` directamente (ADR-001).
  */
-export function crearApiOfertas({ pool, reloj, requireAuth, almacenImagenes }) {
+export function crearApiOfertas({ pool, reloj, requireAuth, almacenImagenes, apiNegocios }) {
   const ofertaRepository = new OfertaRepositoryPg(pool);
+  const negocios = new EstadoDeNegociosConNegocios(apiNegocios);
 
-  const publicarOferta = new PublicarOferta({ ofertas: ofertaRepository, reloj });
-  const listarOfertasVigentes = new ListarOfertasVigentes({ ofertas: ofertaRepository, reloj });
-  const obtenerOferta = new ObtenerOferta({ ofertas: ofertaRepository });
+  const publicarOferta = new PublicarOferta({ ofertas: ofertaRepository, negocios, reloj });
+  const listarOfertasVigentes = new ListarOfertasVigentes({ ofertas: ofertaRepository, negocios, reloj });
+  const obtenerOferta = new ObtenerOferta({ ofertas: ofertaRepository, negocios });
   const listarMisOfertasDeHoy = new ListarMisOfertasDeHoy({ ofertas: ofertaRepository, reloj });
   const cambiarEstadoDeOferta = new CambiarEstadoDeOferta({ ofertas: ofertaRepository, reloj });
   const subirFotoOferta = new SubirFotoOferta({ almacenImagenes });
@@ -43,6 +49,15 @@ export function crearApiOfertas({ pool, reloj, requireAuth, almacenImagenes }) {
       const oferta = await ofertaRepository.obtenerParaActualizar(ofertaId, tx);
       if (!oferta) {
         throw new NoEncontradoError('Oferta no encontrada');
+      }
+      // RN-13: no se reserva sobre la oferta de un negocio que dejó de estar ACTIVO.
+      try {
+        await negocios.exigirActivo(oferta.negocioId, tx);
+      } catch (error) {
+        if (error instanceof NegocioNoHabilitadoError) {
+          throw new OfertaNoVigenteError('Esta oferta ya no está disponible');
+        }
+        throw error;
       }
       const precioVigente = oferta.precioVigente(ahora);
       oferta.reservarUnidad(ahora);

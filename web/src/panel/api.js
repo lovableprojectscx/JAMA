@@ -15,6 +15,8 @@ async function solicitar(path, { method = 'GET', token, body } = {}) {
   if (!respuesta.ok) {
     const error = new Error(cuerpo?.error ?? 'Ocurrió un error inesperado');
     error.status = respuesta.status;
+    error.codigo = cuerpo?.codigo ?? null;
+    error.motivo = cuerpo?.motivo ?? null;
     throw error;
   }
 

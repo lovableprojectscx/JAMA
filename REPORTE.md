@@ -359,6 +359,52 @@ pegado arriba". Pasada de diseño pensada primero para móvil:
 Verificado con capturas a 390px y 320px (pantalla por pantalla) y 1280px,
 y sin desborde horizontal en los 13 anchos de 320 a 1920px.
 
+### Etapa 11 — Alta de negocios, fase 1: reglas y API de la solicitud (esta sesión)
+
+Antes de programar se documentó el plan completo (HU14–HU17, RF18–RF23,
+RN-13 a RN-16, [ADR-010](docs/02-arquitectura-software/decisiones/ADR-010-alta-de-negocios-por-solicitud.md),
+[ADR-011](docs/02-arquitectura-software/decisiones/ADR-011-cuentas-de-administrador.md) y
+[`plan-alta-de-negocios.md`](docs/03-diseno-de-software/plan-alta-de-negocios.md)).
+Esta fase implementa la parte de la API:
+
+- **Migración `003_alta_de_negocios.sql`**: estados `PENDIENTE`, `ACTIVO`,
+  `RECHAZADO` y `SUSPENDIDO` (los negocios existentes siguen ACTIVO; los
+  nuevos entran PENDIENTE), datos de la solicitud, quién revisó y cuándo,
+  WhatsApp único y la tabla `administradores` (para la fase 3).
+- **Dominio `Negocio`**: `solicitar()` valida y normaliza los datos (RN-15),
+  las transiciones de estado pasan por un único método (RN-14) y
+  `exigirQuePuedaOperar()` aplica RN-13.
+- **`POST /api/v1/negocios/solicitudes`**: crea la cuenta PENDIENTE; `400`
+  si un dato es inválido, `409` si el correo o el WhatsApp ya existen
+  (RN-16, garantizado por índices únicos), `429` después de 5 solicitudes
+  creadas por hora desde una IP.
+- **Login**: verifica la contraseña y *después* el estado, así que un
+  negocio pendiente, rechazado o suspendido recibe `403` con su código y
+  motivo, pero quien no tiene la contraseña sigue viendo solo `401`. El
+  panel ahora muestra ese mensaje en vez de "No pudimos conectar".
+- **RN-13 aplicada en todo el recorrido**: un negocio no ACTIVO no publica
+  (`403`), sus ofertas no aparecen en la vitrina ni en el detalle (`404`) y
+  no se pueden pedir. Ofertas consulta el estado por la API pública de
+  Negocios (puerto `EstadoDeNegocios`), sin leer su tabla (ADR-001).
+
+**Dos fallas reales que encontré y corregí en el camino:**
+
+1. **RN-09 nunca se aplicaba.** "Un negocio suspendido no publica ni recibe
+   pedidos" estaba documentada, pero el login y la publicación no miraban
+   el estado. Ahora lo cubre RN-13.
+2. **Los límites por IP contaban a todos los clientes como uno solo en
+   producción.** Express no confiaba en el proxy de Vercel, así que `req.ip`
+   era la del proxy y el límite de 30 pedidos por minuto era, en la
+   práctica, para toda la ciudad junta. Se agregó `app.set('trust proxy', 1)`
+   y una prueba que falla sin ese ajuste (la verifiqué desactivándolo).
+
+Probado además con el servidor real y `curl`: solicitud → login "en
+revisión" → aprobación por SQL → login correcto; la cuenta demo sigue
+entrando. **Todavía no está en producción la migración 003** (es la fase
+4): con este código desplegado y sin la migración, todo sigue funcionando
+salvo `POST /negocios/solicitudes`, que no tiene todavía una página que lo
+use.
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:
@@ -470,9 +516,9 @@ primer despliegue de verdad.
 ## 3. Resultado de `npm test`
 
 ```
-# tests 73
-# suites 21
-# pass 73
+# tests 114
+# suites 26
+# pass 114
 # fail 0
 ```
 
@@ -492,6 +538,9 @@ para confirmar que las pruebas de integración son idempotentes.
 | `tests/seguridad/aislamiento-negocios.test.js` | 7 | **Contra PostgreSQL real**: negocio B no puede resolver un código de negocio A, ni ver/pausar sus ofertas, ni ver sus pedidos reservados (404 a nivel de caso de uso y de controlador, nunca 403); el dueño sí puede |
 | `tests/dominio/supabase-storage-adapter.test.js` | 5 | URLs de subida y públicas del adaptador de Storage (funciones puras, sin red) |
 | `tests/dominio/subir-foto-oferta.test.js` | 6 | RN-12 (tipo de archivo) en `SubirFotoOferta` con un `AlmacenImagenes` falso, y el controlador: sin archivo → 400, archivo inválido → 400, válido → 201 |
+| `tests/dominio/negocio.test.js` | 26 | RN-15 (datos válidos y normalizados, cada campo inválido), RN-14 (transiciones permitidas y prohibidas, quién y cuándo, motivo obligatorio al rechazar) y RN-13 (`exigirQuePuedaOperar` con código y motivo) — sin base de datos |
+| `tests/integracion/solicitud-registro.test.js` | 9 | **Contra PostgreSQL real y por HTTP**: solicitud → 201 PENDIENTE con contraseña hasheada; correo o WhatsApp repetido → 409; dato inválido → 400; login PENDIENTE/RECHAZADO → 403 con código y motivo, contraseña incorrecta → 401 (no revela el estado), aprobado → 200; límite de 5 solicitudes por hora (las fallidas no cuentan) |
+| `tests/seguridad/negocio-no-activo.test.js` | 6 | **Contra PostgreSQL real**: la oferta de un negocio PENDIENTE, RECHAZADO o SUSPENDIDO no aparece en la vitrina y su detalle da 404; no se puede pedir (stock intacto); publicar con un token de negocio PENDIENTE → 403; el límite por IP cuenta a cada cliente por separado detrás del proxy |
 
 Nota técnica: las pruebas de concurrencia y seguridad crean su propio
 negocio/oferta con UUID y evitan `TRUNCATE` global a propósito, porque

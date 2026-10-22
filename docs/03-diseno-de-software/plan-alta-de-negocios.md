@@ -160,8 +160,8 @@ CREATE TABLE IF NOT EXISTS administradores (
 | | Infraestructura | Repositorio: `crear`, `listarPorEstado`, `guardarEstado`; traduce la violación de índice único a `409`. |
 | | Presentación | Rutas `POST /negocios/solicitudes` (con límite por IP) y `/admin/negocios`. |
 | **Acceso** | Todas | Login de administrador con tabla `administradores`; middleware `requiereRol('NEGOCIO' \| 'ADMIN')`; script `crear-admin`. |
-| **Ofertas** | Aplicación / Infraestructura | `PublicarOferta` llama a `negocios.verificarNegocioActivo()`. El listado público solo trae ofertas de negocios ACTIVO (join en la consulta del listado). |
-| **Pedidos** | Aplicación | `PedirOferta` no reserva si el negocio no está ACTIVO. |
+| **Ofertas** | Dominio / Aplicación / Infraestructura | Puerto `EstadoDeNegocios` (adaptador sobre la API pública de Negocios, sin leer la tabla `negocios`, ADR-001). `PublicarOferta` exige negocio ACTIVO; el listado público pide a Negocios los IDs de los negocios ACTIVO y filtra con `negocio_id = ANY(...)`; el detalle de una oferta de un negocio no activo responde 404. |
+| **Pedidos** | Aplicación | `PedirOferta` no reserva si el negocio no está ACTIVO (la verificación ocurre en `reservarUnidad` de Ofertas, dentro de la misma transacción). |
 | **API** | Presentación | Montaje de las rutas nuevas, códigos `403` con `codigo` para estados del negocio. |
 | **Web** | — | Rutas `/negocios`, `/negocios/registro`, `/admin`; mensajes de estado en el login del panel; botones de la landing a `/negocios`. |
 

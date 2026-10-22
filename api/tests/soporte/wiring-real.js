@@ -20,8 +20,9 @@ import { ResolverPedido } from '../../src/modulos/pedidos/aplicacion/resolver-pe
  */
 export function construirPedidosReales(pool, reloj = new RelojSistema()) {
   const unidadDeTrabajo = new UnidadDeTrabajoPg(pool);
-  const apiNegocios = crearApiNegocios({ pool });
-  const apiOfertas = crearApiOfertas({ pool, reloj, requireAuth: (req, res, next) => next() });
+  const sinFiltro = (req, res, next) => next();
+  const apiNegocios = crearApiNegocios({ pool, reloj, limitarSolicitudes: sinFiltro });
+  const apiOfertas = crearApiOfertas({ pool, reloj, requireAuth: sinFiltro, apiNegocios });
 
   const codigos = new CodigoCanjeRepositoryPg(pool);
   const reservaDeStock = new ReservaDeStockConOfertas(apiOfertas);
@@ -44,5 +45,5 @@ export function construirPedidosReales(pool, reloj = new RelojSistema()) {
     reservaDeStock,
   });
 
-  return { pedirOferta, resolverPedido, apiOfertas, codigos };
+  return { pedirOferta, resolverPedido, apiOfertas, apiNegocios, codigos };
 }

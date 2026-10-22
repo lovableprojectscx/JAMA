@@ -17,6 +17,10 @@ export class VerificarCredenciales {
       throw new CredencialesInvalidasError();
     }
 
+    // RN-13: el estado se revisa recién después de la contraseña, para no
+    // revelarle a quien no la tiene si un correo está pendiente o rechazado.
+    negocio.exigirQuePuedaOperar();
+
     return { id: negocio.id, nombre: negocio.nombre, whatsapp: negocio.whatsapp };
   }
 }

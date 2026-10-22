@@ -17,6 +17,9 @@ export default function LoginPantalla({ onIngresar }) {
     } catch (err) {
       if (err.status === 401) {
         setError('Correo o contraseña incorrectos.');
+      } else if (err.status === 403 && err.codigo) {
+        // RF20: cuenta en revisión, rechazada (con motivo) o suspendida.
+        setError(err.motivo ? `${err.message} Motivo: ${err.motivo}` : err.message);
       } else {
         setError('No pudimos conectar. Revisa tu internet e intenta de nuevo.');
       }

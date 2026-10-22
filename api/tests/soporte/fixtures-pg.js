@@ -22,21 +22,29 @@ function emailUnico(pista) {
   return `${prefijo}-${Date.now()}-${contador}-${Math.random().toString(36).slice(2, 8)}@jama.pe`;
 }
 
+/** WhatsApp único (RN-16): 51 + 9 dígitos que empiezan en 9. */
+function whatsappUnico() {
+  const nueveDigitos = `9${String(Math.floor(Math.random() * 1e8)).padStart(8, '0')}`;
+  return `51${nueveDigitos}`;
+}
+
 export async function crearNegocioDePrueba(pool, overrides = {}) {
   const passwordHash = await bcrypt.hash(overrides.password ?? 'demo1234', 4);
   const { rows } = await pool.query(
-    `INSERT INTO negocios (nombre, email, password_hash, whatsapp, yape, direccion)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING id, nombre, email, whatsapp`,
+    `INSERT INTO negocios (nombre, email, password_hash, whatsapp, yape, direccion, estado, motivo_estado)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+     RETURNING id, nombre, email, whatsapp, estado`,
     [
       overrides.nombre ?? 'Negocio de prueba',
       // Siempre único, aunque se pase `email`: evita colisiones entre
       // corridas repetidas de `npm test` contra la misma base jama_test.
-      emailUnico(overrides.email),
+      overrides.emailExacto ?? emailUnico(overrides.email),
       passwordHash,
-      overrides.whatsapp ?? '51900000000',
+      overrides.whatsapp ?? whatsappUnico(),
       overrides.yape ?? '900000000',
       overrides.direccion ?? 'Jr. Prueba 1',
+      overrides.estado ?? 'ACTIVO',
+      overrides.motivoEstado ?? null,
     ]
   );
   return rows[0];

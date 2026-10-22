@@ -8,11 +8,27 @@ export class NegocioRepository {
   async obtenerPorId(id, tx) {
     throw new Error('NegocioRepository.obtenerPorId() no implementado');
   }
+
+  /** RN-16: lanza NegocioDuplicadoError si el correo o el WhatsApp ya existen. */
+  // eslint-disable-next-line no-unused-vars
+  async crear(negocio) {
+    throw new Error('NegocioRepository.crear() no implementado');
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  async listarIdsActivos() {
+    throw new Error('NegocioRepository.listarIdsActivos() no implementado');
+  }
 }
 
 export class Hasher {
   // eslint-disable-next-line no-unused-vars
   async comparar(textoPlano, hash) {
     throw new Error('Hasher.comparar() no implementado');
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  async hashear(textoPlano) {
+    throw new Error('Hasher.hashear() no implementado');
   }
 }

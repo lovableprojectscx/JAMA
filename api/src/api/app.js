@@ -2,14 +2,21 @@ import express from 'express';
 import cors from 'cors';
 import { manejarErrores } from './middlewares/error-handler.middleware.js';
 
-export function crearApp({ apiAcceso, apiOfertas, pedidosModule, expirarReservas }) {
+export function crearApp({ apiAcceso, apiNegocios, apiOfertas, pedidosModule, expirarReservas }) {
   const app = express();
+
+  // En Vercel la petición llega a través de un proxy, que pone la IP real del
+  // cliente en X-Forwarded-For (y sobrescribe la que mande el cliente). Sin
+  // esto, req.ip es la del proxy y los límites por IP cuentan a todos los
+  // clientes como si fueran uno solo.
+  app.set('trust proxy', 1);
 
   app.use(cors());
   app.use(express.json());
 
   const v1 = express.Router();
   v1.use('/auth', apiAcceso.router);
+  v1.use('/negocios/solicitudes', apiNegocios.routerSolicitudes);
   v1.use('/ofertas', apiOfertas.routerPublico);
   v1.use('/ofertas', pedidosModule.routerPublico);
   v1.use('/negocios/me/ofertas', apiOfertas.routerNegocio);

@@ -8,7 +8,7 @@ import { crearApiOfertas } from './modulos/ofertas/index.js';
 import { SupabaseStorageAdapter } from './modulos/ofertas/infraestructura/supabase-storage-adapter.js';
 import { crearModuloPedidos } from './modulos/pedidos/pedidos.module.js';
 import { crearRequireAuth } from './api/middlewares/auth.middleware.js';
-import { limitarPedidos } from './api/middlewares/rate-limit.middleware.js';
+import { limitarPedidos, crearLimitarSolicitudes } from './api/middlewares/rate-limit.middleware.js';
 import { crearApp } from './api/app.js';
 
 /**
@@ -23,7 +23,7 @@ export function crearAplicacion() {
   const reloj = new RelojSistema();
   const unidadDeTrabajo = new UnidadDeTrabajoPg(pool);
 
-  const apiNegocios = crearApiNegocios({ pool });
+  const apiNegocios = crearApiNegocios({ pool, reloj, limitarSolicitudes: crearLimitarSolicitudes() });
   const apiAcceso = crearApiAcceso({
     apiNegocios,
     jwtSecret: process.env.JWT_SECRET,
@@ -35,7 +35,7 @@ export function crearAplicacion() {
     serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
     bucket: process.env.SUPABASE_STORAGE_BUCKET,
   });
-  const apiOfertas = crearApiOfertas({ pool, reloj, requireAuth, almacenImagenes });
+  const apiOfertas = crearApiOfertas({ pool, reloj, requireAuth, almacenImagenes, apiNegocios });
   const pedidosModule = crearModuloPedidos({
     pool,
     reloj,
@@ -46,7 +46,13 @@ export function crearAplicacion() {
     limitarPedidos,
   });
 
-  const app = crearApp({ apiAcceso, apiOfertas, pedidosModule, expirarReservas: pedidosModule.expirarReservas });
+  const app = crearApp({
+    apiAcceso,
+    apiNegocios,
+    apiOfertas,
+    pedidosModule,
+    expirarReservas: pedidosModule.expirarReservas,
+  });
 
   return { app, expirarReservas: pedidosModule.expirarReservas };
 }

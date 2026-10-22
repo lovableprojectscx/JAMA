@@ -1,4 +1,4 @@
-import { CredencialesInvalidasError } from '../../../compartido/dominio/errores.js';
+import { CredencialesInvalidasError, NegocioNoHabilitadoError } from '../../../compartido/dominio/errores.js';
 
 export class AccesoController {
   constructor({ login }) {
@@ -16,6 +16,10 @@ export class AccesoController {
     } catch (error) {
       if (error instanceof CredencialesInvalidasError) {
         return res.status(401).json({ error: error.message });
+      }
+      // RN-13 / RF20: la contraseña es correcta, pero el negocio no está ACTIVO.
+      if (error instanceof NegocioNoHabilitadoError) {
+        return res.status(403).json({ error: error.message, codigo: error.codigo, motivo: error.motivo });
       }
       return next(error);
     }
