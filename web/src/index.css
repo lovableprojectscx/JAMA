@@ -125,7 +125,8 @@ body {
   color: var(--azul-marino);
   padding: 0 8px;
   border-radius: 10px;
-  white-space: nowrap;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 .hero__subtitulo {
@@ -196,6 +197,7 @@ body {
 
   .hero__texto {
     flex: 1;
+    min-width: 0;
   }
 
   .hero__titulo {

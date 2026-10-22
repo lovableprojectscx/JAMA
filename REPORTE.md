@@ -300,6 +300,31 @@ caja azul *contenida*, no una sección de pared a pared, así que no
 necesitó cambios — es el único lugar donde el repo de referencia también
 usa azul como fondo.
 
+### Etapa 9 — Responsive: scroll horizontal en 320px y en tablet (esta sesión)
+
+El usuario pidió revisar que el diseño se viera bien en responsive. Probé
+el ancho real del documento contra el del viewport en 13 anchos (320 a
+1920px) con Playwright y encontré desborde horizontal real en dos: 320px
+(los más angostos, como un iPhone SE) y 768px (el breakpoint donde el
+Hero pasa a dos columnas, ej. una tablet en vertical).
+
+**Causa en 320px**: el span destacado del título (`"antes de que se
+acabe"`) tenía `white-space: nowrap` para que no se partiera a mitad de
+frase, pero eso le impedía encogerse, empujando todo el `Hero` 4px más
+ancho que la pantalla. **Causa en 768px**: al pasar a dos columnas, el
+contenedor de texto no tenía `min-width: 0`, así que un elemento flex con
+contenido ancho no se encogía lo suficiente y la imagen del hero (ancho
+fijo) terminaba empujada 20px fuera de la pantalla.
+
+Arreglado quitando el `nowrap` (con `box-decoration-break: clone` para
+que, si el span se parte en dos líneas, cada línea mantenga sus propias
+esquinas redondeadas en vez de verse cortada a la mitad) y agregando
+`min-width: 0` al contenedor de texto del Hero. Verificado de nuevo en los
+13 anchos: cero desborde horizontal, y revisé visualmente con capturas de
+página completa en 320, 414, 768, 1024 y 1920px — el grid de tarjetas pasa
+de 2 a 3 a 4 columnas sin saltos raros y el Hero no se ve apretado en
+ningún punto intermedio.
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:
