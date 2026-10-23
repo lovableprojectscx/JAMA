@@ -4,7 +4,7 @@ import heroImg from '../assets/jama-hero.webp';
 const INSIGNIAS = [
   { Icono: CalendarCheck, texto: 'Horneado hoy' },
   { Icono: BadgePercent, texto: '50% a 70% menos' },
-  { Icono: ShieldCheck, texto: 'Pagas al recoger' },
+  { Icono: ShieldCheck, texto: 'Pagas en tienda' },
 ];
 
 export default function Hero({ onVerOfertas }) {
@@ -14,16 +14,15 @@ export default function Hero({ onVerOfertas }) {
         <div className="hero__texto">
           <p className="hero__etiqueta">
             <span className="hero__punto" aria-hidden="true" />
-            Huamanga · Centro Histórico · Recojo hoy de 6:00 a 7:30 pm
+            Huamanga · Centro · Recojo hoy 6 a 7:30 pm
           </p>
           <h1 className="hero__titulo">
-            Salva lo más rico del día,
+            Lo rico del centro,
             <br />
-            antes de que <span className="hero__destacado">se acabe</span>
+            a <span className="hero__destacado">mitad de precio</span>
           </h1>
           <p className="hero__subtitulo">
-            Pastelerías y panaderías artesanales del centro liquidan su lote fresco a mitad de precio.
-            Apartas tu porción en 1 clic sin tarjetas; pagas con Yape o efectivo al recoger.
+            Pastelerías liquidan su lote fresco del día. Apartas en 1 toque, pagas al recoger con Yape.
           </p>
           <button type="button" className="hero__boton press" onClick={onVerOfertas}>
             Ver ofertas de hoy <ArrowRight aria-hidden="true" />

@@ -3,18 +3,18 @@ import { Search, ShoppingBag, MapPin } from 'lucide-react';
 const PASOS = [
   {
     Icono: Search,
-    titulo: 'Elige tu lote fresco',
-    descripcion: 'Descubre delicias horneadas hoy por pastelerías del centro con 50% de descuento o más.',
+    titulo: 'Elige tu antojo',
+    descripcion: 'Lotes frescos de pastelerías al 50% o más.',
   },
   {
     Icono: ShoppingBag,
     titulo: 'Aparta en 1 toque',
-    descripcion: 'Sin registros ni tarjetas. Recibes tu código de reserva exclusiva y se abre el WhatsApp del local.',
+    descripcion: 'Sin registro ni tarjeta. Recibes tu código al instante.',
   },
   {
     Icono: MapPin,
-    titulo: 'Paga y recoge en tienda',
-    descripcion: 'Muestras tu código al llegar, pagas con Yape o efectivo en el mostrador y disfrutas.',
+    titulo: 'Paga y recoge',
+    descripcion: 'Muestras tu código, pagas con Yape o efectivo en el local.',
   },
 ];
 
@@ -24,7 +24,7 @@ export default function ComoFunciona() {
       <div className="como-funciona__interior">
         <div className="seccion__encabezado">
           <p className="seccion__etiqueta">Paso a paso</p>
-          <h2 className="seccion__titulo">Así de simple y transparente</h2>
+          <h2 className="seccion__titulo">Así de simple</h2>
         </div>
         <ol className="como-funciona__pasos">
           {PASOS.map(({ Icono, titulo, descripcion }, indice) => (

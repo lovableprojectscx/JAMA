@@ -80,11 +80,11 @@ export default function App() {
           <div className="seccion__badge-zona">
             <span className="seccion__badge-punto" aria-hidden="true" />
             <MapPin size={13} aria-hidden="true" />
-            <span>Huamanga · Centro Histórico</span>
+            <span>Huamanga · Centro</span>
           </div>
-          <h2 className="seccion__titulo">La JAMA fresca de hoy</h2>
+          <h2 className="seccion__titulo">La JAMA de hoy</h2>
           <p className="seccion__bajada">
-            Pasteles, panes y postres horneados hoy que negocios del centro liquidan a mitad de precio.
+            Lotes frescos de pastelerías del centro a mitad de precio.
           </p>
         </div>
 
@@ -127,18 +127,18 @@ export default function App() {
               <div className="modal-confirmacion__icono-exito">
                 <Check size={28} />
               </div>
-              <h2 className="modal-confirmacion__titulo">¡Listo! Tu paquete te espera 🥐</h2>
+              <h2 className="modal-confirmacion__titulo">¡Reserva confirmada!</h2>
               <p className="modal-confirmacion__subtitulo">
-                Tienes <strong>30 minutos</strong> de reserva exclusiva. El negocio ya apartó tu porción en su mostrador.
+                Tienes <strong>30 minutos</strong> de reserva. Pagas en el local.
               </p>
             </div>
 
             {/* Caja destacada del código de canje */}
             <div className="modal-confirmacion__codigo-caja">
-              <span className="modal-confirmacion__codigo-etiqueta">Tu código de recojo exclusivo</span>
+              <span className="modal-confirmacion__codigo-etiqueta">Tu código de recojo</span>
               <div className="modal-confirmacion__codigo-valor">{confirmacion.codigo}</div>
               <span className="modal-confirmacion__codigo-nota">
-                Muestra este código al llegar y paga directo con Yape o efectivo
+                Muestra este código al llegar · Pagas con Yape o efectivo
               </span>
             </div>
 
@@ -152,7 +152,7 @@ export default function App() {
                   {confirmacion.negocioNombre || confirmacion.oferta?.negocioNombre || 'Comercio afiliado'}
                 </h4>
                 <p className="modal-confirmacion__comercio-dir">
-                  📍 {confirmacion.negocioDireccion || confirmacion.oferta?.negocioDireccion || 'Zona Centro, Huamanga'}
+                  📍 {confirmacion.negocioDireccion || confirmacion.oferta?.negocioDireccion || 'Centro, Huamanga'}
                 </p>
                 <p className="modal-confirmacion__comercio-item">
                   🛍️ <strong>{confirmacion.oferta?.titulo}</strong> · S/{' '}
@@ -170,7 +170,7 @@ export default function App() {
                 rel="noopener noreferrer"
               >
                 <MessageCircle size={20} />
-                <span>💬 Coordinar recojo por WhatsApp</span>
+                <span>WhatsApp del negocio</span>
               </a>
 
               {(confirmacion.enlaceMaps || confirmacion.oferta?.enlaceMaps) && (
@@ -181,7 +181,7 @@ export default function App() {
                   rel="noopener noreferrer"
                 >
                   <Compass size={18} />
-                  <span>🧭 Ver ruta en Google Maps</span>
+                  <span>Cómo llegar (Google Maps)</span>
                 </a>
               )}
             </div>
@@ -191,7 +191,7 @@ export default function App() {
               className="modal-confirmacion__btn-listo"
               onClick={() => setConfirmacion(null)}
             >
-              Volver a la vitrina (Tu código queda guardado)
+              Listo, volver a las ofertas
             </button>
           </div>
         </div>
