@@ -10,6 +10,8 @@ import CtaNegocio from './components/CtaNegocio.jsx';
 import { obtenerOfertas, pedirOferta } from './api.js';
 import logoJama from './assets/jama-logo.png';
 
+const ANIO_ACTUAL = new Date().getFullYear();
+
 export default function App() {
   const [ofertas, setOfertas] = useState([]);
   const [cargandoLista, setCargandoLista] = useState(true);
@@ -78,11 +80,11 @@ export default function App() {
           <div className="seccion__badge-zona">
             <span className="seccion__badge-punto" aria-hidden="true" />
             <MapPin size={13} aria-hidden="true" />
-            <span>Huamanga · Zona Centro</span>
+            <span>Huamanga · Centro Histórico</span>
           </div>
-          <h2 className="seccion__titulo">La JAMA de hoy</h2>
+          <h2 className="seccion__titulo">La JAMA fresca de hoy</h2>
           <p className="seccion__bajada">
-            Comida rica y fresca que quedó hoy en pastelerías y panaderías del centro.
+            Pasteles, panes y postres horneados hoy que negocios del centro liquidan a mitad de precio.
           </p>
         </div>
 
@@ -125,18 +127,18 @@ export default function App() {
               <div className="modal-confirmacion__icono-exito">
                 <Check size={28} />
               </div>
-              <h2 className="modal-confirmacion__titulo">¡Tu oferta está reservada!</h2>
+              <h2 className="modal-confirmacion__titulo">¡Listo! Tu paquete te espera 🥐</h2>
               <p className="modal-confirmacion__subtitulo">
-                Tienes <strong>30 minutos</strong> de reserva para coordinar tu recojo con el comercio.
+                Tienes <strong>30 minutos</strong> de reserva exclusiva. El negocio ya apartó tu porción en su mostrador.
               </p>
             </div>
 
             {/* Caja destacada del código de canje */}
             <div className="modal-confirmacion__codigo-caja">
-              <span className="modal-confirmacion__codigo-etiqueta">Tu código de canje</span>
+              <span className="modal-confirmacion__codigo-etiqueta">Tu código de recojo exclusivo</span>
               <div className="modal-confirmacion__codigo-valor">{confirmacion.codigo}</div>
               <span className="modal-confirmacion__codigo-nota">
-                Muestra este código al recoger tu pedido
+                Muestra este código al llegar y paga directo con Yape o efectivo
               </span>
             </div>
 
@@ -168,7 +170,7 @@ export default function App() {
                 rel="noopener noreferrer"
               >
                 <MessageCircle size={20} />
-                <span>Abrir WhatsApp para coordinar</span>
+                <span>💬 Coordinar recojo por WhatsApp</span>
               </a>
 
               {(confirmacion.enlaceMaps || confirmacion.oferta?.enlaceMaps) && (
@@ -179,7 +181,7 @@ export default function App() {
                   rel="noopener noreferrer"
                 >
                   <Compass size={18} />
-                  <span>Cómo llegar (Google Maps)</span>
+                  <span>🧭 Ver ruta en Google Maps</span>
                 </a>
               )}
             </div>
@@ -189,7 +191,7 @@ export default function App() {
               className="modal-confirmacion__btn-listo"
               onClick={() => setConfirmacion(null)}
             >
-              Entendido, volver a las ofertas
+              Volver a la vitrina (Tu código queda guardado)
             </button>
           </div>
         </div>
@@ -200,9 +202,15 @@ export default function App() {
       <CtaNegocio />
 
       <footer className="pie">
-        <img className="pie__logo" src={logoJama} alt="JAMA" width="84" height="40" loading="lazy" />
-        <p className="pie__lema">Comida rica de hoy, más barata y cerca de ti.</p>
-        <p className="pie__nota">Huamanga, Ayacucho · Pago y coordinación por WhatsApp y Yape</p>
+        <div className="pie__interior">
+          <div className="pie__marca">
+            <img src={logoJama} alt="JAMA" className="pie__logo" />
+            <p className="pie__eslogan">La comida más rica de Ayacucho, sin desperdicios.</p>
+          </div>
+          <p className="pie__legal">
+            © {ANIO_ACTUAL} JAMA · Huamanga, Ayacucho. Todos los derechos reservados.
+          </p>
+        </div>
       </footer>
     </div>
   );

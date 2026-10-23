@@ -36,14 +36,14 @@ export default function OfertaCard({ oferta, onPedir, cargando }) {
             <div className="oferta-card__placeholder-icon-wrap">
               <ShoppingBag size={32} />
             </div>
-            <span className="oferta-card__placeholder-texto">Lote fresco de hoy</span>
+            <span className="oferta-card__placeholder-texto">Lote fresco horneado hoy</span>
           </div>
         )}
 
         <div className="oferta-card__badges-flotantes">
           <span className="oferta-card__descuento-pill">-{descuentoVigente}%</span>
           {oferta.stock <= 3 && oferta.stock > 0 && (
-            <span className="oferta-card__urgencia-pill">¡Quedan {oferta.stock}!</span>
+            <span className="oferta-card__urgencia-pill">🔥 ¡Solo quedan {oferta.stock}!</span>
           )}
         </div>
       </div>
@@ -97,7 +97,7 @@ export default function OfertaCard({ oferta, onPedir, cargando }) {
 
           {oferta.proximoTramo && (
             <div className="oferta-card__aviso-tramo">
-              ⏳ Baja a <strong>{formatearPrecio(oferta.proximoTramo.precio)}</strong> a las {oferta.proximoTramo.desde}
+              ⏳ Baja a <strong>{formatearPrecio(oferta.proximoTramo.precio)}</strong> a las {oferta.proximoTramo.desde} (si no se agota antes)
             </div>
           )}
         </div>
@@ -109,7 +109,7 @@ export default function OfertaCard({ oferta, onPedir, cargando }) {
           onClick={() => onPedir(oferta)}
           disabled={cargando}
         >
-          {cargando ? 'Generando código...' : `Pedir oferta · ${formatearPrecio(precioVigente)}`}
+          {cargando ? 'Apartando tu porción...' : `Apartar por ${formatearPrecio(precioVigente)} · En tienda`}
         </button>
       </div>
     </article>

@@ -2,9 +2,9 @@ import { ArrowRight, CalendarCheck, BadgePercent, ShieldCheck } from 'lucide-rea
 import heroImg from '../assets/jama-hero.webp';
 
 const INSIGNIAS = [
-  { Icono: CalendarCheck, texto: 'Fresco de hoy' },
-  { Icono: BadgePercent, texto: 'Precio claro' },
-  { Icono: ShieldCheck, texto: 'Recojo local' },
+  { Icono: CalendarCheck, texto: 'Horneado hoy' },
+  { Icono: BadgePercent, texto: '50% a 70% menos' },
+  { Icono: ShieldCheck, texto: 'Pagas al recoger' },
 ];
 
 export default function Hero({ onVerOfertas }) {
@@ -14,16 +14,16 @@ export default function Hero({ onVerOfertas }) {
         <div className="hero__texto">
           <p className="hero__etiqueta">
             <span className="hero__punto" aria-hidden="true" />
-            Huamanga · Zona Centro · Recojo de 6 a 7 pm
+            Huamanga · Centro Histórico · Recojo hoy de 6:00 a 7:30 pm
           </p>
           <h1 className="hero__titulo">
-            Lo rico del día,
+            Salva lo más rico del día,
             <br />
             antes de que <span className="hero__destacado">se acabe</span>
           </h1>
           <p className="hero__subtitulo">
-            Pastelerías y panaderías de Ayacucho bajan el precio de lo que les queda al cierre.
-            Reservas gratis, pagas y recoges directo con el negocio.
+            Pastelerías y panaderías artesanales del centro liquidan su lote fresco a mitad de precio.
+            Apartas tu porción en 1 clic sin tarjetas; pagas con Yape o efectivo al recoger.
           </p>
           <button type="button" className="hero__boton press" onClick={onVerOfertas}>
             Ver ofertas de hoy <ArrowRight aria-hidden="true" />

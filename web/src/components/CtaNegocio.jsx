@@ -8,13 +8,13 @@ export default function CtaNegocio() {
           <span className="cta-negocio__icono">
             <Store aria-hidden="true" />
           </span>
-          <h2 className="cta-negocio__titulo">¿Tienes una pastelería o panadería?</h2>
+          <h2 className="cta-negocio__titulo">¿Tienes una pastelería o panadería en Ayacucho?</h2>
           <p className="cta-negocio__texto">
-            Publica lo que te queda al cierre del día y véndelo antes de perderlo. Gratis para empezar.
+            Convierte tus lotes de la tarde en ingresos limpios y nuevos clientes locales. Publica en 2 minutos sin costo de afiliación.
           </p>
         </div>
         <a className="cta-negocio__boton press" href="/negocios">
-          Vender en JAMA <ArrowRight aria-hidden="true" />
+          Afiliar mi negocio gratis <ArrowRight aria-hidden="true" />
         </a>
       </div>
     </section>
