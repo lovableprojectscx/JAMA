@@ -9,6 +9,7 @@ import PanelApp from './panel/PanelApp.jsx';
 import NegociosLanding from './negocios/NegociosLanding.jsx';
 import RegistroNegocio from './negocios/RegistroNegocio.jsx';
 import AdminApp from './admin/AdminApp.jsx';
+import TerminosCondiciones from './terminos/TerminosCondiciones.jsx';
 
 function enrutar() {
   const path = window.location.pathname.replace(/\/+$/, '') || '/';
@@ -24,6 +25,9 @@ function enrutar() {
   }
   if (path === '/negocios') {
     return <NegociosLanding />;
+  }
+  if (path === '/terminos' || path === '/terminos-y-condiciones') {
+    return <TerminosCondiciones />;
   }
   return <App />;
 }

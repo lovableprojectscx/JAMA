@@ -361,7 +361,8 @@ export default function RegistroNegocio() {
                   />
                   <label htmlFor="reg-declaracion">
                     <strong>Compromiso de calidad (RC08):</strong> Declaro que solo publicaré productos
-                    del día, frescos, aptos para el consumo humano y dentro de su fecha de vencimiento.
+                    del día, frescos, aptos para el consumo humano y dentro de su fecha de vencimiento,
+                    conforme a los <a href="/terminos" target="_blank" rel="noopener noreferrer">Términos y Condiciones</a>.
                   </label>
                 </div>
                 {errores.declaracionAceptada && (

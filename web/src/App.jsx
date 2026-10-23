@@ -207,6 +207,11 @@ export default function App() {
             <img src={logoJama} alt="JAMA" className="pie__logo" />
             <p className="pie__eslogan">La comida más rica de Ayacucho, sin desperdicios.</p>
           </div>
+          <div className="pie__enlaces">
+            <a href="/terminos" className="pie__enlace">Términos y Condiciones</a>
+            <span aria-hidden="true"> · </span>
+            <a href="/negocios" className="pie__enlace">Para Negocios</a>
+          </div>
           <p className="pie__legal">
             © {ANIO_ACTUAL} JAMA · Huamanga, Ayacucho. Todos los derechos reservados.
           </p>

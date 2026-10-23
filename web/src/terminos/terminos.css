@@ -1,0 +1,244 @@
+/* ==========================================================================
+   ESTILOS: PÁGINA DE TÉRMINOS Y CONDICIONES (JAMA)
+   ========================================================================== */
+
+.terminos-pagina {
+  min-height: 100vh;
+  background-color: var(--color-fondo, #FAF8EF);
+  color: var(--color-texto, #1E2B4D);
+  font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cabecera */
+.terminos-header {
+  background: rgba(250, 248, 239, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(30, 43, 77, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.terminos-header__interior {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.terminos-header__volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1E2B4D;
+  text-decoration: none;
+  padding: 8px 14px;
+  background: white;
+  border: 1px solid rgba(30, 43, 77, 0.12);
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+
+.terminos-header__volver:hover {
+  background: #F3F4F6;
+  transform: translateX(-2px);
+}
+
+/* Contenido Principal */
+.terminos-contenido {
+  flex: 1;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+  width: 100%;
+}
+
+/* Cabecera del Documento */
+.terminos-intro {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.terminos-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(212, 220, 49, 0.25);
+  color: #1E2B4D;
+  border: 1px solid rgba(212, 220, 49, 0.5);
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+}
+
+.terminos-titulo {
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 900;
+  color: #1E2B4D;
+  line-height: 1.15;
+  margin: 0 0 12px;
+}
+
+.terminos-subtitulo {
+  font-size: 16px;
+  color: #5B6478;
+  max-width: 680px;
+  margin: 0 auto 12px;
+  line-height: 1.5;
+}
+
+.terminos-actualizacion {
+  font-size: 13px;
+  color: #8C96A8;
+  font-weight: 600;
+}
+
+/* Tarjetas de Resumen Ejecutivo (Escaneabilidad) */
+.terminos-resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.terminos-card-resumen {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(30, 43, 77, 0.08);
+  box-shadow: 0 2px 8px rgba(30, 43, 77, 0.04);
+}
+
+.terminos-card-resumen__icono {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(212, 220, 49, 0.2);
+  color: #1E2B4D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.terminos-card-resumen h3 {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 6px;
+  color: #1E2B4D;
+}
+
+.terminos-card-resumen p {
+  font-size: 13.5px;
+  color: #5B6478;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* Cuerpo de Artículos Legales */
+.terminos-cuerpo {
+  background: white;
+  border-radius: 20px;
+  padding: clamp(24px, 5vw, 44px);
+  border: 1px solid rgba(30, 43, 77, 0.08);
+  box-shadow: 0 4px 16px rgba(30, 43, 77, 0.04);
+}
+
+.terminos-articulo {
+  margin-bottom: 32px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid rgba(30, 43, 77, 0.06);
+}
+
+.terminos-articulo:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.terminos-articulo__encabezado {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.terminos-articulo__numero {
+  font-size: 12px;
+  font-weight: 900;
+  background: #1E2B4D;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+.terminos-articulo__titulo {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1E2B4D;
+  margin: 0;
+}
+
+.terminos-articulo p {
+  font-size: 15px;
+  line-height: 1.65;
+  color: #3B4660;
+  margin: 0 0 12px;
+}
+
+.terminos-articulo p:last-child {
+  margin-bottom: 0;
+}
+
+.terminos-articulo ul {
+  margin: 8px 0 12px 20px;
+  padding: 0;
+}
+
+.terminos-articulo li {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #3B4660;
+  margin-bottom: 6px;
+}
+
+.terminos-destacado {
+  background: #FAF8EF;
+  border-left: 4px solid #D4DC31;
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 12px 0;
+  font-size: 14px !important;
+  color: #1E2B4D !important;
+  font-weight: 600;
+}
+
+/* Pie de Página */
+.terminos-pie {
+  background: #1E2B4D;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 24px 20px;
+  text-align: center;
+  font-size: 13.5px;
+}
+
+.terminos-pie a {
+  color: #D4DC31;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.terminos-pie a:hover {
+  text-decoration: underline;
+}

@@ -281,8 +281,9 @@ export default function NegociosLanding() {
       <footer className="negocios-footer">
         <p>© {ANIO_ACTUAL} JAMA · Huamanga, Ayacucho</p>
         <p>
-          <a href="/">Ir a la vitrina de clientes</a> ·
-          <a href="/panel">Panel de negocio</a>
+          <a href="/">Ir a la vitrina de clientes</a> ·{' '}
+          <a href="/panel">Panel de negocio</a> ·{' '}
+          <a href="/terminos">Términos y Condiciones</a>
         </p>
       </footer>
     </div>
