@@ -1,4 +1,4 @@
-import { Clock3 } from 'lucide-react';
+import { Clock3, MapPin } from 'lucide-react';
 
 function formatearPrecio(valor) {
   return new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(valor);
@@ -32,6 +32,27 @@ export default function OfertaCard({ oferta, onPedir, cargando }) {
       </div>
 
       <div className="oferta-card__cuerpo">
+        {oferta.negocioNombre && (
+          <div className="oferta-card__tienda">
+            <MapPin size={13} className="oferta-card__pin" aria-hidden="true" />
+            <span className="oferta-card__tienda-nombre">{oferta.negocioNombre}</span>
+            {oferta.negocioDireccion && (
+              <span className="oferta-card__tienda-direccion"> · {oferta.negocioDireccion}</span>
+            )}
+            {oferta.enlaceMaps && (
+              <a
+                href={oferta.enlaceMaps}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="oferta-card__tienda-maps"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Mapa ↗
+              </a>
+            )}
+          </div>
+        )}
+
         <h2 className="oferta-card__titulo">{oferta.titulo}</h2>
         {oferta.descripcion && <p className="oferta-card__descripcion">{oferta.descripcion}</p>}
 

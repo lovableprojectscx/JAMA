@@ -494,6 +494,24 @@ Siguiendo [`plan-alta-de-negocios.md`](docs/03-diseno-de-software/plan-alta-de-n
      - **Paso 6 (Vitrina Pública en Vivo)**: Navegación como cliente a `https://jama-iota.vercel.app/` y comprobación de la aparición inmediata de la oferta con su descuento, stock y botón "Pedir" (`18-prod-vitrina-oferta-visible.png`).
    - Los 6 pasos fueron completados con éxito (6/6 aprobados). Documentado formalmente en el artefacto `certificacion-fase4-produccion.md`.
 
+### Etapa 15 — Focalización en Zona Centro: nombres de locales, direcciones y enlaces a Google Maps (esta sesión)
+
+Para arrancar el piloto de Huamanga focalizado en la Zona Centro sin añadir fricción ni pedir permisos invasivos de GPS:
+
+1. **Cero fricción de ubicación**:
+   - No se solicita permiso de geolocalización al cliente (evita la tasa de rebote del >50% de los popups de GPS en celulares).
+   - Se enfoca la vitrina en los comercios de la **Zona Centro / Cercado de Huamanga** (`Hero.jsx` y encabezado actualizado).
+
+2. **Enriquecimiento de la API de Ofertas**:
+   - `ListarOfertasVigentes` asocia los datos del comercio (`negocioNombre` y `negocioDireccion`) a cada oferta activa respetando Clean Architecture mediante puertos y adaptadores.
+   - `serializarOferta` expone `negocioNombre`, `negocioDireccion`, `zona: "Centro"` y `enlaceMaps` (`https://www.google.com/maps/search/?api=1&query=...`).
+   - `PedirOferta` incluye la dirección del local y su enlace de Google Maps en la respuesta de confirmación.
+
+3. **Experiencia Móvil en la Vitrina y Confirmación**:
+   - Las tarjetas de oferta (`OfertaCard.jsx`) ahora muestran el nombre del local, su dirección en el centro y un enlace directo `Mapa ↗`.
+   - La pantalla de confirmación tras generar el código de canje muestra el punto de recojo físico y dos botones de acción: **Abrir WhatsApp** para coordinar y **📍 Cómo llegar (Google Maps)** para abrir la app de mapas del celular.
+   - Verificado con Playwright y capturas certificadas (`19-vitrina-zona-centro-maps.png` y `20-confirmacion-pedido-direccion-maps.png`).
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:

@@ -32,10 +32,11 @@ export class PedidosController {
 
   async pedir(req, res, next) {
     try {
-      const { codigo, enlaceWhatsapp, expiraEn, precio } = await this.pedirOferta.ejecutar({
-        ofertaId: req.params.id,
-      });
-      return res.status(201).json({ codigo, enlaceWhatsapp, expiraEn, precio });
+      const { codigo, enlaceWhatsapp, expiraEn, precio, negocioNombre, negocioDireccion, enlaceMaps } =
+        await this.pedirOferta.ejecutar({
+          ofertaId: req.params.id,
+        });
+      return res.status(201).json({ codigo, enlaceWhatsapp, expiraEn, precio, negocioNombre, negocioDireccion, enlaceMaps });
     } catch (error) {
       if (error instanceof OfertaAgotadaError || error instanceof OfertaNoVigenteError) {
         return res.status(409).json({ error: error.message });

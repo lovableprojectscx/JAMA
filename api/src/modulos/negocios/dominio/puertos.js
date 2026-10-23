@@ -16,6 +16,11 @@ export class NegocioRepository {
   }
 
   // eslint-disable-next-line no-unused-vars
+  async listarActivosConDetalle() {
+    throw new Error('NegocioRepository.listarActivosConDetalle() no implementado');
+  }
+
+  // eslint-disable-next-line no-unused-vars
   async listarIdsActivos() {
     throw new Error('NegocioRepository.listarIdsActivos() no implementado');
   }

@@ -61,6 +61,8 @@ export class Oferta {
   constructor({
     id,
     negocioId,
+    negocioNombre,
+    negocioDireccion,
     titulo,
     descripcion,
     fotoUrl,
@@ -76,6 +78,8 @@ export class Oferta {
   }) {
     this.id = id;
     this.negocioId = negocioId;
+    this.negocioNombre = negocioNombre ?? null;
+    this.negocioDireccion = negocioDireccion ?? null;
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.fotoUrl = fotoUrl;

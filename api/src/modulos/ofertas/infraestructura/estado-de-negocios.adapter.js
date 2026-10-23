@@ -11,6 +11,10 @@ export class EstadoDeNegociosConNegocios extends EstadoDeNegocios {
     return this.apiNegocios.verificarNegocioActivo(negocioId, tx);
   }
 
+  async negociosActivosDetalle() {
+    return this.apiNegocios.negociosActivosDetalle();
+  }
+
   async idsActivos() {
     return this.apiNegocios.idsDeNegociosActivos();
   }

@@ -72,18 +72,36 @@ export default function App() {
         {confirmacion && (
           <div className="confirmacion">
             <p className="confirmacion__titulo">¡Listo! Tu código es {confirmacion.codigo}</p>
-            <p>
-              Te abrimos WhatsApp para coordinar con <strong>{confirmacion.oferta.titulo}</strong>. Si no
-              se abrió, usa el botón de abajo.
+            <p className="confirmacion__tienda">
+              📍 <strong>{confirmacion.negocioNombre || confirmacion.oferta?.negocioNombre || 'Comercio afiliado'}</strong>
+              {(confirmacion.negocioDireccion || confirmacion.oferta?.negocioDireccion) && (
+                <span> · {confirmacion.negocioDireccion || confirmacion.oferta?.negocioDireccion} (Zona Centro)</span>
+              )}
             </p>
-            <a
-              className="boton-pedir boton-pedir--enlace"
-              href={confirmacion.enlaceWhatsapp}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Abrir WhatsApp
-            </a>
+            <p>
+              Te abrimos WhatsApp para coordinar tu recojo de <strong>{confirmacion.oferta.titulo}</strong>. Si no
+              se abrió, usa el botón verde.
+            </p>
+            <div className="confirmacion__botones">
+              <a
+                className="boton-pedir boton-pedir--enlace"
+                href={confirmacion.enlaceWhatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Abrir WhatsApp
+              </a>
+              {(confirmacion.enlaceMaps || confirmacion.oferta?.enlaceMaps) && (
+                <a
+                  className="boton-pedir boton-pedir--maps"
+                  href={confirmacion.enlaceMaps || confirmacion.oferta?.enlaceMaps}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  📍 Cómo llegar (Google Maps)
+                </a>
+              )}
+            </div>
             <button type="button" className="confirmacion__cerrar" onClick={() => setConfirmacion(null)}>
               Cerrar
             </button>
@@ -93,7 +111,7 @@ export default function App() {
         <div className="seccion__encabezado">
           <p className="seccion__etiqueta">Ofertas de cierre</p>
           <h2 className="seccion__titulo">La JAMA de hoy</h2>
-          <p className="seccion__bajada">Lo que quedó hoy en pastelerías y panaderías de Huamanga.</p>
+          <p className="seccion__bajada">Lo que quedó hoy en pastelerías y panaderías de la Zona Centro de Huamanga.</p>
         </div>
 
         {cargandoLista && <p className="estado">Cargando ofertas de hoy...</p>}

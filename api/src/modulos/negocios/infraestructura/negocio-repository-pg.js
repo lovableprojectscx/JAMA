@@ -76,6 +76,13 @@ export class NegocioRepositoryPg extends NegocioRepository {
     }
   }
 
+  async listarActivosConDetalle() {
+    const { rows } = await this.pool.query(
+      `SELECT id, nombre, direccion, whatsapp FROM negocios WHERE estado = 'ACTIVO'`
+    );
+    return rows;
+  }
+
   async listarIdsActivos() {
     const { rows } = await this.pool.query(`SELECT id FROM negocios WHERE estado = 'ACTIVO'`);
     return rows.map((fila) => fila.id);

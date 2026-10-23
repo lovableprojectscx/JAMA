@@ -10,6 +10,10 @@ export class EstadoDeNegocios {
     throw new Error('EstadoDeNegocios.exigirActivo() no implementado');
   }
 
+  async negociosActivosDetalle() {
+    throw new Error('EstadoDeNegocios.negociosActivosDetalle() no implementado');
+  }
+
   async idsActivos() {
     throw new Error('EstadoDeNegocios.idsActivos() no implementado');
   }

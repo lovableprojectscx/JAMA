@@ -32,7 +32,18 @@ export class PedirOferta {
       const mensaje = `Hola ${contacto.nombre}, vi tu oferta "${reserva.titulo}" en JAMA. Quiero recogerla hoy. Mi código es ${codigo}.`;
       const enlaceWhatsapp = this.mensajeria.generarEnlace(contacto.whatsapp, mensaje);
 
-      return { codigo, enlaceWhatsapp, expiraEn: codigoCanje.expiraEn, precio: codigoCanje.precio };
+      const queryMaps = encodeURIComponent(`${contacto.nombre} ${contacto.direccion ?? ''} Huamanga Ayacucho`.trim());
+      const enlaceMaps = contacto.direccion ? `https://www.google.com/maps/search/?api=1&query=${queryMaps}` : null;
+
+      return {
+        codigo,
+        enlaceWhatsapp,
+        expiraEn: codigoCanje.expiraEn,
+        precio: codigoCanje.precio,
+        negocioNombre: contacto.nombre,
+        negocioDireccion: contacto.direccion,
+        enlaceMaps,
+      };
     });
   }
 

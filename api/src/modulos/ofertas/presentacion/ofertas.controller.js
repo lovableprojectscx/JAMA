@@ -5,9 +5,19 @@ function serializarOferta(oferta, ahora) {
   const precioVigente = oferta.precioVigente(ahora);
   const descuento = Math.round((1 - precioVigente / oferta.precioCarta) * 100);
   const proximoTramo = oferta.proximoTramo(ahora);
+  const nombre = oferta.negocioNombre || '';
+  const dir = oferta.negocioDireccion || '';
+  const queryMaps = encodeURIComponent(`${nombre} ${dir} Huamanga Ayacucho`.trim());
 
   return {
     id: oferta.id,
+    negocioId: oferta.negocioId,
+    negocioNombre: oferta.negocioNombre ?? null,
+    negocioDireccion: oferta.negocioDireccion ?? null,
+    zona: 'Centro',
+    enlaceMaps: oferta.negocioDireccion
+      ? `https://www.google.com/maps/search/?api=1&query=${queryMaps}`
+      : null,
     titulo: oferta.titulo,
     descripcion: oferta.descripcion,
     fotoUrl: oferta.fotoUrl,

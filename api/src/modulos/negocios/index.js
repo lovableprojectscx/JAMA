@@ -46,6 +46,9 @@ export function crearApiNegocios({ pool, reloj, limitarSolicitudes }) {
       return verificarNegocioActivo.ejecutar({ negocioId }, tx);
     },
     /** RN-13: para que la vitrina solo muestre ofertas de negocios ACTIVO. */
+    async negociosActivosDetalle() {
+      return negocioRepository.listarActivosConDetalle();
+    },
     async idsDeNegociosActivos() {
       return negocioRepository.listarIdsActivos();
     },

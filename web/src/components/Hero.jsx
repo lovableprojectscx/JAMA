@@ -14,7 +14,7 @@ export default function Hero({ onVerOfertas }) {
         <div className="hero__texto">
           <p className="hero__etiqueta">
             <span className="hero__punto" aria-hidden="true" />
-            Huamanga · Recojo de 6 a 7 pm
+            Huamanga · Zona Centro · Recojo de 6 a 7 pm
           </p>
           <h1 className="hero__titulo">
             Lo rico del día,
