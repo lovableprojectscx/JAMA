@@ -7,7 +7,7 @@ import { crearApiAcceso } from './modulos/acceso/index.js';
 import { crearApiOfertas } from './modulos/ofertas/index.js';
 import { SupabaseStorageAdapter } from './modulos/ofertas/infraestructura/supabase-storage-adapter.js';
 import { crearModuloPedidos } from './modulos/pedidos/pedidos.module.js';
-import { crearRequireAuth } from './api/middlewares/auth.middleware.js';
+import { crearRequireAuth, crearRequireRol, componerMiddlewares } from './api/middlewares/auth.middleware.js';
 import { limitarPedidos, crearLimitarSolicitudes } from './api/middlewares/rate-limit.middleware.js';
 import { crearApp } from './api/app.js';
 
@@ -25,30 +25,38 @@ export function crearAplicacion() {
 
   const apiNegocios = crearApiNegocios({ pool, reloj, limitarSolicitudes: crearLimitarSolicitudes() });
   const apiAcceso = crearApiAcceso({
+    pool,
     apiNegocios,
     jwtSecret: process.env.JWT_SECRET,
     duracionToken: process.env.JWT_DURACION ?? '12h',
   });
   const requireAuth = crearRequireAuth(apiAcceso);
+  const requireRolNegocio = crearRequireRol('NEGOCIO');
+  const requireRolAdmin = crearRequireRol('ADMIN');
+
+  const requireNegocio = componerMiddlewares(requireAuth, requireRolNegocio);
+  const routerAdminNegocios = apiNegocios.crearRouterAdmin(requireAuth, requireRolAdmin);
+
   const almacenImagenes = new SupabaseStorageAdapter({
     url: process.env.SUPABASE_URL,
     serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
     bucket: process.env.SUPABASE_STORAGE_BUCKET,
   });
-  const apiOfertas = crearApiOfertas({ pool, reloj, requireAuth, almacenImagenes, apiNegocios });
+  const apiOfertas = crearApiOfertas({ pool, reloj, requireAuth: requireNegocio, almacenImagenes, apiNegocios });
   const pedidosModule = crearModuloPedidos({
     pool,
     reloj,
     unidadDeTrabajo,
     apiOfertas,
     apiNegocios,
-    requireAuth,
+    requireAuth: requireNegocio,
     limitarPedidos,
   });
 
   const app = crearApp({
     apiAcceso,
     apiNegocios,
+    routerAdminNegocios,
     apiOfertas,
     pedidosModule,
     expirarReservas: pedidosModule.expirarReservas,

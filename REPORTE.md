@@ -435,6 +435,46 @@ Siguiendo [`plan-alta-de-negocios.md`](docs/03-diseno-de-software/plan-alta-de-n
    - Verificación responsiva automatizada con Playwright en Chrome headless en los 4 anchos estándar: 320px (móvil estrecho), 390px (iPhone), 768px (tablet) y 1280px (escritorio), confirmando 0 desborde horizontal (`scrollWidth <= clientWidth`).
    - `npm run lint` (0 errores) y `npm run build` pasando al 100%. Las 114 pruebas de la API se mantienen intactas.
 
+### Etapa 13 — Alta de negocios, fase 3: panel de administración y aviso por WhatsApp (esta sesión)
+
+Siguiendo [`plan-alta-de-negocios.md`](docs/03-diseno-de-software/plan-alta-de-negocios.md) (HU17, RF15, RF16, RF17, RF21, RF22, RN-13, RN-14, ADR-011), se completó la fase 3 dotando al equipo de JAMA de un panel protegido para evaluar solicitudes, aprobarlas o rechazarlas, y notificar a los comerciantes directamente por WhatsApp:
+
+1. **Aislamiento de roles y seguridad (ADR-011)**:
+   - Los tokens JWT ahora incorporan el claim `rol: "ADMIN"` o `rol: "NEGOCIO"`.
+   - Se crearon middlewares de autorización desacoplados: `crearRequireRol('ADMIN')` y `crearRequireRol('NEGOCIO')` compuestos con `componerMiddlewares`.
+   - Aislamiento HTTP estricto: un comerciante que intente acceder a rutas de administración recibe `403 FORBIDDEN (ROL_INSUFICIENTE)`, y un administrador no puede interactuar con endpoints de comercio.
+
+2. **Backend de Administración y CLI**:
+   - `AdminRepositoryPg`: repositorio para la tabla `administradores`.
+   - Caso de uso `LoginAdmin`: autentica contra `administradores` comparando contraseñas hasheadas con `bcrypt`. Endpoint: `POST /api/v1/auth/admin/login`.
+   - CLI `api/scripts/crear-admin.js` (`npm run crear-admin email password [nombre]`) para provisionar cuentas de operadores de JAMA con contraseña encriptada sin exponer endpoints públicos de registro. Creado el administrador base `admin@jama.pe` / `admin1234`.
+   - Casos de uso `ListarSolicitudes` y `ResolverSolicitud`: permiten listar comercios por estado (`PENDIENTE`, `ACTIVO`, `RECHAZADO`, `SUSPENDIDO`) y aplicar transiciones de la máquina de estados RN-14.
+   - Endpoints montados bajo `/api/v1/admin/negocios`:
+     - `GET /api/v1/admin/negocios?estado=PENDIENTE`: lista solicitudes.
+     - `POST /api/v1/admin/negocios/:id/aprobar`: pasa a `ACTIVO`, registra revisor y fecha.
+     - `POST /api/v1/admin/negocios/:id/rechazar`: exige motivo (>= 10 chars), pasa a `RECHAZADO`.
+     - `POST /api/v1/admin/negocios/:id/suspender` y `reactivar`: gestión continua del comercio (RF16).
+
+3. **Frontend del Panel de Administración (`/admin`)**:
+   - Enrutado en `web/src/main.jsx` hacia `AdminApp.jsx`.
+   - `AdminLogin.jsx`: formulario de acceso con badge distintivo `ADMIN`.
+   - `AdminPanel.jsx`: interfaz reactiva de doble vista (Pestaña "Pendientes" y "Historial completo").
+   - Tarjetas completas con nombre del comercio, responsable, rubro con badge visual, teléfono con link a WhatsApp, dirección en Huamanga y fecha de registro.
+   - Acciones inmediatas: botón **Aprobar** con confirmación visual instantánea, y botón **Rechazar** con campo de texto validado para el motivo obligatorio (RF17).
+
+4. **Avisos oficiales por WhatsApp (RF22, wa.me)**:
+   - Al aprobar una solicitud, aparece el botón verde con el ícono de WhatsApp que abre `https://wa.me/51...` con un mensaje de bienvenida prellenado con el nombre de la tienda y el enlace directo al `/panel`.
+   - Al rechazar una solicitud, el botón de WhatsApp prellena el mensaje explicativo con la causal registrada.
+
+5. **Certificación automatizada E2E con Playwright**:
+   - Suite `web/e2e-certificacion-fase3.mjs` ejecutada contra Chromium real y base de datos Supabase:
+     1. Login exitoso de administrador (`08-admin-login.png`).
+     2. Visualización reactiva de solicitudes pendientes (`09-admin-panel-pendientes.png`).
+     3. Aprobación y generación del enlace de WhatsApp prellenado (`10-admin-aprobacion-whatsapp.png`).
+     4. Rechazo con motivo obligatorio y enlace de aviso (`11-admin-rechazo-con-motivo.png`).
+     5. Verificación de ciclo completo: el comercio recién aprobado inicia sesión de inmediato en `/panel` y accede a operar en su tienda (`12-negocio-aprobado-entra-panel.png`).
+   - Todas las pruebas unitarias y de arquitectura pasan (98/98). Build de Vite y linter limpios. Documentado en el artefacto `certificacion-fase3-admin.md`.
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:

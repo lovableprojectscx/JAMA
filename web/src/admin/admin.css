@@ -1,0 +1,389 @@
+/* ==========================================================================
+   JAMA — Panel de Administración (/admin)
+   ========================================================================== */
+
+.admin-app {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--crema);
+  color: var(--azul-marino);
+}
+
+/* Header de Admin */
+.admin-header {
+  background: var(--azul-marino);
+  color: var(--blanco);
+  padding: 12px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.admin-header__interior {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-header__marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-header__logo {
+  height: 32px;
+  width: auto;
+}
+
+.admin-header__tag {
+  background: var(--lima);
+  color: var(--azul-marino);
+  font-size: 11px;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin-header__usuario {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.admin-header__nombre {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.admin-header__btn-salir {
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: var(--blanco);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.admin-header__btn-salir:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* Login de Admin */
+.admin-login-contenedor {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+}
+
+.admin-login-tarjeta {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-grande);
+  padding: 32px 24px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: var(--sombra-suave);
+  text-align: center;
+}
+
+.admin-login-tarjeta__logo {
+  margin-bottom: 16px;
+}
+
+.admin-login-tarjeta__titulo {
+  font-size: 22px;
+  font-weight: 900;
+  margin: 0 0 6px;
+  color: var(--azul-marino);
+}
+
+.admin-login-tarjeta__subtitulo {
+  font-size: 14px;
+  color: var(--gris-texto);
+  margin: 0 0 24px;
+}
+
+/* Contenido Principal de Admin */
+.admin-contenido {
+  flex: 1;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+  width: 100%;
+}
+
+.admin-pestanas {
+  display: flex;
+  gap: 8px;
+  border-bottom: 2px solid var(--borde);
+  margin-bottom: 24px;
+}
+
+.admin-pestana {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--gris-texto);
+  padding: 10px 18px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: all 120ms ease;
+}
+
+.admin-pestana--activa {
+  color: var(--azul-marino);
+  border-bottom-color: var(--azul-marino);
+}
+
+.admin-pestana__contador {
+  background: var(--azul-marino);
+  color: var(--blanco);
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  margin-left: 6px;
+}
+
+.admin-pestana--activa .admin-pestana__contador {
+  background: var(--lima);
+  color: var(--azul-marino);
+}
+
+/* Lista de Solicitudes */
+.admin-solicitudes-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-vacio {
+  background: var(--blanco);
+  border: 2px dashed var(--borde);
+  border-radius: var(--radio-tarjeta);
+  padding: 48px 20px;
+  text-align: center;
+  color: var(--gris-texto);
+}
+
+.admin-vacio h3 {
+  font-size: 18px;
+  color: var(--azul-marino);
+  margin: 0 0 6px;
+}
+
+/* Tarjeta de Solicitud */
+.admin-tarjeta-solicitud {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-tarjeta);
+  padding: 20px;
+  box-shadow: 0 2px 8px -2px rgba(30, 43, 77, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.admin-tarjeta-solicitud__cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.admin-tarjeta-solicitud__titulo {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--azul-marino);
+  margin: 0 0 4px;
+}
+
+.admin-tarjeta-solicitud__responsable {
+  font-size: 13px;
+  color: var(--gris-texto);
+  margin: 0;
+}
+
+.admin-badge-estado {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.admin-badge-estado--pendiente {
+  background: #fdf5d6;
+  color: #7a5e0b;
+  border: 1px solid #f2dda0;
+}
+
+.admin-badge-estado--activo {
+  background: #eaf3e0;
+  color: #2f6b1f;
+  border: 1px solid #c9e2b4;
+}
+
+.admin-badge-estado--rechazado {
+  background: #fdecea;
+  color: var(--rojo-aviso);
+  border: 1px solid #f9cdcb;
+}
+
+/* Grid de Datos de la Tienda */
+.admin-datos-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  background: #fcfbf6;
+  border: 1px solid #f0ede0;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 13px;
+}
+
+.admin-dato-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-dato-item__etiqueta {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--gris-texto);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-dato-item__valor {
+  font-weight: 700;
+  color: var(--azul-marino);
+}
+
+.admin-dato-item__valor a {
+  color: var(--azul-marino);
+  text-decoration: underline;
+}
+
+/* Acciones en la Tarjeta */
+.admin-tarjeta-solicitud__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding-top: 6px;
+}
+
+.admin-btn-aprobar {
+  background: #2f6b1f;
+  color: var(--blanco);
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-btn-aprobar:hover {
+  background: #255519;
+}
+
+.admin-btn-rechazar {
+  background: var(--blanco);
+  color: var(--rojo-aviso);
+  border: 1px solid var(--rojo-aviso);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.admin-btn-rechazar:hover {
+  background: #fdecea;
+}
+
+.admin-btn-whatsapp {
+  background: #25d366;
+  color: #0b4b20;
+  border: 1px solid #1fb757;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 10px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-btn-whatsapp:hover {
+  background: #1eb757;
+}
+
+/* Caja de Rechazo con Motivo */
+.admin-caja-rechazo {
+  background: #fdf2f1;
+  border: 1px solid #f8d2cf;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.admin-caja-rechazo__input {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #e5a4a0;
+  background: var(--blanco);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-caja-rechazo__botones {
+  display: flex;
+  gap: 8px;
+}
+
+/* Responsivo escritorio */
+@media (min-width: 640px) {
+  .admin-datos-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .admin-tarjeta-solicitud {
+    padding: 24px;
+  }
+}

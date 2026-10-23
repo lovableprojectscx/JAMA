@@ -2,7 +2,14 @@ import express from 'express';
 import cors from 'cors';
 import { manejarErrores } from './middlewares/error-handler.middleware.js';
 
-export function crearApp({ apiAcceso, apiNegocios, apiOfertas, pedidosModule, expirarReservas }) {
+export function crearApp({
+  apiAcceso,
+  apiNegocios,
+  routerAdminNegocios,
+  apiOfertas,
+  pedidosModule,
+  expirarReservas,
+}) {
   const app = express();
 
   // En Vercel la petición llega a través de un proxy, que pone la IP real del
@@ -17,6 +24,9 @@ export function crearApp({ apiAcceso, apiNegocios, apiOfertas, pedidosModule, ex
   const v1 = express.Router();
   v1.use('/auth', apiAcceso.router);
   v1.use('/negocios/solicitudes', apiNegocios.routerSolicitudes);
+  if (routerAdminNegocios) {
+    v1.use('/admin/negocios', routerAdminNegocios);
+  }
   v1.use('/ofertas', apiOfertas.routerPublico);
   v1.use('/ofertas', pedidosModule.routerPublico);
   v1.use('/negocios/me/ofertas', apiOfertas.routerNegocio);

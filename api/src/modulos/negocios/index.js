@@ -4,8 +4,12 @@ import { VerificarCredenciales } from './aplicacion/verificar-credenciales.caso-
 import { ObtenerContacto } from './aplicacion/obtener-contacto.caso-uso.js';
 import { RegistrarSolicitud } from './aplicacion/registrar-solicitud.caso-uso.js';
 import { VerificarNegocioActivo } from './aplicacion/verificar-negocio-activo.caso-uso.js';
+import { ListarSolicitudes } from './aplicacion/listar-solicitudes.caso-uso.js';
+import { ResolverSolicitud } from './aplicacion/resolver-solicitud.caso-uso.js';
 import { NegociosController } from './presentacion/negocios.controller.js';
+import { AdminNegociosController } from './presentacion/admin-negocios.controller.js';
 import { crearRutasSolicitudes } from './presentacion/negocios.routes.js';
+import { crearRutasAdminNegocios } from './presentacion/admin-negocios.routes.js';
 
 /**
  * API pública del módulo Negocios. Ningún otro módulo debe importar nada de
@@ -19,11 +23,17 @@ export function crearApiNegocios({ pool, reloj, limitarSolicitudes }) {
   const obtenerContacto = new ObtenerContacto({ negocios: negocioRepository });
   const registrarSolicitud = new RegistrarSolicitud({ negocios: negocioRepository, hasher, reloj });
   const verificarNegocioActivo = new VerificarNegocioActivo({ negocios: negocioRepository });
+  const listarSolicitudes = new ListarSolicitudes({ negocios: negocioRepository });
+  const resolverSolicitud = new ResolverSolicitud({ negocios: negocioRepository, reloj });
 
   const controller = new NegociosController({ registrarSolicitud });
+  const adminController = new AdminNegociosController({ listarSolicitudes, resolverSolicitud });
 
   return {
     routerSolicitudes: crearRutasSolicitudes(controller, limitarSolicitudes),
+    crearRouterAdmin(requireAuth, requireRolAdmin) {
+      return crearRutasAdminNegocios(adminController, requireAuth, requireRolAdmin);
+    },
 
     async verificarCredenciales({ email, password }) {
       return verificarCredenciales.ejecutar({ email, password });
@@ -39,5 +49,9 @@ export function crearApiNegocios({ pool, reloj, limitarSolicitudes }) {
     async idsDeNegociosActivos() {
       return negocioRepository.listarIdsActivos();
     },
+    // Exponer casos de uso para tests de integración
+    listarSolicitudes,
+    resolverSolicitud,
+    negocioRepository,
   };
 }

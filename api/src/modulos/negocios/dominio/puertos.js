@@ -19,6 +19,16 @@ export class NegocioRepository {
   async listarIdsActivos() {
     throw new Error('NegocioRepository.listarIdsActivos() no implementado');
   }
+
+  // eslint-disable-next-line no-unused-vars
+  async listarPorEstado(estado, tx) {
+    throw new Error('NegocioRepository.listarPorEstado() no implementado');
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  async guardarEstado(negocio, tx) {
+    throw new Error('NegocioRepository.guardarEstado() no implementado');
+  }
 }
 
 export class Hasher {

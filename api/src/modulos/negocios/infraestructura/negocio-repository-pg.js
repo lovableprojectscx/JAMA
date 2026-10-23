@@ -80,4 +80,27 @@ export class NegocioRepositoryPg extends NegocioRepository {
     const { rows } = await this.pool.query(`SELECT id FROM negocios WHERE estado = 'ACTIVO'`);
     return rows.map((fila) => fila.id);
   }
+
+  async listarPorEstado(estado, tx) {
+    const ejecutor = tx ?? this.pool;
+    let query = 'SELECT * FROM negocios';
+    const params = [];
+    if (estado) {
+      query += ' WHERE estado = $1';
+      params.push(estado);
+    }
+    query += ' ORDER BY creado_en DESC';
+    const { rows } = await ejecutor.query(query, params);
+    return rows.map(filaANegocio);
+  }
+
+  async guardarEstado(negocio, tx) {
+    const ejecutor = tx ?? this.pool;
+    await ejecutor.query(
+      `UPDATE negocios
+       SET estado = $1, revisado_en = $2, revisado_por = $3, motivo_estado = $4
+       WHERE id = $5`,
+      [negocio.estado, negocio.revisadoEn, negocio.revisadoPor, negocio.motivoEstado, negocio.id]
+    );
+  }
 }
