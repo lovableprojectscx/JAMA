@@ -18,3 +18,19 @@ export async function pedirOferta(ofertaId) {
   }
   return cuerpo;
 }
+
+export async function registrarSolicitud(datos) {
+  const respuesta = await fetch(`${API_URL}/negocios/solicitudes`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(datos),
+  });
+  const cuerpo = await respuesta.json();
+  if (!respuesta.ok) {
+    const error = new Error(cuerpo.error ?? 'No se pudo registrar la solicitud');
+    error.status = respuesta.status;
+    error.campo = cuerpo.campo;
+    throw error;
+  }
+  return cuerpo;
+}

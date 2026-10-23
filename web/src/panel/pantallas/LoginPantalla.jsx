@@ -5,23 +5,29 @@ export default function LoginPantalla({ onIngresar }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [cargando, setCargando] = useState(false);
-  const [error, setError] = useState(null);
+  const [errorInfo, setErrorInfo] = useState(null);
 
   async function handleSubmit(evento) {
     evento.preventDefault();
     setCargando(true);
-    setError(null);
+    setErrorInfo(null);
     try {
       const { token, negocio } = await iniciarSesion(email.trim(), password);
       onIngresar({ token, negocio });
     } catch (err) {
       if (err.status === 401) {
-        setError('Correo o contraseña incorrectos.');
+        setErrorInfo({ mensaje: 'Correo o contraseña incorrectos.' });
       } else if (err.status === 403 && err.codigo) {
         // RF20: cuenta en revisión, rechazada (con motivo) o suspendida.
-        setError(err.motivo ? `${err.message} Motivo: ${err.motivo}` : err.message);
+        let texto = err.message;
+        if (err.codigo === 'NEGOCIO_PENDIENTE') {
+          texto = 'Tu solicitud está en revisión. Te escribiremos por WhatsApp apenas sea aprobada para que puedas empezar a publicar.';
+        } else if (err.motivo) {
+          texto = `${err.message} Motivo: ${err.motivo}`;
+        }
+        setErrorInfo({ mensaje: texto, codigo: err.codigo });
       } else {
-        setError('No pudimos conectar. Revisa tu internet e intenta de nuevo.');
+        setErrorInfo({ mensaje: 'No pudimos conectar. Revisa tu internet e intenta de nuevo.' });
       }
     } finally {
       setCargando(false);
@@ -59,12 +65,26 @@ export default function LoginPantalla({ onIngresar }) {
           />
         </label>
 
-        {error && <p className="panel-aviso panel-aviso--error">{error}</p>}
+        {errorInfo && (
+          <p className={`panel-aviso ${errorInfo.codigo === 'NEGOCIO_PENDIENTE' ? 'panel-aviso--pendiente' : 'panel-aviso--error'}`}>
+            {errorInfo.mensaje}
+          </p>
+        )}
 
         <button type="submit" className="panel-boton panel-boton--primario" disabled={cargando}>
           {cargando ? 'Entrando...' : 'Entrar'}
         </button>
       </form>
+
+      <div className="panel-login__pie">
+        <p className="panel-login__enlace-registro">
+          ¿Tu negocio aún no está en JAMA?{' '}
+          <a href="/negocios/registro">Solicita tu cuenta aquí</a>
+        </p>
+        <p className="panel-login__enlace-volver">
+          <a href="/negocios">← Volver a información para negocios</a>
+        </p>
+      </div>
     </div>
   );
 }

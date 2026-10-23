@@ -373,3 +373,44 @@
   color: var(--azul-marino);
   border-top-color: var(--azul-marino);
 }
+
+
+.panel-aviso--pendiente {
+  background: #fdf5d6;
+  color: #7a5e0b;
+  border: 1px solid #f2dda0;
+}
+
+.panel-login__pie {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+}
+
+.panel-login__enlace-registro {
+  margin: 0;
+  font-size: 14px;
+  color: var(--gris-texto);
+}
+
+.panel-login__enlace-registro a {
+  color: var(--azul-marino);
+  font-weight: 800;
+  text-decoration: underline;
+}
+
+.panel-login__enlace-volver {
+  margin: 0;
+  font-size: 13px;
+}
+
+.panel-login__enlace-volver a {
+  color: var(--gris-texto);
+  text-decoration: none;
+}
+
+.panel-login__enlace-volver a:hover {
+  text-decoration: underline;
+}

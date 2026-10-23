@@ -1,0 +1,699 @@
+/* ==========================================================================
+   JAMA — Páginas de Negocios (/negocios y /negocios/registro)
+   Mobile-first, paleta oficial: crema #faf8ef, azul marino #1e2b4d, lima #d4dc31
+   ========================================================================== */
+
+.negocios-pagina {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--crema);
+  color: var(--azul-marino);
+}
+
+/* Header propio para Negocios */
+.negocios-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: var(--alto-header);
+  background: rgba(250, 248, 239, 0.92);
+  backdrop-filter: saturate(1.4) blur(10px);
+  -webkit-backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid var(--borde);
+}
+
+.negocios-header__interior {
+  height: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.negocios-header__acciones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.negocios-header__link-panel {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gris-texto);
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+.negocios-header__link-panel:hover {
+  color: var(--azul-marino);
+}
+
+.negocios-header__btn-unirme {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--azul-marino);
+  color: var(--blanco);
+  font-size: 14px;
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+/* Hero Negocios */
+.negocios-hero {
+  padding: 36px 20px 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.negocios-hero__tag {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--gris-texto);
+  background: #f0ede0;
+  padding: 4px 14px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+}
+
+.negocios-hero__titulo {
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+  color: var(--azul-marino);
+}
+
+.negocios-hero__resalte {
+  background: linear-gradient(180deg, transparent 62%, var(--lima-suave) 62%);
+  padding: 0 4px;
+}
+
+.negocios-hero__bajada {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--gris-texto);
+  margin: 0 auto 28px;
+  max-width: 580px;
+}
+
+.negocios-hero__acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.negocios-btn-primario {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--azul-marino);
+  color: var(--blanco);
+  font-size: 16px;
+  font-weight: 900;
+  padding: 16px 28px;
+  border-radius: 14px;
+  text-decoration: none;
+  width: 100%;
+  max-width: 320px;
+  box-shadow: var(--sombra-suave);
+  border: none;
+  cursor: pointer;
+}
+
+.negocios-btn-secundario {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gris-texto);
+  text-decoration: none;
+  padding: 8px 16px;
+}
+
+.negocios-btn-secundario:hover {
+  color: var(--azul-marino);
+  text-decoration: underline;
+}
+
+/* Insignias de confianza */
+.negocios-insignias {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.negocios-insignia {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--azul-marino);
+}
+
+/* Secciones de contenido */
+.negocios-seccion {
+  padding: 40px 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.negocios-seccion__header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.negocios-seccion__kicker {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gris-texto);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.negocios-seccion__titulo {
+  font-size: 24px;
+  font-weight: 900;
+  margin: 0 0 8px;
+  color: var(--azul-marino);
+}
+
+.negocios-seccion__subtitulo {
+  font-size: 15px;
+  color: var(--gris-texto);
+  margin: 0 auto;
+  max-width: 520px;
+}
+
+/* Tarjetas de Beneficios (Por qué te conviene) */
+.negocios-beneficios-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.negocios-tarjeta-beneficio {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-tarjeta);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.negocios-tarjeta-beneficio__icono {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--lima-suave);
+  color: var(--azul-marino);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.negocios-tarjeta-beneficio__titulo {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0;
+  color: var(--azul-marino);
+}
+
+.negocios-tarjeta-beneficio__desc {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--gris-texto);
+  margin: 0;
+}
+
+/* 3 Pasos (Cómo funciona) */
+.negocios-pasos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.negocios-paso-card {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-tarjeta);
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.negocios-paso-card__numero {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--azul-marino);
+  color: var(--blanco);
+  font-size: 18px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.negocios-paso-card__contenido h3 {
+  font-size: 17px;
+  font-weight: 800;
+  margin: 0 0 6px;
+  color: var(--azul-marino);
+}
+
+.negocios-paso-card__contenido p {
+  font-size: 14px;
+  color: var(--gris-texto);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Tarjeta Qué necesitas */
+.negocios-requisitos-caja {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-tarjeta);
+  padding: 24px;
+}
+
+.negocios-requisitos-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.negocios-requisito-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.negocios-requisito-check {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #eaf3e0;
+  color: #2f6b1f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.negocios-requisito-item strong {
+  display: block;
+  color: var(--azul-marino);
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+
+.negocios-requisito-item span {
+  font-size: 14px;
+  color: var(--gris-texto);
+}
+
+/* FAQ Negocios */
+.negocios-faq-tarjeta {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-tarjeta);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.negocios-faq-item h4 {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 6px;
+  color: var(--azul-marino);
+}
+
+.negocios-faq-item p {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--gris-texto);
+  margin: 0;
+}
+
+/* Banner CTA Final */
+.negocios-cta-final {
+  background: var(--azul-marino);
+  color: var(--blanco);
+  border-radius: var(--radio-grande);
+  padding: 32px 20px;
+  text-align: center;
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.negocios-cta-final h2 {
+  font-size: 26px;
+  font-weight: 900;
+  margin: 0;
+  color: var(--blanco);
+}
+
+.negocios-cta-final p {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+  max-width: 480px;
+}
+
+.negocios-btn-lima {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--lima);
+  color: var(--azul-marino);
+  font-size: 16px;
+  font-weight: 900;
+  padding: 16px 32px;
+  border-radius: 14px;
+  text-decoration: none;
+}
+
+/* Footer Negocios */
+.negocios-footer {
+  border-top: 1px solid var(--borde);
+  padding: 24px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--gris-texto);
+}
+
+.negocios-footer a {
+  color: var(--azul-marino);
+  text-decoration: underline;
+  margin: 0 8px;
+}
+
+/* ==========================================================================
+   PANTALLA DE REGISTRO (/negocios/registro)
+   ========================================================================== */
+
+.registro-contenedor {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+  width: 100%;
+}
+
+.registro-tarjeta {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-grande);
+  padding: 28px 24px;
+  box-shadow: var(--sombra-suave);
+}
+
+.registro-encabezado {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.registro-encabezado__link-atras {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gris-texto);
+  text-decoration: none;
+  margin-bottom: 12px;
+}
+
+.registro-encabezado__link-atras:hover {
+  color: var(--azul-marino);
+}
+
+.registro-encabezado__titulo {
+  font-size: 24px;
+  font-weight: 900;
+  margin: 0 0 6px;
+  color: var(--azul-marino);
+}
+
+.registro-encabezado__subtitulo {
+  font-size: 14px;
+  color: var(--gris-texto);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.registro-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.registro-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.registro-campo__etiqueta {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--azul-marino);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.registro-campo__opcional {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--gris-texto);
+}
+
+.registro-campo__input,
+.registro-campo__select {
+  font-family: inherit;
+  font-size: 15px;
+  padding: 13px 14px;
+  border-radius: 10px;
+  border: 2px solid #d9d5c5;
+  background: var(--blanco);
+  color: var(--azul-marino);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.registro-campo__input:focus,
+.registro-campo__select:focus {
+  outline: none;
+  border-color: var(--azul-marino);
+}
+
+.registro-campo__input--error,
+.registro-campo__select--error {
+  border-color: var(--rojo-aviso);
+}
+
+.registro-campo__ayuda {
+  font-size: 12px;
+  color: var(--gris-texto);
+}
+
+.registro-campo__error {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--rojo-aviso);
+}
+
+.registro-fila-doble {
+  display: flex;
+  gap: 12px;
+}
+
+.registro-fila-doble .registro-campo {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Casilla de Declaración */
+.registro-declaracion {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px;
+  background: #fdfcee;
+  border: 1px solid #efeac8;
+  border-radius: 12px;
+  margin-top: 4px;
+}
+
+.registro-declaracion input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--azul-marino);
+  margin-top: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.registro-declaracion label {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--azul-marino);
+  cursor: pointer;
+}
+
+/* Avisos globales en formulario */
+.registro-aviso {
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.registro-aviso--error {
+  background: #fdecea;
+  color: var(--rojo-aviso);
+  border: 1px solid #f9cdcb;
+}
+
+/* Pantalla de Éxito */
+.registro-exito {
+  text-align: center;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.registro-exito__icono {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #eaf3e0;
+  color: #2f6b1f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.registro-exito__titulo {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--azul-marino);
+  margin: 0;
+}
+
+.registro-exito__texto {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--gris-texto);
+  margin: 0;
+  max-width: 420px;
+}
+
+.registro-exito__caja-aviso {
+  background: #fdf5d6;
+  border: 1px solid #f2dda0;
+  color: #7a5e0b;
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+  line-height: 1.4;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.registro-exito__acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 12px;
+}
+
+/* Responsivo para pantallas más grandes */
+@media (min-width: 768px) {
+  .negocios-hero {
+    padding: 56px 20px 36px;
+  }
+
+  .negocios-hero__titulo {
+    font-size: 44px;
+  }
+
+  .negocios-hero__bajada {
+    font-size: 18px;
+  }
+
+  .negocios-hero__acciones {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .negocios-beneficios-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .negocios-pasos-lista {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .negocios-paso-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .negocios-cta-final {
+    padding: 48px 32px;
+    margin: 40px auto;
+    max-width: 900px;
+  }
+
+  .registro-tarjeta {
+    padding: 36px;
+  }
+}

@@ -13,8 +13,8 @@ export default function CtaNegocio() {
             Publica lo que te queda al cierre del día y véndelo antes de perderlo. Gratis para empezar.
           </p>
         </div>
-        <a className="cta-negocio__boton press" href="/panel">
-          Publicar una oferta <ArrowRight aria-hidden="true" />
+        <a className="cta-negocio__boton press" href="/negocios">
+          Vender en JAMA <ArrowRight aria-hidden="true" />
         </a>
       </div>
     </section>

@@ -405,6 +405,36 @@ entrando. **Todavía no está en producción la migración 003** (es la fase
 salvo `POST /negocios/solicitudes`, que no tiene todavía una página que lo
 use.
 
+
+### Etapa 12 — Alta de negocios, fase 2: páginas para negocios y formulario de solicitud (esta sesión)
+
+Siguiendo [`plan-alta-de-negocios.md`](docs/03-diseno-de-software/plan-alta-de-negocios.md) (HU14, HU15, HU16, RF18, RF19, RF20), se construyó la interfaz para que las tiendas de Huamanga conozcan el marketplace y soliciten su cuenta desde el celular:
+
+1. **Página de presentación para negocios (`/negocios`)**:
+   - Sistema visual idéntico a la vitrina (crema de fondo, azul marino para texto/botones, acentos en lima).
+   - Hero: *"Vende lo que te queda al cierre, en vez de perderlo"*, enfocado en pastelerías y panaderías de Huamanga. Insignias de confianza: "Gratis en el piloto", "Cobras directo por Yape o efectivo", "Sin comisiones por venta".
+   - 4 beneficios clave (recuperas inversión, clientes nuevos de tu zona, control total y cero comisiones).
+   - "Cómo funciona para tu negocio" en 3 pasos: publicas en 1 minuto desde el celular → el cliente reserva y te escribe por WhatsApp con el código de 4 letras → entregas de 6 a 7 pm, cobras y confirmas en tu panel.
+   - Requisitos claros: local físico en Huamanga, celular con WhatsApp, Yape/efectivo y compromiso de frescura y calidad (RC08).
+   - Preguntas frecuentes de comercios (costos, pagos, clientes que no vienen, tiempo de aprobación, pausar ofertas).
+   - CTA final destacado y pie de página propio.
+
+2. **Formulario de solicitud (`/negocios/registro`)**:
+   - Formulario mobile-first con validaciones inmediatas en cliente y servidor: nombre comercial (2–80), responsable (2–80), tipo de negocio (Panadería, Pastelería, Pollería, Restaurante, Cafetería; sin supermercados según RC09), WhatsApp (9 dígitos que empiezan en 9), dirección en Huamanga, Yape opcional (9 dígitos), correo y contraseña (mínimo 8 caracteres).
+   - Casilla obligatoria de compromiso de calidad: *"Declaro bajo compromiso que solo publicaré productos del día, frescos y aptos para el consumo humano (RC08)"*.
+   - Envío a `POST /api/v1/negocios/solicitudes` y pantalla de confirmación: *"¡Recibimos tu solicitud! Te escribiremos a tu WhatsApp ({número}) apenas revisemos los datos para coordinar tu activación"*.
+   - Manejo de respuestas: `409` destaca si el correo o WhatsApp ya existen y ofrece enlace al login del panel; `429` avisa si se superó el límite por hora; `400` muestra el motivo de validación.
+
+3. **Integración con landing y panel**:
+   - `Header.jsx` y `CtaNegocio.jsx` actualizados: ahora enlazan a `/negocios` (en vez de mandar comercios sin cuenta a un login donde no podían hacer nada).
+   - `LoginPantalla.jsx` del panel: enlace *"¿Tu negocio aún no está en JAMA? Solicita tu cuenta aquí"* hacia `/negocios/registro`, y aviso visual con estilo diferenciado (`.panel-aviso--pendiente`) cuando la cuenta está en revisión (`NEGOCIO_PENDIENTE`) o rechazada con su motivo.
+   - Enrutador SPA en `main.jsx` limpio y sin librerías pesadas para `/`, `/negocios`, `/negocios/registro` y `/panel`.
+
+4. **Verificación y pruebas**:
+   - Comprobado el flujo real de punta a punta con la API local y Supabase: envío de solicitud → estado PENDIENTE en base de datos → intento de login responde `403 NEGOCIO_PENDIENTE` con el aviso en pantalla → detección de duplicado 409.
+   - Verificación responsiva automatizada con Playwright en Chrome headless en los 4 anchos estándar: 320px (móvil estrecho), 390px (iPhone), 768px (tablet) y 1280px (escritorio), confirmando 0 desborde horizontal (`scrollWidth <= clientWidth`).
+   - `npm run lint` (0 errores) y `npm run build` pasando al 100%. Las 114 pruebas de la API se mantienen intactas.
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:
