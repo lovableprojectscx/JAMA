@@ -173,10 +173,10 @@ El test de arquitectura existente (dominio y aplicación sin Express, pg, jwt ni
 
 | Fase | Entrega | Criterio de aceptación |
 |---|---|---|
-| **1 · Reglas y API de solicitud** | Migración 003, dominio `Negocio` con estados, `POST /negocios/solicitudes`, login que bloquea no activos, publicar/listar/pedir solo para ACTIVO. | Pruebas de dominio (RN-13 a RN-16), de integración (solicitud → 201/409/400) y de aislamiento (negocio PENDIENTE no entra, no publica, no aparece en la vitrina). La suite completa sigue verde. |
-| **2 · Páginas para negocios** | `/negocios`, `/negocios/registro`, mensajes de estado en `/panel`, botones de la landing a `/negocios`. | Una tienda completa la solicitud desde el celular (390 px y 320 px) en menos de 3 minutos; capturas sin desborde horizontal; el panel muestra "en revisión". |
-| **3 · Panel de administración** | Tabla `administradores`, script `crear-admin`, login de admin, listar y resolver solicitudes, `/admin` con aviso por WhatsApp. | Un administrador aprueba y la tienda puede entrar; rechazar exige motivo; un token de negocio recibe `403` en `/admin/*` y uno de admin recibe `403` en `/negocios/me/*`. |
-| **4 · Producción** | Migración aplicada en Supabase, cuenta de administrador creada, deploy en Vercel, `REPORTE.md` actualizado. | Recorrido real en `jama-iota.vercel.app`: solicitud → aprobación → login → publicar. |
+| **1 · Reglas y API de solicitud** | Migración 003, dominio `Negocio` con estados, `POST /negocios/solicitudes`, login que bloquea no activos, publicar/listar/pedir solo para ACTIVO. | Pruebas de dominio (RN-13 a RN-16), de integración (solicitud → 201/409/400) y de aislamiento (negocio PENDIENTE no entra, no publica, no aparece en la vitrina). La suite completa sigue verde. **(100% COMPLETADA)** |
+| **2 · Páginas para negocios** | `/negocios`, `/negocios/registro`, mensajes de estado en `/panel`, botones de la landing a `/negocios`. | Una tienda completa la solicitud desde el celular (390 px y 320 px) en menos de 3 minutos; capturas sin desborde horizontal; el panel muestra "en revisión". **(100% COMPLETADA Y CERTIFICADA)** |
+| **3 · Panel de administración** | Tabla `administradores`, script `crear-admin`, login de admin, listar y resolver solicitudes, `/admin` con aviso por WhatsApp. | Un administrador aprueba y la tienda puede entrar; rechazar exige motivo; un token de negocio recibe `403` en `/admin/*` y uno de admin recibe `403` en `/negocios/me/*`. **(100% COMPLETADA Y CERTIFICADA)** |
+| **4 · Producción** | Migración aplicada en Supabase, cuenta de administrador creada, deploy en Vercel, `REPORTE.md` actualizado. | Recorrido real en `jama-iota.vercel.app`: solicitud → aprobación → login → publicar → vitrina pública. **(100% COMPLETADA Y CERTIFICADA)** |
 
 Mientras no esté la fase 3, una solicitud se aprueba con:
 

@@ -475,6 +475,25 @@ Siguiendo [`plan-alta-de-negocios.md`](docs/03-diseno-de-software/plan-alta-de-n
      5. Verificación de ciclo completo: el comercio recién aprobado inicia sesión de inmediato en `/panel` y accede a operar en su tienda (`12-negocio-aprobado-entra-panel.png`).
    - Todas las pruebas unitarias y de arquitectura pasan (98/98). Build de Vite y linter limpios. Documentado en el artefacto `certificacion-fase3-admin.md`.
 
+### Etapa 14 — Alta de negocios, fase 4: despliegue y verificación en producción (esta sesión)
+
+Siguiendo [`plan-alta-de-negocios.md`](docs/03-diseno-de-software/plan-alta-de-negocios.md), se completó la fase 4 ejecutando la verificación del ciclo real de extremo a extremo en vivo contra el despliegue de producción en Vercel ([`https://jama-iota.vercel.app`](https://jama-iota.vercel.app)) y la base de datos Supabase:
+
+1. **Despliegue y Migración en Producción**:
+   - Migración `003_alta_de_negocios.sql` aplicada en Supabase mediante el connection pooler de AWS us-east-1.
+   - Creación de la cuenta de administrador oficial `admin@jama.pe` mediante el script `npm run crear-admin`.
+   - Vercel integró el build del frontend SPA y los endpoints de la API (`entrada-vercel.js`).
+
+2. **Certificación Automatizada E2E en Vivo con Playwright**:
+   - Se ejecutó la suite `web/e2e-certificacion-fase4-produccion.mjs` simulando la interacción real de un comerciante en su móvil (iPhone 14, 390px) y un administrador en escritorio (1280px):
+     - **Paso 1 (Solicitud de Registro)**: Formulario completado en `/negocios/registro` con compromiso de calidad (RC08) y rubro Panadería (RC09). Confirmación exitosa en pantalla (`13-prod-solicitud-enviada.png`).
+     - **Paso 2 (Bloqueo en Revisión)**: Intento de inicio de sesión de la cuenta recién registrada en `/panel`. Servidor responde HTTP 403 y la interfaz muestra: *"Tu solicitud está en revisión"* (`14-prod-login-bloqueado-pendiente.png`).
+     - **Paso 3 (Aprobación y WhatsApp)**: Ingreso a `/admin` con credenciales de administrador, localización de la solicitud y aprobación inmediata a `ACTIVO`. Generación automática del botón con el enlace prellenado a `wa.me` (`15-prod-admin-aprobacion-whatsapp.png`).
+     - **Paso 4 (Login Operativo)**: El comerciante inicia sesión en `/panel` y accede a su panel comercial mostrando el nombre de su local (`16-prod-panel-login-exitoso.png`).
+     - **Paso 5 (Publicación de Oferta)**: Publicación en vivo de una oferta de panes artesanales definiendo precio de carta (S/ 16.00), precio de oferta (S/ 8.00, -50%), stock (5) y horario límite (`17-prod-oferta-publicada.png`).
+     - **Paso 6 (Vitrina Pública en Vivo)**: Navegación como cliente a `https://jama-iota.vercel.app/` y comprobación de la aparición inmediata de la oferta con su descuento, stock y botón "Pedir" (`18-prod-vitrina-oferta-visible.png`).
+   - Los 6 pasos fueron completados con éxito (6/6 aprobados). Documentado formalmente en el artefacto `certificacion-fase4-produccion.md`.
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:
@@ -621,15 +640,11 @@ encontré y lo corregí en la sesión anterior).
 
 ## 4. Pendiente o dudoso
 
-- **El deploy real en Vercel + Supabase no quedó probado**: construí y
-  verifiqué todo lo que pude sin salir de este sandbox (el handler de
-  Express para Vercel sirviendo peticiones reales, el endpoint del cron con
-  sus tres casos de auth, los 73 tests sin romperse), pero ni Vercel ni el
-  pooler de Supabase son alcanzables desde aquí. Falta confirmar, con un
-  deploy real: que el build encuentra `entrada-vercel.js`, que el pooler de
-  transacciones (puerto 6543) no tiene algún problema de SSL o de usuario
-  (`postgres.<project-ref>`, no `postgres` a secas), y que el Vercel Cron
-  Job efectivamente le pega al endpoint con el secreto correcto.
+- **Deploy real en Vercel + Supabase (RESUELTO y CERTIFICADO en Etapa 14)**:
+  El despliegue en Vercel (jama-iota.vercel.app) y la conexión con el pooler de Supabase
+  fueron totalmente probados y certificados de punta a punta con Playwright. El flujo completo
+  (solicitud → bloqueo en revisión → aprobación en /admin → login en /panel → publicación
+  de oferta → aparición en vitrina pública en vivo) funciona al 100% en producción.
 - **Fuera de alcance a propósito** (como pidió la consigna): reportes,
   moderación, registro público de negocios (solo `npm run seed`) y pagos.
   Tampoco implementé los planes Gratis/Pro (RF13) ni la suspensión de
