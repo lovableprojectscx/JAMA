@@ -10,7 +10,17 @@ export function obtenerPool() {
     if (!connectionString) {
       throw new Error('DATABASE_URL no está definida');
     }
-    pool = new Pool({ connectionString });
+    pool = new Pool({
+      connectionString,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 5000,
+      max: 10,
+    });
+
+    // Evita que un ECONNRESET en un cliente inactivo mate el proceso de Node
+    pool.on('error', (err) => {
+      console.warn('[db] Advertencia en conexión inactiva del pool (reconexión automática):', err.message);
+    });
   }
   return pool;
 }
