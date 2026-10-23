@@ -8,6 +8,8 @@ export async function obtenerOfertasDeHoy() {
   return respuesta.json();
 }
 
+export const obtenerOfertas = obtenerOfertasDeHoy;
+
 export async function pedirOferta(ofertaId) {
   const respuesta = await fetch(`${API_URL}/ofertas/${ofertaId}/pedidos`, { method: 'POST' });
   const cuerpo = await respuesta.json();

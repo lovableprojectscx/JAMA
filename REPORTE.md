@@ -512,6 +512,43 @@ Para arrancar el piloto de Huamanga focalizado en la Zona Centro sin añadir fri
    - La pantalla de confirmación tras generar el código de canje muestra el punto de recojo físico y dos botones de acción: **Abrir WhatsApp** para coordinar y **📍 Cómo llegar (Google Maps)** para abrir la app de mapas del celular.
    - Verificado con Playwright y capturas certificadas (`19-vitrina-zona-centro-maps.png` y `20-confirmacion-pedido-direccion-maps.png`).
 
+
+### Etapa 16 — Rediseño Profesional UX/UI de la Vitrina y Confirmación (Piloto Zona Centro Huamanga)
+
+A partir de la retroalimentación de producto, se llevó a cabo una auditoría integral de UX/UI orientada al cliente móvil y al modelo operativo del piloto en **Huamanga (Zona Centro)**.
+
+#### 1. Diagnóstico de UX / UI previo
+1. **Grid móvil fracturado (2 columnas en pantallas < 440px):** En pantallas típicas de smartphone (360px–390px), dos columnas dejaban apenas ~160px útiles por tarjeta. Esto provocaba que los títulos y direcciones se quebraran en 3 y 4 líneas, saturando el campo visual y arruinando la legibilidad.
+2. **Confirmación inline fuera de pantalla:** Al tocar "Pedir" al final de la página, la caja de confirmación aparecía arriba del listado, obligando al usuario a hacer scroll manual inverso para ver su código de reserva.
+3. **Falta de apetitosidad en productos sin foto:** Cuando un comercio no subía imagen, se mostraba un marco gris vacío o genérico sin estímulo visual de compra.
+4. **Fricción innecesaria evitada (Sin permisos GPS invasivos):** Siguiendo las directrices del piloto, no se pide geolocalización por navegador; en su lugar, la interfaz comunica de forma clara y amigable que las ofertas son del Centro de Huamanga, con enlaces directos a Google Maps por cada comercio.
+
+#### 2. Mejoras de UX/UI implementadas
+- **Vitrina Móvil de Alta Conversión (1 columna fluida):**
+  - Grid de 1 columna centrada (`max-width: 440px`) en móviles (< 640px), expandible a 2 y 3 columnas en tablets y desktop.
+  - Ilustración y degradado cálido para ofertas sin fotografía ("Lote fresco de hoy") con insignia `-X%` de alto contraste en lima JAMA (#D4DC31).
+  - Indicador contextual en cabecera: `📍 Huamanga · Zona Centro` con pulso sutil verde.
+  - Fila de comercio clara: Icono de tienda, nombre, dirección y botón pill `Mapa ↗` con navegación a Google Maps.
+  - Precios claros: Precio con descuento en 22px negrita (`S/ 8.00`), precio de carta tachado en gris (`S/ 16.00`) y etiqueta de horario (`Recojo hasta 11:59 p. m.`).
+  - Badge de escasez automática: Si el stock es $\le 3$, se activa la insignia `¡Quedan X!` para generar urgencia ética sin engaños.
+  - Botón CTA de ancho completo: `Pedir oferta · S/ X.XX` con respuesta táctil (`active: scale(0.98)`).
+
+- **Modal Bottom-Sheet de Confirmación (Thumb-Friendly):**
+  - Se sustituyó la confirmación inline por un Bottom Sheet modal con `backdrop-filter: blur(8px)` que emerge instantáneamente en el viewport del usuario.
+  - Tarjeta de cupón troquelada con código alfanumérico en fuente monoespaciada grande (`X U 2 V`) para mostrar fácilmente en el mostrador.
+  - Ficha del comercio con dirección exacta y botón verde oficial de WhatsApp (#25D366) para abrir la conversación de coordinación con un solo toque.
+  - Botón secundario "Cómo llegar (Google Maps)" que abre la ruta directamente en la app del mapa.
+  - Cierre intuitivo mediante botón flotante `(X)`, toque de fondo o botón "Entendido, volver a las ofertas".
+
+#### 3. Certificación Automatizada Playwright
+Se diseñó y ejecutó la suite E2E (`scratch/certificar_ux_pro.mjs`) certificando:
+- Renderizado responsivo de la vitrina en viewport móvil (390x844) y desktop (1280x800).
+- Flujo completo de reserva: click en "Pedir oferta" -> apertura de modal -> validación de código de cupón -> botones de WhatsApp y Maps presentes -> cierre de modal sin refresco de pantalla.
+- Capturas de pantalla generadas y certificadas:
+  - `capturas/21-vitrina-pro-ux.png` (Vitrina Móvil Pro UX)
+  - `capturas/22-modal-confirmacion-pro-ux.png` (Modal Confirmación Bottom-Sheet)
+  - `capturas/23-vitrina-desktop-pro.png` (Vitrina Desktop Pro)
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:

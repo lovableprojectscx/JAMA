@@ -403,108 +403,95 @@ body {
   color: var(--rojo-aviso);
 }
 
-.confirmacion {
-  background: var(--blanco);
-  border: 2px solid var(--azul-marino);
-  border-radius: var(--radio-tarjeta);
-  padding: 18px;
-  margin-bottom: 24px;
-  box-shadow: var(--sombra-suave);
-}
-
-.confirmacion__titulo {
-  font-size: 19px;
-  font-weight: 900;
-  margin: 0 0 6px;
-}
-
-
-.confirmacion__tienda {
-  margin: 6px 0 10px;
-  font-size: 14px;
-  color: var(--azul-marino);
-  background: #f1f5f9;
-  padding: 8px 12px;
-  border-radius: 8px;
-}
-
-.confirmacion__botones {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-@media (min-width: 480px) {
-  .confirmacion__botones {
-    flex-direction: row;
-  }
-}
-
-.boton-pedir--maps {
-  background: #2563eb;
-  color: #ffffff;
-  text-decoration: none;
+/* ========================================================
+   SECCIÓN OFERTAS · BADGE ZONA Y GRID RESPONSIVE
+   ======================================================== */
+.seccion__badge-zona {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+  background: #f1f5f9;
+  color: var(--azul-marino);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
-.boton-pedir--maps:hover {
-  background: #1d4ed8;
+.seccion__badge-punto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+  animation: pulso-zona 2s infinite ease-in-out;
 }
 
-.confirmacion__cerrar {
-  display: block;
-  margin: 10px auto 0;
-  background: none;
-  border: none;
-  color: var(--gris-texto);
-  text-decoration: underline;
-  font-family: inherit;
-  font-size: 14px;
-  cursor: pointer;
+@keyframes pulso-zona {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
 }
 
 .lista-ofertas,
 .ejemplos__lista {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  max-width: 440px;
+  margin: 0 auto;
 }
 
 @media (min-width: 640px) {
   .lista-ofertas,
   .ejemplos__lista {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 20px;
+    max-width: 100%;
   }
 }
 
 @media (min-width: 1000px) {
   .lista-ofertas,
   .ejemplos__lista {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    max-width: 1120px;
   }
 }
 
+/* ========================================================
+   TARJETA DE OFERTA (OFERTACARD) · REDISEÑO UX/UI
+   ======================================================== */
 .oferta-card,
 .ejemplo-card {
   position: relative;
   display: flex;
   flex-direction: column;
   background: var(--blanco);
-  border-radius: var(--radio-tarjeta);
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: var(--sombra-suave);
+  box-shadow: 0 4px 18px -2px rgba(30, 43, 77, 0.07);
+  border: 1px solid rgba(30, 43, 77, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.oferta-card:hover,
+.ejemplo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -4px rgba(30, 43, 77, 0.12);
 }
 
 .oferta-card__foto-contenedor,
 .ejemplo-card__foto-contenedor {
   position: relative;
-  aspect-ratio: 1 / 1;
+  width: 100%;
+  height: 180px;
   overflow: hidden;
-  background: var(--crema);
+  background: #f8fafc;
 }
 
 .oferta-card__foto {
@@ -512,94 +499,179 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.3s ease;
 }
 
-.ejemplo-card__foto {
-  position: absolute;
-  max-width: none;
+.oferta-card:hover .oferta-card__foto {
+  transform: scale(1.03);
 }
 
-.oferta-card__foto--vacia {
+.oferta-card__foto-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, var(--crema), #e9e6d8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 50%, #E2E8F0 100%);
+  color: var(--azul-marino);
 }
 
-.oferta-card__descuento {
+.oferta-card__placeholder-icon-wrap {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.oferta-card__placeholder-texto {
+  font-size: 12px;
+  font-weight: 800;
+  color: #78350f;
+  letter-spacing: 0.2px;
+}
+
+.oferta-card__badges-flotantes {
   position: absolute;
   top: 10px;
   left: 10px;
+  right: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.oferta-card__descuento-pill {
   background: var(--lima);
   color: var(--azul-marino);
   font-weight: 900;
-  font-size: 12px;
+  font-size: 13px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  letter-spacing: -0.2px;
+}
+
+.oferta-card__urgencia-pill {
+  background: #ef4444;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 11px;
   padding: 4px 10px;
   border-radius: 999px;
-  z-index: 1;
-  box-shadow: 0 2px 6px -2px rgba(30, 43, 77, 0.3);
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+  animation: pulso-urgencia 1.5s infinite;
 }
 
-.oferta-card__cuerpo,
-.ejemplo-card__cuerpo {
-  flex: 1;
-  padding: 12px 12px 14px;
+@keyframes pulso-urgencia {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+.oferta-card__cuerpo {
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
+  flex: 1;
 }
 
+/* Cabecera del comercio */
+.oferta-card__comercio-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px dashed #e2e8f0;
+  padding-bottom: 8px;
+}
 
-.oferta-card__tienda {
+.oferta-card__comercio-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.oferta-card__comercio-nombre-row {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--azul-marino);
-  margin-bottom: 2px;
+  gap: 6px;
 }
 
-.oferta-card__pin {
+.oferta-card__icono-tienda {
+  color: #0284c7;
+  flex-shrink: 0;
+}
+
+.oferta-card__comercio-nombre {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--azul-marino);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oferta-card__comercio-direccion {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oferta-card__icono-pin {
   color: #10b981;
   flex-shrink: 0;
 }
 
-.oferta-card__tienda-nombre {
-  font-weight: 800;
-  color: var(--azul-marino);
-}
-
-.oferta-card__tienda-direccion {
-  color: var(--gris-texto);
-}
-
-.oferta-card__tienda-maps {
-  margin-left: auto;
+.oferta-card__link-maps {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #eff6ff;
   color: #2563eb;
+  border: 1px solid #bfdbfe;
+  font-size: 11px;
   font-weight: 800;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
 }
 
-.oferta-card__tienda-maps:hover {
+.oferta-card__link-maps:hover {
+  background: #dbeafe;
   color: #1d4ed8;
 }
 
-.oferta-card__titulo,
-.ejemplo-card__titulo {
-  font-size: 15px;
+/* Título y descripción */
+.oferta-card__titulo {
+  font-size: 17px;
   font-weight: 800;
-  line-height: 1.25;
-  margin: 0;
+  line-height: 1.3;
+  margin: 2px 0 0;
+  color: var(--azul-marino);
 }
 
-.oferta-card__descripcion,
-.ejemplo-card__descripcion {
+.oferta-card__descripcion {
   margin: 0;
-  color: var(--gris-texto);
-  font-size: 12px;
+  color: #64748b;
+  font-size: 13px;
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -607,63 +679,353 @@ body {
   overflow: hidden;
 }
 
-.oferta-card__precios,
-.ejemplo-card__precios {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  column-gap: 8px;
+/* Precios y horario */
+.oferta-card__meta-bloque {
   margin-top: auto;
   padding-top: 6px;
-}
-
-.oferta-card__precio-carta,
-.ejemplo-card__precio-carta {
-  text-decoration: line-through;
-  color: var(--gris-texto);
-  font-size: 12px;
-}
-
-.oferta-card__precio-oferta,
-.ejemplo-card__precio-oferta {
-  order: -1;
-  color: var(--azul-marino);
-  font-size: 19px;
-  font-weight: 900;
-  letter-spacing: -0.01em;
-}
-
-.ejemplo-card__etiqueta {
-  margin: 4px 0 0;
-  font-size: 11px;
-  font-weight: 800;
-  color: var(--gris-texto);
-}
-
-.oferta-card__proximo-tramo {
-  margin: 4px 0 0;
-  font-size: 11px;
-  font-weight: 800;
-  color: var(--azul-marino);
-  background: var(--lima-suave);
-  border-radius: 8px;
-  padding: 5px 9px;
-  width: fit-content;
-}
-
-.oferta-card__detalle {
-  margin: 2px 0 0;
-  font-size: 12px;
-  color: var(--gris-texto);
   display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.oferta-card__precios-fila {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.oferta-card__precios {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.oferta-card__precio-vigente {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--azul-marino);
+  letter-spacing: -0.5px;
+}
+
+.oferta-card__precio-original {
+  font-size: 14px;
+  color: #94a3b8;
+  text-decoration: line-through;
+  font-weight: 700;
+}
+
+.oferta-card__horario-badge {
+  display: inline-flex;
   align-items: center;
   gap: 4px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
 }
 
-.oferta-card__detalle svg {
-  width: 13px;
-  height: 13px;
+.oferta-card__aviso-tramo {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+/* Botón Pedir */
+.oferta-card__btn-pedir {
+  margin-top: 6px;
+  width: 100%;
+  height: 48px;
+  background: var(--azul-marino);
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+  box-shadow: 0 3px 8px rgba(30, 43, 77, 0.2);
+}
+
+.oferta-card__btn-pedir:hover {
+  background: #141f38;
+  box-shadow: 0 4px 12px rgba(30, 43, 77, 0.3);
+}
+
+.oferta-card__btn-pedir:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ========================================================
+   MODAL INTERACTIVO DE CONFIRMACIÓN (OVERLAY / BOTTOM SHEET)
+   ======================================================== */
+.modal-confirmacion-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@media (min-width: 640px) {
+  .modal-confirmacion-overlay {
+    align-items: center;
+    padding: 20px;
+  }
+}
+
+.modal-confirmacion {
+  background: #ffffff;
+  width: 100%;
+  max-width: 460px;
+  border-radius: 24px 24px 0 0;
+  padding: 24px 20px;
+  position: relative;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.3);
+  animation: slideUpModal 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 640px) {
+  .modal-confirmacion {
+    border-radius: 24px;
+    padding: 28px 24px;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUpModal {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.modal-confirmacion__cerrar {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modal-confirmacion__cerrar:hover {
+  background: #e2e8f0;
+  color: var(--azul-marino);
+}
+
+.modal-confirmacion__cabecera {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.modal-confirmacion__icono-exito {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #16a34a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);
+}
+
+.modal-confirmacion__titulo {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--azul-marino);
+  margin: 0 0 4px;
+}
+
+.modal-confirmacion__subtitulo {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Caja del código de canje */
+.modal-confirmacion__codigo-caja {
+  background: #f8fafc;
+  border: 2px dashed #94a3b8;
+  border-radius: 16px;
+  padding: 14px 16px;
+  text-align: center;
+  margin: 14px 0;
+}
+
+.modal-confirmacion__codigo-etiqueta {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.modal-confirmacion__codigo-valor {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 38px;
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: var(--azul-marino);
+  line-height: 1.1;
+}
+
+.modal-confirmacion__codigo-nota {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #059669;
+  margin-top: 4px;
+}
+
+/* Ficha del comercio y punto de recojo */
+.modal-confirmacion__comercio-ficha {
+  background: #f1f5f9;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.modal-confirmacion__comercio-icono {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0284c7;
   flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.modal-confirmacion__comercio-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.modal-confirmacion__comercio-nombre {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--azul-marino);
+}
+
+.modal-confirmacion__comercio-dir {
+  margin: 2px 0 4px;
+  font-size: 12px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.modal-confirmacion__comercio-item {
+  margin: 0;
+  font-size: 12px;
+  color: #1e293b;
+}
+
+/* Acciones principales del modal */
+.modal-confirmacion__acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.modal-confirmacion__btn-wa {
+  background: #25D366;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 15px;
+  height: 50px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
+  transition: all 0.15s ease;
+}
+
+.modal-confirmacion__btn-wa:hover {
+  background: #22c35e;
+}
+
+.modal-confirmacion__btn-maps {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1.5px solid #bfdbfe;
+  font-weight: 800;
+  font-size: 14px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.modal-confirmacion__btn-maps:hover {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.modal-confirmacion__btn-listo {
+  width: 100%;
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.modal-confirmacion__btn-listo:hover {
+  color: var(--azul-marino);
+  text-decoration: underline;
 }
 
 .boton-pedir {
@@ -1021,4 +1383,8 @@ body {
   margin: 0;
   font-size: 12px;
   color: var(--gris-texto);
+}
+
+#ofertas {
+  scroll-margin-top: 84px;
 }

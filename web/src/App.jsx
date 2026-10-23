@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
-import { obtenerOfertasDeHoy, pedirOferta } from './api.js';
-import OfertaCard from './components/OfertaCard.jsx';
+import { useState, useEffect, useRef } from 'react';
+import { Check, Compass, MapPin, MessageCircle, Store, X } from 'lucide-react';
 import Header from './components/Header.jsx';
 import Hero from './components/Hero.jsx';
+import OfertaCard from './components/OfertaCard.jsx';
+import EjemplosIlustrativos from './components/EjemplosIlustrativos.jsx';
 import ComoFunciona from './components/ComoFunciona.jsx';
 import Faq from './components/Faq.jsx';
 import CtaNegocio from './components/CtaNegocio.jsx';
-import EjemplosIlustrativos from './components/EjemplosIlustrativos.jsx';
+import { obtenerOfertas, pedirOferta } from './api.js';
 import logoJama from './assets/jama-logo.png';
 
 export default function App() {
@@ -16,18 +17,20 @@ export default function App() {
   const [ofertaEnProceso, setOfertaEnProceso] = useState(null);
   const [confirmacion, setConfirmacion] = useState(null);
   const [avisoError, setAvisoError] = useState(null);
+
   const refOfertas = useRef(null);
 
-  async function cargarOfertas() {
-    setCargandoLista(true);
+  async function cargarOfertas(opciones = {}) {
+    const { silencioso = false } = opciones;
+    if (!silencioso) setCargandoLista(true);
     setErrorLista(null);
     try {
-      const datos = await obtenerOfertasDeHoy();
+      const datos = await obtenerOfertas();
       setOfertas(datos);
     } catch {
-      setErrorLista('No pudimos cargar las ofertas de hoy. Verifica tu conexión e intenta de nuevo.');
+      setErrorLista('No pudimos cargar las ofertas. Revisa tu conexión.');
     } finally {
-      setCargandoLista(false);
+      if (!silencioso) setCargandoLista(false);
     }
   }
 
@@ -42,11 +45,12 @@ export default function App() {
       const resultado = await pedirOferta(oferta.id);
       setConfirmacion({ ...resultado, oferta });
       window.open(resultado.enlaceWhatsapp, '_blank', 'noopener,noreferrer');
-      cargarOfertas();
+      // Recarga silenciosa en segundo plano sin desmontar la pantalla
+      cargarOfertas({ silencioso: true });
     } catch (error) {
       if (error.status === 409) {
         setAvisoError('Justo se agotó esta oferta. Alguien más la pidió primero.');
-        cargarOfertas();
+        cargarOfertas({ silencioso: true });
       } else if (error.status === 429) {
         setAvisoError('Muchos pedidos seguidos. Espera un momento e inténtalo de nuevo.');
       } else {
@@ -69,49 +73,17 @@ export default function App() {
       <main className="contenido" id="ofertas" ref={refOfertas}>
         {avisoError && <div className="aviso aviso--error">{avisoError}</div>}
 
-        {confirmacion && (
-          <div className="confirmacion">
-            <p className="confirmacion__titulo">¡Listo! Tu código es {confirmacion.codigo}</p>
-            <p className="confirmacion__tienda">
-              📍 <strong>{confirmacion.negocioNombre || confirmacion.oferta?.negocioNombre || 'Comercio afiliado'}</strong>
-              {(confirmacion.negocioDireccion || confirmacion.oferta?.negocioDireccion) && (
-                <span> · {confirmacion.negocioDireccion || confirmacion.oferta?.negocioDireccion} (Zona Centro)</span>
-              )}
-            </p>
-            <p>
-              Te abrimos WhatsApp para coordinar tu recojo de <strong>{confirmacion.oferta.titulo}</strong>. Si no
-              se abrió, usa el botón verde.
-            </p>
-            <div className="confirmacion__botones">
-              <a
-                className="boton-pedir boton-pedir--enlace"
-                href={confirmacion.enlaceWhatsapp}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Abrir WhatsApp
-              </a>
-              {(confirmacion.enlaceMaps || confirmacion.oferta?.enlaceMaps) && (
-                <a
-                  className="boton-pedir boton-pedir--maps"
-                  href={confirmacion.enlaceMaps || confirmacion.oferta?.enlaceMaps}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  📍 Cómo llegar (Google Maps)
-                </a>
-              )}
-            </div>
-            <button type="button" className="confirmacion__cerrar" onClick={() => setConfirmacion(null)}>
-              Cerrar
-            </button>
-          </div>
-        )}
-
+        {/* Encabezado de la vitrina con badge de Zona Centro */}
         <div className="seccion__encabezado">
-          <p className="seccion__etiqueta">Ofertas de cierre</p>
+          <div className="seccion__badge-zona">
+            <span className="seccion__badge-punto" aria-hidden="true" />
+            <MapPin size={13} aria-hidden="true" />
+            <span>Huamanga · Zona Centro</span>
+          </div>
           <h2 className="seccion__titulo">La JAMA de hoy</h2>
-          <p className="seccion__bajada">Lo que quedó hoy en pastelerías y panaderías de la Zona Centro de Huamanga.</p>
+          <p className="seccion__bajada">
+            Comida rica y fresca que quedó hoy en pastelerías y panaderías del centro.
+          </p>
         </div>
 
         {cargandoLista && <p className="estado">Cargando ofertas de hoy...</p>}
@@ -130,6 +102,98 @@ export default function App() {
           </div>
         )}
       </main>
+
+      {/* Modal interactivo de confirmación (Bottom Sheet en móvil, Modal centrado en escritorio) */}
+      {confirmacion && (
+        <div
+          className="modal-confirmacion-overlay"
+          onClick={() => setConfirmacion(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="modal-confirmacion" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="modal-confirmacion__cerrar"
+              onClick={() => setConfirmacion(null)}
+              aria-label="Cerrar modal"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="modal-confirmacion__cabecera">
+              <div className="modal-confirmacion__icono-exito">
+                <Check size={28} />
+              </div>
+              <h2 className="modal-confirmacion__titulo">¡Tu oferta está reservada!</h2>
+              <p className="modal-confirmacion__subtitulo">
+                Tienes <strong>30 minutos</strong> de reserva para coordinar tu recojo con el comercio.
+              </p>
+            </div>
+
+            {/* Caja destacada del código de canje */}
+            <div className="modal-confirmacion__codigo-caja">
+              <span className="modal-confirmacion__codigo-etiqueta">Tu código de canje</span>
+              <div className="modal-confirmacion__codigo-valor">{confirmacion.codigo}</div>
+              <span className="modal-confirmacion__codigo-nota">
+                Muestra este código al recoger tu pedido
+              </span>
+            </div>
+
+            {/* Ficha del comercio y punto de recojo en Zona Centro */}
+            <div className="modal-confirmacion__comercio-ficha">
+              <div className="modal-confirmacion__comercio-icono">
+                <Store size={22} />
+              </div>
+              <div className="modal-confirmacion__comercio-info">
+                <h4 className="modal-confirmacion__comercio-nombre">
+                  {confirmacion.negocioNombre || confirmacion.oferta?.negocioNombre || 'Comercio afiliado'}
+                </h4>
+                <p className="modal-confirmacion__comercio-dir">
+                  📍 {confirmacion.negocioDireccion || confirmacion.oferta?.negocioDireccion || 'Zona Centro, Huamanga'}
+                </p>
+                <p className="modal-confirmacion__comercio-item">
+                  🛍️ <strong>{confirmacion.oferta?.titulo}</strong> · S/{' '}
+                  {(confirmacion.precio ?? confirmacion.oferta?.precioOferta ?? 0).toFixed(2)}
+                </p>
+              </div>
+            </div>
+
+            {/* Acciones principales */}
+            <div className="modal-confirmacion__acciones">
+              <a
+                className="modal-confirmacion__btn-wa press"
+                href={confirmacion.enlaceWhatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <MessageCircle size={20} />
+                <span>Abrir WhatsApp para coordinar</span>
+              </a>
+
+              {(confirmacion.enlaceMaps || confirmacion.oferta?.enlaceMaps) && (
+                <a
+                  className="modal-confirmacion__btn-maps press"
+                  href={confirmacion.enlaceMaps || confirmacion.oferta?.enlaceMaps}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Compass size={18} />
+                  <span>Cómo llegar (Google Maps)</span>
+                </a>
+              )}
+            </div>
+
+            <button
+              type="button"
+              className="modal-confirmacion__btn-listo"
+              onClick={() => setConfirmacion(null)}
+            >
+              Entendido, volver a las ofertas
+            </button>
+          </div>
+        </div>
+      )}
 
       <ComoFunciona />
       <Faq />
