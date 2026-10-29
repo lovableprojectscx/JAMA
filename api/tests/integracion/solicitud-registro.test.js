@@ -99,6 +99,22 @@ describe('POST /negocios/solicitudes', () => {
     assert.equal(repetida.body.campo, 'whatsapp');
   });
 
+  test('RN-15: tipo OTRO guarda su detalle, que el administrador ve en la lista', async () => {
+    const datos = solicitud({ tipo: 'OTRO', tipoDetalle: 'Heladería' });
+    const { status, body } = await enviarJson(`${servidor.url}/negocios/solicitudes`, 'POST', datos);
+
+    assert.equal(status, 201);
+    const { rows } = await pool.query('SELECT tipo, tipo_detalle FROM negocios WHERE id = $1', [body.id]);
+    assert.equal(rows[0].tipo, 'OTRO');
+    assert.equal(rows[0].tipo_detalle, 'Heladería');
+
+    const { ListarSolicitudes } = await import('../../src/modulos/negocios/aplicacion/listar-solicitudes.caso-uso.js');
+    const { NegocioRepositoryPg } = await import('../../src/modulos/negocios/infraestructura/negocio-repository-pg.js');
+    const lista = await new ListarSolicitudes({ negocios: new NegocioRepositoryPg(pool) }).ejecutar({ estado: 'PENDIENTE' });
+    const enLista = lista.find((n) => n.id === body.id);
+    assert.equal(enLista.tipoDetalle, 'Heladería');
+  });
+
   test('RN-15: un dato inválido responde 400 y no crea nada', async () => {
     const datos = solicitud({ tipo: 'SUPERMERCADO' });
     const { status, body } = await enviarJson(`${servidor.url}/negocios/solicitudes`, 'POST', datos);

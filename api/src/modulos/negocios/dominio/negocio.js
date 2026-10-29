@@ -11,8 +11,15 @@ export const EstadoNegocio = Object.freeze({
   SUSPENDIDO: 'SUSPENDIDO',
 });
 
-/** RC09: el piloto no incluye supermercados. */
-export const TIPOS_DE_NEGOCIO = Object.freeze(['PANADERIA', 'PASTELERIA', 'POLLERIA', 'RESTAURANTE', 'CAFETERIA']);
+/** RC09: el piloto no incluye supermercados; un "OTRO" lo revisa el administrador al aprobar. */
+export const TIPOS_DE_NEGOCIO = Object.freeze([
+  'PANADERIA',
+  'PASTELERIA',
+  'POLLERIA',
+  'RESTAURANTE',
+  'CAFETERIA',
+  'OTRO',
+]);
 
 /** RN-14: a qué estados se puede pasar desde cada estado. RECHAZADO es final. */
 const TRANSICIONES = Object.freeze({
@@ -63,6 +70,7 @@ export class Negocio {
     estado,
     responsable = null,
     tipo = null,
+    tipoDetalle = null,
     declaracionAceptadaEn = null,
     creadoEn = null,
     revisadoEn = null,
@@ -79,6 +87,7 @@ export class Negocio {
     this.estado = estado;
     this.responsable = responsable;
     this.tipo = tipo;
+    this.tipoDetalle = tipoDetalle;
     this.declaracionAceptadaEn = declaracionAceptadaEn;
     this.creadoEn = creadoEn;
     this.revisadoEn = revisadoEn;
@@ -100,6 +109,10 @@ export class Negocio {
     if (!TIPOS_DE_NEGOCIO.includes(tipo)) {
       throw new ReglaNegocioError('RN-15: elige un tipo de negocio válido');
     }
+
+    // Con "OTRO" hay que decir qué es; con los demás tipos el detalle no aplica.
+    const tipoDetalle =
+      tipo === 'OTRO' ? exigirLargo(texto(datos.tipoDetalle), 'El tipo de negocio', 2, 60) : null;
 
     const whatsapp = nueveDigitosDeCelular(datos.whatsapp);
     if (!whatsapp) {
@@ -134,6 +147,7 @@ export class Negocio {
       nombre,
       responsable,
       tipo,
+      tipoDetalle,
       direccion,
       email,
       passwordHash: null,

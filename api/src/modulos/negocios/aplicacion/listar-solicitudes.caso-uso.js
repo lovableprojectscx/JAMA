@@ -10,6 +10,7 @@ export class ListarSolicitudes {
       nombre: n.nombre,
       responsable: n.responsable,
       tipo: n.tipo,
+      tipoDetalle: n.tipoDetalle,
       whatsapp: n.whatsapp,
       yape: n.yape,
       direccion: n.direccion,

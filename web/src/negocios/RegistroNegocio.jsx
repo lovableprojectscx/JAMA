@@ -10,6 +10,7 @@ const TIPOS_NEGOCIO = [
   { valor: 'CAFETERIA', etiqueta: 'Cafetería' },
   { valor: 'POLLERIA', etiqueta: 'Pollería' },
   { valor: 'RESTAURANTE', etiqueta: 'Restaurante' },
+  { valor: 'OTRO', etiqueta: 'Otro' },
 ];
 
 export default function RegistroNegocio() {
@@ -17,6 +18,7 @@ export default function RegistroNegocio() {
     nombre: '',
     responsable: '',
     tipo: 'PASTELERIA',
+    tipoDetalle: '',
     whatsapp: '',
     direccion: '',
     yape: '',
@@ -49,6 +51,15 @@ export default function RegistroNegocio() {
 
     if (!formData.responsable.trim() || formData.responsable.trim().length < 2) {
       nuevosErrores.responsable = 'El nombre del responsable debe tener al menos 2 caracteres.';
+    }
+
+    if (formData.tipo === 'OTRO') {
+      const detalle = formData.tipoDetalle.trim();
+      if (detalle.length < 2) {
+        nuevosErrores.tipoDetalle = 'Cuéntanos qué tipo de negocio es.';
+      } else if (detalle.length > 60) {
+        nuevosErrores.tipoDetalle = 'Máximo 60 caracteres.';
+      }
     }
 
     const whatsappLimpio = formData.whatsapp.replace(/\D/g, '');
@@ -99,6 +110,7 @@ export default function RegistroNegocio() {
         nombre: formData.nombre.trim(),
         responsable: formData.responsable.trim(),
         tipo: formData.tipo,
+        tipoDetalle: formData.tipo === 'OTRO' ? formData.tipoDetalle.trim() : null,
         whatsapp: formData.whatsapp.replace(/\D/g, ''),
         direccion: formData.direccion.trim(),
         yape: formData.yape.trim() ? formData.yape.replace(/\D/g, '') : null,
@@ -251,6 +263,26 @@ export default function RegistroNegocio() {
                     </select>
                   </div>
                 </div>
+
+                {formData.tipo === 'OTRO' && (
+                  <div className="registro-campo">
+                    <label className="registro-campo__etiqueta" htmlFor="reg-tipo-detalle">
+                      ¿Qué tipo de negocio es?
+                    </label>
+                    <input
+                      id="reg-tipo-detalle"
+                      className={`registro-campo__input ${errores.tipoDetalle ? 'registro-campo__input--error' : ''}`}
+                      type="text"
+                      maxLength={60}
+                      placeholder="Ej. Juguería, heladería, dulcería"
+                      value={formData.tipoDetalle}
+                      onChange={(e) => handleChange('tipoDetalle', e.target.value)}
+                      autoFocus
+                      required
+                    />
+                    {errores.tipoDetalle && <span className="registro-campo__error">{errores.tipoDetalle}</span>}
+                  </div>
+                )}
 
                 {/* WhatsApp y Yape */}
                 <div className="registro-fila-doble">

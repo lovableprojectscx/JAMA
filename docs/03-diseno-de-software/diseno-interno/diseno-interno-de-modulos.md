@@ -37,7 +37,7 @@ Son las reglas que viven en el **dominio**. Cada una tiene su prueba automática
 | RN-12 | La foto de una oferta debe ser JPG, PNG o WEBP | `SubirFotoOferta` |
 | RN-13 | Solo un negocio **ACTIVO** puede iniciar sesión en el panel, publicar ofertas y recibir pedidos; sus ofertas dejan de verse si deja de estar ACTIVO | `Negocio.puedeOperar()` |
 | RN-14 | Un negocio solo cambia de estado por las transiciones permitidas: PENDIENTE → ACTIVO o RECHAZADO; ACTIVO → SUSPENDIDO; SUSPENDIDO → ACTIVO. RECHAZADO es final | `Negocio.#transicion()` |
-| RN-15 | Una solicitud de registro debe tener: nombre del negocio y del responsable, tipo de negocio permitido (panadería, pastelería, pollería, restaurante o cafetería; no supermercados — RC09), WhatsApp peruano de 9 dígitos que empiece en 9, correo válido, contraseña de al menos 8 caracteres y la declaración de que solo publicará productos aptos y dentro de su fecha (RC08) aceptada | `Negocio.solicitar()` |
+| RN-15 | Una solicitud de registro debe tener: nombre del negocio y del responsable, tipo de negocio permitido (panadería, pastelería, pollería, restaurante, cafetería u **otro**, y en ese caso qué tipo de negocio es, de 2 a 60 caracteres, para que el administrador lo revise al aprobar; no supermercados — RC09), WhatsApp peruano de 9 dígitos que empiece en 9, correo válido, contraseña de al menos 8 caracteres y la declaración de que solo publicará productos aptos y dentro de su fecha (RC08) aceptada | `Negocio.solicitar()` |
 | RN-16 | El correo y el número de WhatsApp no se repiten entre negocios | Índices únicos en `negocios` + `RegistrarSolicitud` |
 
 ---

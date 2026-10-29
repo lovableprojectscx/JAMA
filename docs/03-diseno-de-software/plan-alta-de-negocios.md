@@ -89,7 +89,7 @@ Mismo sistema visual que la landing (crema predominante, azul solo en texto, bot
 |---|---|
 | Nombre del negocio | Obligatorio, 2–80 caracteres |
 | Nombre del responsable | Obligatorio, 2–80 caracteres |
-| Tipo de negocio | Panadería, Pastelería, Pollería, Restaurante o Cafetería (sin supermercados, RC09) |
+| Tipo de negocio | Panadería, Pastelería, Pollería, Restaurante, Cafetería u Otro (sin supermercados, RC09). Con "Otro" aparece "¿Qué tipo de negocio es?" (2–60 caracteres, migración `004`), que el administrador ve antes de aprobar |
 | WhatsApp | 9 dígitos que empiezan en 9; se guarda como `51XXXXXXXXX` para el enlace `wa.me` |
 | Dirección | Obligatoria (Huamanga) |
 | Yape | Opcional, 9 dígitos |

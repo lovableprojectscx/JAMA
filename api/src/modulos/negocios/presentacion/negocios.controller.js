@@ -7,13 +7,24 @@ export class NegociosController {
 
   async solicitar(req, res, next) {
     try {
-      const { nombre, responsable, tipo, whatsapp, direccion, yape, email, password, declaracionAceptada } =
-        req.body ?? {};
+      const {
+        nombre,
+        responsable,
+        tipo,
+        tipoDetalle,
+        whatsapp,
+        direccion,
+        yape,
+        email,
+        password,
+        declaracionAceptada,
+      } = req.body ?? {};
 
       const negocio = await this.registrarSolicitud.ejecutar({
         nombre,
         responsable,
         tipo,
+        tipoDetalle,
         whatsapp,
         direccion,
         yape,

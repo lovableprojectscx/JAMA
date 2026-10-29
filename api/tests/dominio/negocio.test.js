@@ -145,3 +145,30 @@ describe('Negocio.exigirQuePuedaOperar (RN-13)', () => {
     assert.doesNotThrow(() => negocioEn('ACTIVO').exigirQuePuedaOperar());
   });
 });
+
+describe('Tipo de negocio "OTRO" (RN-15)', () => {
+  test('acepta OTRO con su detalle y lo guarda limpio', () => {
+    const negocio = Negocio.solicitar(solicitudValida({ tipo: 'otro', tipoDetalle: '  Juguería ' }), AHORA);
+    assert.equal(negocio.tipo, 'OTRO');
+    assert.equal(negocio.tipoDetalle, 'Juguería');
+  });
+
+  test('rechaza OTRO sin decir qué tipo de negocio es', () => {
+    assert.throws(
+      () => Negocio.solicitar(solicitudValida({ tipo: 'OTRO', tipoDetalle: ' ' }), AHORA),
+      ReglaNegocioError
+    );
+  });
+
+  test('rechaza un detalle de más de 60 caracteres', () => {
+    assert.throws(
+      () => Negocio.solicitar(solicitudValida({ tipo: 'OTRO', tipoDetalle: 'x'.repeat(61) }), AHORA),
+      ReglaNegocioError
+    );
+  });
+
+  test('con un tipo de la lista, el detalle se ignora', () => {
+    const negocio = Negocio.solicitar(solicitudValida({ tipo: 'PANADERIA', tipoDetalle: 'algo' }), AHORA);
+    assert.equal(negocio.tipoDetalle, null);
+  });
+});

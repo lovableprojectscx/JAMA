@@ -186,7 +186,9 @@ export default function AdminPanel({ token, admin, onLogout }) {
                       <h2 className="admin-tarjeta-solicitud__titulo">{negocio.nombre}</h2>
                       <p className="admin-tarjeta-solicitud__responsable">
                         Responsable: <strong>{negocio.responsable}</strong> · Rubro:{' '}
-                        <strong>{negocio.tipo}</strong>
+                        <strong>
+                          {negocio.tipo === 'OTRO' ? `Otro: ${negocio.tipoDetalle ?? '—'}` : negocio.tipo}
+                        </strong>
                       </p>
                     </div>
 

@@ -17,6 +17,7 @@ function filaANegocio(fila) {
     estado: fila.estado,
     responsable: fila.responsable,
     tipo: fila.tipo,
+    tipoDetalle: fila.tipo_detalle,
     declaracionAceptadaEn: fila.declaracion_aceptada_en,
     creadoEn: fila.creado_en,
     revisadoEn: fila.revisado_en,
@@ -51,8 +52,8 @@ export class NegocioRepositoryPg extends NegocioRepository {
       await this.pool.query(
         `INSERT INTO negocios
            (id, nombre, responsable, tipo, email, password_hash, whatsapp, yape, direccion,
-            estado, declaracion_aceptada_en, creado_en)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+            estado, declaracion_aceptada_en, creado_en, tipo_detalle)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
         [
           negocio.id,
           negocio.nombre,
@@ -66,6 +67,7 @@ export class NegocioRepositoryPg extends NegocioRepository {
           negocio.estado,
           negocio.declaracionAceptadaEn,
           negocio.creadoEn,
+          negocio.tipoDetalle,
         ]
       );
     } catch (error) {
