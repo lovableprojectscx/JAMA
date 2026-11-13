@@ -604,6 +604,8 @@ Siguiendo [ADR-012](docs/02-arquitectura-software/decisiones/ADR-012-perfiles-pu
      - `capturas/25-perfil-tienda-desktop-1280.png` (Perfil público escritorio 1280px)
      - `capturas/26-panel-mi-perfil-movil-390.png` (Panel Mi Perfil móvil 390px)
      - `capturas/27-panel-mi-perfil-desktop-1280.png` (Panel Mi Perfil escritorio 1280px)
+     - `capturas/28-oferta-publicada-en-perfil.png` (Oferta activa renderizada en la tienda)
+     - `capturas/29-reserva-modal-perfil.png` (Modal bottom-sheet de reserva con código de cupón troquelado)
 
 ## 2. Cómo correrlo
 
