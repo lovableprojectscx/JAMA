@@ -9,6 +9,11 @@ export class NegocioRepository {
     throw new Error('NegocioRepository.obtenerPorId() no implementado');
   }
 
+  // eslint-disable-next-line no-unused-vars
+  async obtenerPorSlug(slug, tx) {
+    throw new Error('NegocioRepository.obtenerPorSlug() no implementado');
+  }
+
   /** RN-16: lanza NegocioDuplicadoError si el correo o el WhatsApp ya existen. */
   // eslint-disable-next-line no-unused-vars
   async crear(negocio) {
@@ -33,6 +38,11 @@ export class NegocioRepository {
   // eslint-disable-next-line no-unused-vars
   async guardarEstado(negocio, tx) {
     throw new Error('NegocioRepository.guardarEstado() no implementado');
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  async guardarPerfil(negocio, tx) {
+    throw new Error('NegocioRepository.guardarPerfil() no implementado');
   }
 }
 

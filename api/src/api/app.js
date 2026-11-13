@@ -6,6 +6,7 @@ export function crearApp({
   apiAcceso,
   apiNegocios,
   routerAdminNegocios,
+  routerMeNegocios,
   apiOfertas,
   pedidosModule,
   expirarReservas,
@@ -24,8 +25,12 @@ export function crearApp({
   const v1 = express.Router();
   v1.use('/auth', apiAcceso.router);
   v1.use('/negocios/solicitudes', apiNegocios.routerSolicitudes);
+  v1.use('/negocios/publico', apiNegocios.routerPublico);
   if (routerAdminNegocios) {
     v1.use('/admin/negocios', routerAdminNegocios);
+  }
+  if (routerMeNegocios) {
+    v1.use('/negocios/me', routerMeNegocios);
   }
   v1.use('/ofertas', apiOfertas.routerPublico);
   v1.use('/ofertas', pedidosModule.routerPublico);

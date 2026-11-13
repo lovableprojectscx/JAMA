@@ -55,7 +55,17 @@ export default function OfertaCard({ oferta, onPedir, cargando }) {
           <div className="oferta-card__comercio-datos">
             <div className="oferta-card__comercio-nombre-row">
               <Store size={14} className="oferta-card__icono-tienda" aria-hidden="true" />
-              <span className="oferta-card__comercio-nombre">{nombreTienda}</span>
+              {oferta.negocioSlug ? (
+                <a
+                  href={`/t/${oferta.negocioSlug}`}
+                  className="oferta-card__comercio-nombre oferta-card__comercio-nombre--link"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {nombreTienda}
+                </a>
+              ) : (
+                <span className="oferta-card__comercio-nombre">{nombreTienda}</span>
+              )}
             </div>
             <p className="oferta-card__comercio-direccion">
               <MapPin size={12} className="oferta-card__icono-pin" aria-hidden="true" />

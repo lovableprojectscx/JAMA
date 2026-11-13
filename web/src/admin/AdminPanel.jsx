@@ -231,6 +231,17 @@ export default function AdminPanel({ token, admin, onLogout }) {
                       <span className="admin-dato-item__valor">{negocio.yape ?? 'No indicado'}</span>
                     </div>
 
+                    {negocio.estado === 'ACTIVO' && negocio.slug && (
+                      <div className="admin-dato-item" style={{ gridColumn: '1 / -1' }}>
+                        <span className="admin-dato-item__etiqueta">Perfil Público</span>
+                        <span className="admin-dato-item__valor">
+                          <a href={`/t/${negocio.slug}`} target="_blank" rel="noreferrer" style={{ color: 'var(--azul-marino)', fontWeight: 800, textDecoration: 'underline' }}>
+                            /t/{negocio.slug} ↗
+                          </a>
+                        </span>
+                      </div>
+                    )}
+
                     {negocio.motivoEstado && (
                       <div className="admin-dato-item" style={{ gridColumn: '1 / -1' }}>
                         <span className="admin-dato-item__etiqueta">Motivo de Estado</span>

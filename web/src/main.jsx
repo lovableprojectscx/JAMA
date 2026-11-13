@@ -10,6 +10,7 @@ import NegociosLanding from './negocios/NegociosLanding.jsx';
 import RegistroNegocio from './negocios/RegistroNegocio.jsx';
 import AdminApp from './admin/AdminApp.jsx';
 import TerminosCondiciones from './terminos/TerminosCondiciones.jsx';
+import PerfilTienda from './tienda/PerfilTienda.jsx';
 
 function enrutar() {
   const path = window.location.pathname.replace(/\/+$/, '') || '/';
@@ -19,6 +20,14 @@ function enrutar() {
   }
   if (path.startsWith('/panel')) {
     return <PanelApp />;
+  }
+  if (path.startsWith('/t/')) {
+    const slug = path.slice(3);
+    return <PerfilTienda slug={slug} />;
+  }
+  if (path.startsWith('/tienda/')) {
+    const slug = path.slice(8);
+    return <PerfilTienda slug={slug} />;
   }
   if (path === '/negocios/registro') {
     return <RegistroNegocio />;

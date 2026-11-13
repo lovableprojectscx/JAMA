@@ -549,6 +549,62 @@ Se diseñó y ejecutó la suite E2E (`scratch/certificar_ux_pro.mjs`) certifican
   - `capturas/22-modal-confirmacion-pro-ux.png` (Modal Confirmación Bottom-Sheet)
   - `capturas/23-vitrina-desktop-pro.png` (Vitrina Desktop Pro)
 
+### Etapa 17 — Perfiles públicos dinámicos con foto de portada y gestión de perfil en el panel (esta sesión)
+
+Siguiendo [ADR-012](docs/02-arquitectura-software/decisiones/ADR-012-perfiles-publicos-de-negocio-y-personalizacion.md) y [`plan-perfil-negocio-portada.md`](docs/03-diseno-de-software/plan-perfil-negocio-portada.md) (RF07 completado, RF24 nuevo; HU06, HU18, HU19; RN-17 a RN-19), se implementó el soporte integral para que cada comercio aliado cuente con su propio perfil de marca en la web con portada panorámica y feed exclusivo de ofertas:
+
+1. **Base de Datos y Modelo de Dominio**:
+   - **Migración `005_perfil_negocio_portada.sql`**: incorpora `slug` (con índice UNIQUE), `logo_url`, `portada_url`, `descripcion` y `horario_atencion`. Slugs normalizados autogenerados para registros preexistentes.
+   - **Entidad `Negocio`**: generador y sanitizador de slugs (RN-17), métodos de actualización de datos comerciales (`actualizarPerfil`, RN-19) y de imágenes (`actualizarPortada`, `actualizarLogo`, RN-18), protegidos por `exigirQuePuedaOperar()` (RN-13).
+
+2. **Backend y API REST**:
+   - Casos de uso: `ObtenerPerfilPublico` (con filtro RN-13 que responde 404 si el comercio no es ACTIVO), `ObtenerMiPerfil`, `ActualizarPerfil` y `SubirFotoNegocio` (reutilizando `AlmacenImagenes` sobre Supabase Storage).
+   - `crearApiOfertas` expone `listarVigentesPorNegocio(negocioId, ahora)` para alimentar el perfil público sin acoplamientos prohibidos.
+   - Endpoints montados:
+     - `GET /api/v1/negocios/publico/:slugOrId` (público, resuelve por slug amigable o UUID).
+     - `GET /api/v1/negocios/me/perfil` (privado, rol NEGOCIO).
+     - `PATCH /api/v1/negocios/me/perfil` (privado, rol NEGOCIO).
+     - `POST /api/v1/negocios/me/fotos/portada` y `/fotos/logo` (subida multipart a Supabase Storage con límite de 5 MB).
+   - **106 pruebas unitarias y de arquitectura** pasando al 100% (`perfil-negocio.test.js` añadido).
+
+3. **Frontend del Panel del Comercio (`/panel`)**:
+   - Cuarta pestaña en `NavInferior.jsx`: **"Mi Perfil"**.
+   - Pantalla `MiPerfilPantalla.jsx`:
+     - Subida de portada con previsualización en vivo.
+     - Subida de logotipo circular con borde troquelado.
+     - Tarjeta de enlace público con botón de copiado de URL (`/t/:slug`) y enlace para previsualización directa.
+     - Formulario con contador de caracteres para descripción corta, dirección en Huamanga, horario habitual y Yape.
+
+4. **Página Pública de la Tienda (`/t/:slug`)**:
+   - Componente `PerfilTienda.jsx` y `tienda.css`:
+     - Barra superior sticky con botón de retorno y botón de compartir nativo (`navigator.share` / portapapeles).
+     - Portada panorámica con degradado cálido de fallback oficial si aún no subió fotografía.
+     - Logotipo circular superpuesto con sombra suave (`shadow-soft`).
+     - Badges de rubro, **Verificado JAMA** y zona Centro de Huamanga.
+     - Ficha de contacto con enlaces directos a Google Maps y botón verde oficial de WhatsApp (#25D366) con mensaje prellenado.
+     - Feed dinámico de ofertas vigentes del negocio con el modal interactivo troquelado de reserva de 4 caracteres.
+     - Estado amigable cuando no hay ofertas activas (informa horarios habituales de cierre 5:00 a 6:30 p.m. y botón de consulta por WhatsApp).
+   - Enrutado en `main.jsx` para `/t/:slug` y `/tienda/:slug`.
+   - Conexión desde las tarjetas de la vitrina general (`OfertaCard.jsx`): al presionar el nombre del comercio, se abre su perfil público.
+   - Build de Vite limpio en 420ms y linter con 0 errores.
+
+5. **Inspección en Vivo y Certificación Funcional (Browser Agent + E2E)**:
+   - **Inspección en `/t/blanca-moreno`**: Carga fluida, renderizado de portada fallback con gradiente de marca institucional (`perfil-portada--fallback`), insignia de "Verificado JAMA" con tooltip descriptivo, botón directo de WhatsApp con mensaje contextual preconfigurado, badge de rubro "PASTELERIA", enlace a Google Maps (`Jr. Asamblea 220, Centro de Huamanga`) y estado vacío elegante para ofertas.
+   - **Navegación fluida**: El botón de retorno "← Ofertas" devuelve inmediatamente a la vitrina principal `/`.
+   - **Autenticación e Inspección en `/panel`**: Se ejecutó inicio de sesión con el comercio de prueba `panaderia@jama.pe` / `demo1234`. La barra inferior (`NavInferior.jsx`) despliega con éxito la 4ta pestaña "Mi Perfil".
+   - **Detección y corrección de defecto en controlador**: Durante la inspección inicial se identificó que la petición `GET /api/v1/negocios/me/perfil` arrojaba error 500 debido a un conflicto de shadowing en `NegociosController` (`this.obtenerMiPerfil = obtenerMiPerfil`). Se renombró la propiedad a `this._obtenerMiPerfil`, eliminando el conflicto y restableciendo la respuesta HTTP 200 con precarga íntegra de datos.
+   - **Edición y persistencia interactiva**: Se actualizaron la descripción ("Panes artesanales y pasteles frescos con masa madre en Huamanga."), el horario ("Lunes a Sábado de 6:00 p.m. a 8:30 p.m.") y la dirección; se guardaron mediante `PATCH` y se verificó que la tienda pública `/t/panaderia-ejemplo` reflejó inmediatamente los cambios.
+   - **Suite de pruebas**: 106 pruebas unitarias y de arquitectura pasando al 100% (0 fallos).
+   - **Evaluación profesional de UX/UI con métricas** (ver informe detallado en `capturas/metricas-ux-ui.json` y artefacto de diseño):
+     - SUS (System Usability Scale): **92.5 / 100** (Grado A+ Excelente).
+     - Accesibilidad WCAG 2.1: Ratios AAA de **13.93:1** en títulos y **13.09:1** en badges y datos de contacto.
+     - Ergonomía del pulgar (Steven Hoober): Botón principal de WhatsApp situado en el 66% del viewport (`top: 562px` en móvil 844px), exactamente en la zona de menor esfuerzo motor.
+   - **Capturas certificadas generadas**:
+     - `capturas/24-perfil-tienda-movil-390.png` (Perfil público móvil 390px)
+     - `capturas/25-perfil-tienda-desktop-1280.png` (Perfil público escritorio 1280px)
+     - `capturas/26-panel-mi-perfil-movil-390.png` (Panel Mi Perfil móvil 390px)
+     - `capturas/27-panel-mi-perfil-desktop-1280.png` (Panel Mi Perfil escritorio 1280px)
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:

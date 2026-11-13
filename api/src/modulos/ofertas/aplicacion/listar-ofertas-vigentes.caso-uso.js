@@ -19,6 +19,8 @@ export class ListarOfertasVigentes {
         if (info) {
           o.negocioNombre = info.nombre;
           o.negocioDireccion = info.direccion;
+          o.negocioSlug = info.slug;
+          o.negocioLogoUrl = info.logo_url;
         }
         return o;
       });

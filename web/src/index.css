@@ -621,6 +621,17 @@ body {
   text-overflow: ellipsis;
 }
 
+.oferta-card__comercio-nombre--link {
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 120ms ease;
+}
+
+.oferta-card__comercio-nombre--link:hover {
+  text-decoration: underline;
+  color: #0284c7;
+}
+
 .oferta-card__comercio-direccion {
   margin: 0;
   display: flex;

@@ -23,7 +23,18 @@ export function crearAplicacion() {
   const reloj = new RelojSistema();
   const unidadDeTrabajo = new UnidadDeTrabajoPg(pool);
 
-  const apiNegocios = crearApiNegocios({ pool, reloj, limitarSolicitudes: crearLimitarSolicitudes() });
+  const almacenImagenes = new SupabaseStorageAdapter({
+    url: process.env.SUPABASE_URL,
+    serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    bucket: process.env.SUPABASE_STORAGE_BUCKET,
+  });
+
+  const apiNegocios = crearApiNegocios({
+    pool,
+    reloj,
+    limitarSolicitudes: crearLimitarSolicitudes(),
+    almacenImagenes,
+  });
   const apiAcceso = crearApiAcceso({
     pool,
     apiNegocios,
@@ -36,13 +47,11 @@ export function crearAplicacion() {
 
   const requireNegocio = componerMiddlewares(requireAuth, requireRolNegocio);
   const routerAdminNegocios = apiNegocios.crearRouterAdmin(requireAuth, requireRolAdmin);
+  const routerMeNegocios = apiNegocios.crearRouterMe(requireNegocio);
 
-  const almacenImagenes = new SupabaseStorageAdapter({
-    url: process.env.SUPABASE_URL,
-    serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
-    bucket: process.env.SUPABASE_STORAGE_BUCKET,
-  });
   const apiOfertas = crearApiOfertas({ pool, reloj, requireAuth: requireNegocio, almacenImagenes, apiNegocios });
+  apiNegocios.conectarOfertasApi(apiOfertas);
+
   const pedidosModule = crearModuloPedidos({
     pool,
     reloj,
@@ -57,6 +66,7 @@ export function crearAplicacion() {
     apiAcceso,
     apiNegocios,
     routerAdminNegocios,
+    routerMeNegocios,
     apiOfertas,
     pedidosModule,
     expirarReservas: pedidosModule.expirarReservas,

@@ -29,6 +29,7 @@ Los requisitos funcionales expresan **lo que el sistema debe hacer** para satisf
 | RF21 | El sistema debe permitir al administrador listar las solicitudes por estado y **aprobarlas** o **rechazarlas** indicando un motivo, registrando quién y cuándo lo hizo. |
 | RF22 | El sistema debe ofrecer al administrador un enlace `wa.me` con un mensaje prellenado para avisarle al negocio que su solicitud fue aprobada o rechazada. |
 | RF23 | El sistema debe limitar la cantidad de solicitudes de registro por IP y rechazar correos o números de WhatsApp ya registrados. |
+| RF24 | El sistema debe ofrecer una página pública individual para cada negocio aliado (`/t/:slug`), con su foto de portada, logotipo, insignia de verificado, dirección en Google Maps, horario de recojo, enlace a WhatsApp y su listado dinámico de ofertas vigentes. |
 
 ## Relación entre HU y requisitos funcionales
 
@@ -51,8 +52,12 @@ Los requisitos funcionales expresan **lo que el sistema debe hacer** para satisf
 | HU15 Enviar solicitud de registro | RF19, RF23 |
 | HU16 Saber el estado de mi solicitud | RF20 |
 | HU17 Aprobar o rechazar solicitudes | RF15, RF17, RF21, RF22 |
+| HU18 Personalizar perfil y portada | RF07 |
+| HU19 Ver perfil público de tienda | RF24 |
 
 > *Agregado en octubre 2026:* RF18–RF23 detallan RF07 (registro) y RF15 (verificación por el administrador) para el alta de negocios por solicitud con aprobación ([ADR-010](../02-arquitectura-software/decisiones/ADR-010-alta-de-negocios-por-solicitud.md), [ADR-011](../02-arquitectura-software/decisiones/ADR-011-cuentas-de-administrador.md)). El plan de implementación está en [`plan-alta-de-negocios.md`](../03-diseno-de-software/plan-alta-de-negocios.md).
+>
+> *Agregado en noviembre 2026:* RF24 y la extensión de RF07 detallan la administración de perfil con portada y la página pública individual del negocio ([ADR-012](../02-arquitectura-software/decisiones/ADR-012-perfiles-publicos-de-negocio-y-personalizacion.md)). El diseño detallado está en [`plan-perfil-negocio-portada.md`](../03-diseno-de-software/plan-perfil-negocio-portada.md).
 
 ## Fuera del alcance del MVP
 - Alertas personalizadas ("avísame cuando haya pollo cerca").

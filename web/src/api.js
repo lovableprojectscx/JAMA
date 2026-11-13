@@ -10,6 +10,17 @@ export async function obtenerOfertasDeHoy() {
 
 export const obtenerOfertas = obtenerOfertasDeHoy;
 
+export async function obtenerPerfilPublico(slugOrId) {
+  const respuesta = await fetch(`${API_URL}/negocios/publico/${slugOrId}`);
+  const cuerpo = await respuesta.json().catch(() => null);
+  if (!respuesta.ok) {
+    const error = new Error(cuerpo?.error ?? 'No se pudo cargar la tienda');
+    error.status = respuesta.status;
+    throw error;
+  }
+  return cuerpo;
+}
+
 export async function pedirOferta(ofertaId) {
   const respuesta = await fetch(`${API_URL}/ofertas/${ofertaId}/pedidos`, { method: 'POST' });
   const cuerpo = await respuesta.json();

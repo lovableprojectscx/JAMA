@@ -15,5 +15,6 @@ Un **ADR** (*Architecture Decision Record*) documenta una decisión importante d
 | [ADR-009](ADR-009-spa-separada-del-backend.md) | Aplicación web SPA (React + Vite) separada del backend | DA05, DA08 | El frontend y el backend se despliegan por separado; la interfaz es *mobile-first*. | Una SPA con vitrina pública, panel del negocio y panel de administración. |
 | [ADR-010](ADR-010-alta-de-negocios-por-solicitud.md) | Alta de negocios por solicitud con aprobación | DA04 | Que las tiendas se unan solas sin que publique nadie sin revisar (AC06). | Estado `PENDIENTE` → `ACTIVO`/`RECHAZADO` en la entidad `Negocio`; solo un negocio ACTIVO opera (RN-13). |
 | [ADR-011](ADR-011-cuentas-de-administrador.md) | Cuentas de administrador en tabla propia | DA04 | Aprobar solicitudes requiere un administrador real y trazable. | Tabla `administradores` en Acceso, creada por script; login y rutas separadas por rol. |
+| [ADR-012](ADR-012-perfiles-publicos-de-negocio-y-personalizacion.md) | Perfiles públicos de negocios y personalización de marca | DA04, AC05, AC06 | Los comercios requieren enlace propio ("link en bio") con su marca y ofertas exclusivas, reforzando la trazabilidad de la tesis. | URL `/t/:slug`, portada y logo en Supabase Storage, gestión en `/panel`, y filtrado solo para comercios ACTIVO. |
 
-**Estado de todas:** Aceptada · **Fecha:** octubre 2026
+**Estado de todas:** Aceptada · **Fecha:** octubre/noviembre 2026

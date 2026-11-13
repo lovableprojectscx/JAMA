@@ -3,6 +3,7 @@ import LoginPantalla from './pantallas/LoginPantalla.jsx';
 import MisOfertasPantalla from './pantallas/MisOfertasPantalla.jsx';
 import PublicarOfertaPantalla from './pantallas/PublicarOfertaPantalla.jsx';
 import PedidosPantalla from './pantallas/PedidosPantalla.jsx';
+import MiPerfilPantalla from './pantallas/MiPerfilPantalla.jsx';
 import NavInferior from './componentes/NavInferior.jsx';
 import { leerSesionGuardada, guardarSesion, borrarSesion } from './sesion.js';
 import logoJama from '../assets/jama-logo.png';
@@ -45,6 +46,7 @@ export default function PanelApp() {
         {pantalla === 'ofertas' && <MisOfertasPantalla token={sesion.token} />}
         {pantalla === 'publicar' && <PublicarOfertaPantalla token={sesion.token} />}
         {pantalla === 'pedidos' && <PedidosPantalla token={sesion.token} />}
+        {pantalla === 'perfil' && <MiPerfilPantalla token={sesion.token} />}
       </main>
 
       <NavInferior pantallaActiva={pantalla} onCambiarPantalla={setPantalla} />

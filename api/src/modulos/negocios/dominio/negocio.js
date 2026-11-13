@@ -58,6 +58,21 @@ function exigirMotivo(motivo) {
   return limpio;
 }
 
+export function generarSlug(nombre, id = '') {
+  const base = String(nombre ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-');
+  if (!base) {
+    const sufijo = id ? String(id).replace(/-/g, '').slice(0, 6) : 'local';
+    return `tienda-${sufijo}`;
+  }
+  return base.slice(0, 80);
+}
+
 export class Negocio {
   constructor({
     id,
@@ -76,6 +91,11 @@ export class Negocio {
     revisadoEn = null,
     revisadoPor = null,
     motivoEstado = null,
+    slug = null,
+    logoUrl = null,
+    portadaUrl = null,
+    descripcion = null,
+    horarioAtencion = null,
   }) {
     this.id = id;
     this.nombre = nombre;
@@ -93,6 +113,11 @@ export class Negocio {
     this.revisadoEn = revisadoEn;
     this.revisadoPor = revisadoPor;
     this.motivoEstado = motivoEstado;
+    this.slug = slug;
+    this.logoUrl = logoUrl;
+    this.portadaUrl = portadaUrl;
+    this.descripcion = descripcion;
+    this.horarioAtencion = horarioAtencion;
   }
 
   /**
@@ -142,6 +167,8 @@ export class Negocio {
       );
     }
 
+    const slug = datos.slug ? texto(datos.slug).toLowerCase() : generarSlug(nombre, datos.id);
+
     return new Negocio({
       id: datos.id,
       nombre,
@@ -156,6 +183,11 @@ export class Negocio {
       estado: EstadoNegocio.PENDIENTE,
       declaracionAceptadaEn: ahora,
       creadoEn: ahora,
+      slug,
+      logoUrl: null,
+      portadaUrl: null,
+      descripcion: null,
+      horarioAtencion: null,
     });
   }
 
@@ -174,6 +206,46 @@ export class Negocio {
     if (!this.puedeOperar()) {
       throw new NegocioNoHabilitadoError(this.estado, this.motivoEstado);
     }
+  }
+
+  actualizarPerfil({ descripcion, direccion, yape, horarioAtencion }) {
+    this.exigirQuePuedaOperar();
+    if (typeof descripcion !== 'undefined') {
+      this.descripcion = texto(descripcion).slice(0, 200) || null;
+    }
+    if (typeof direccion !== 'undefined' && texto(direccion)) {
+      this.direccion = exigirLargo(texto(direccion), 'La dirección', 5, 160);
+    }
+    if (typeof yape !== 'undefined') {
+      if (texto(yape)) {
+        const yapeLimpio = nueveDigitosDeCelular(yape);
+        if (!yapeLimpio) {
+          throw new ReglaNegocioError('RN-15: el número de Yape debe ser un celular de 9 dígitos que empiece en 9');
+        }
+        this.yape = yapeLimpio;
+      } else {
+        this.yape = null;
+      }
+    }
+    if (typeof horarioAtencion !== 'undefined') {
+      this.horarioAtencion = texto(horarioAtencion).slice(0, 100) || null;
+    }
+  }
+
+  actualizarPortada(portadaUrl) {
+    this.exigirQuePuedaOperar();
+    if (!portadaUrl || typeof portadaUrl !== 'string') {
+      throw new ReglaNegocioError('Indica una URL de portada válida');
+    }
+    this.portadaUrl = portadaUrl.trim();
+  }
+
+  actualizarLogo(logoUrl) {
+    this.exigirQuePuedaOperar();
+    if (!logoUrl || typeof logoUrl !== 'string') {
+      throw new ReglaNegocioError('Indica una URL de logo válida');
+    }
+    this.logoUrl = logoUrl.trim();
   }
 
   aprobar(adminId, ahora) {

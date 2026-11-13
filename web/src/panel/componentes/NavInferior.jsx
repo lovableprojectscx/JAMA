@@ -2,6 +2,7 @@ const PESTANAS = [
   { id: 'ofertas', etiqueta: 'Ofertas' },
   { id: 'publicar', etiqueta: 'Publicar' },
   { id: 'pedidos', etiqueta: 'Pedidos' },
+  { id: 'perfil', etiqueta: 'Mi Perfil' },
 ];
 
 export default function NavInferior({ pantallaActiva, onCambiarPantalla }) {

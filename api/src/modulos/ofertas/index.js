@@ -80,5 +80,10 @@ export function crearApiOfertas({ pool, reloj, requireAuth, almacenImagenes, api
       }
       return { id: oferta.id, titulo: oferta.titulo };
     },
+
+    /** Usado por Negocios para exponer las ofertas activas en el perfil público /t/:slug. */
+    async listarVigentesPorNegocio(negocioId, ahora) {
+      return ofertaRepository.listarVigentes(ahora ?? reloj.ahora(), [negocioId]);
+    },
   };
 }

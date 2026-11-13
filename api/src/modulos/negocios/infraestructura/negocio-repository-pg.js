@@ -23,6 +23,11 @@ function filaANegocio(fila) {
     revisadoEn: fila.revisado_en,
     revisadoPor: fila.revisado_por,
     motivoEstado: fila.motivo_estado,
+    slug: fila.slug,
+    logoUrl: fila.logo_url,
+    portadaUrl: fila.portada_url,
+    descripcion: fila.descripcion,
+    horarioAtencion: fila.horario_atencion,
   });
 }
 
@@ -46,14 +51,23 @@ export class NegocioRepositoryPg extends NegocioRepository {
     return filaANegocio(rows[0]);
   }
 
+  async obtenerPorSlug(slug, tx) {
+    const ejecutor = tx ?? this.pool;
+    const { rows } = await ejecutor.query('SELECT * FROM negocios WHERE slug = $1', [
+      String(slug ?? '').trim().toLowerCase(),
+    ]);
+    return filaANegocio(rows[0]);
+  }
+
   /** RN-16: la base garantiza la unicidad (índices); aquí se traduce a un error del dominio. */
   async crear(negocio) {
     try {
       await this.pool.query(
         `INSERT INTO negocios
            (id, nombre, responsable, tipo, email, password_hash, whatsapp, yape, direccion,
-            estado, declaracion_aceptada_en, creado_en, tipo_detalle)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+            estado, declaracion_aceptada_en, creado_en, tipo_detalle, slug, logo_url,
+            portada_url, descripcion, horario_atencion)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`,
         [
           negocio.id,
           negocio.nombre,
@@ -68,6 +82,11 @@ export class NegocioRepositoryPg extends NegocioRepository {
           negocio.declaracionAceptadaEn,
           negocio.creadoEn,
           negocio.tipoDetalle,
+          negocio.slug,
+          negocio.logoUrl,
+          negocio.portadaUrl,
+          negocio.descripcion,
+          negocio.horarioAtencion,
         ]
       );
     } catch (error) {
@@ -80,7 +99,9 @@ export class NegocioRepositoryPg extends NegocioRepository {
 
   async listarActivosConDetalle() {
     const { rows } = await this.pool.query(
-      `SELECT id, nombre, direccion, whatsapp FROM negocios WHERE estado = 'ACTIVO'`
+      `SELECT id, nombre, direccion, whatsapp, slug, logo_url, portada_url, descripcion, horario_atencion, tipo
+       FROM negocios
+       WHERE estado = 'ACTIVO'`
     );
     return rows;
   }
@@ -110,6 +131,25 @@ export class NegocioRepositoryPg extends NegocioRepository {
        SET estado = $1, revisado_en = $2, revisado_por = $3, motivo_estado = $4
        WHERE id = $5`,
       [negocio.estado, negocio.revisadoEn, negocio.revisadoPor, negocio.motivoEstado, negocio.id]
+    );
+  }
+
+  async guardarPerfil(negocio, tx) {
+    const ejecutor = tx ?? this.pool;
+    await ejecutor.query(
+      `UPDATE negocios
+       SET descripcion = $1, direccion = $2, yape = $3, horario_atencion = $4,
+           logo_url = $5, portada_url = $6
+       WHERE id = $7`,
+      [
+        negocio.descripcion,
+        negocio.direccion,
+        negocio.yape,
+        negocio.horarioAtencion,
+        negocio.logoUrl,
+        negocio.portadaUrl,
+        negocio.id,
+      ]
     );
   }
 }

@@ -66,3 +66,49 @@ export function obtenerPedidosPorConfirmar(token) {
 export function resolverPedido(token, codigo, concretado) {
   return solicitar(`/pedidos/${codigo}`, { method: 'PATCH', token, body: { concretado } });
 }
+
+export function obtenerMiPerfil(token) {
+  return solicitar('/negocios/me/perfil', { token });
+}
+
+export function actualizarMiPerfil(token, datos) {
+  return solicitar('/negocios/me/perfil', { method: 'PATCH', token, body: datos });
+}
+
+export async function subirFotoPortada(token, archivo) {
+  const formData = new FormData();
+  formData.append('portada', archivo);
+
+  const respuesta = await fetch(`${API_URL}/negocios/me/fotos/portada`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+
+  const cuerpo = await respuesta.json().catch(() => null);
+  if (!respuesta.ok) {
+    const error = new Error(cuerpo?.error ?? 'No se pudo subir la foto de portada');
+    error.status = respuesta.status;
+    throw error;
+  }
+  return cuerpo;
+}
+
+export async function subirFotoLogo(token, archivo) {
+  const formData = new FormData();
+  formData.append('logo', archivo);
+
+  const respuesta = await fetch(`${API_URL}/negocios/me/fotos/logo`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+
+  const cuerpo = await respuesta.json().catch(() => null);
+  if (!respuesta.ok) {
+    const error = new Error(cuerpo?.error ?? 'No se pudo subir el logotipo');
+    error.status = respuesta.status;
+    throw error;
+  }
+  return cuerpo;
+}

@@ -24,6 +24,13 @@ Formato: **Como** [actor], **quiero** [acción], **para** [beneficio].
 | HU14 | Como dueño de una pastelería o panadería que todavía no conoce JAMA, quiero una página que me explique qué gano, cómo funciona para mi negocio y qué necesito, para decidir si me uno. |
 | HU15 | Como dueño de un negocio, quiero enviar mi solicitud de registro desde el celular en pocos minutos, para empezar a publicar sin tener que llamar a nadie. |
 | HU16 | Como negocio con una solicitud enviada, quiero que el panel me diga si mi cuenta está en revisión o fue rechazada (y por qué), para no pensar que la página falló. |
+| HU18 | Como negocio con cuenta activa, quiero personalizar mi perfil con foto de portada y logotipo, y editar mi descripción, dirección, horario y Yape, para reforzar la identidad de mi marca y compartir mi tienda en mis redes. |
+
+## Cliente (ampliación)
+
+| ID | Historia de usuario |
+|---|---|
+| HU19 | Como cliente, quiero ver la página de perfil público de una tienda aliada (`/t/:slug`), para consultar sus ofertas vigentes del día, ubicación exacta en Google Maps, horario de recojo y escribirle a su WhatsApp. |
 
 ## Administrador
 
@@ -35,3 +42,5 @@ Formato: **Como** [actor], **quiero** [acción], **para** [beneficio].
 | HU17 | Como administrador, quiero ver las solicitudes de registro pendientes y aprobarlas o rechazarlas con un motivo, y avisarle al negocio por WhatsApp, para que en la vitrina solo publiquen negocios reales. |
 
 > *Agregado en octubre 2026:* HU14–HU17 detallan el alta de negocios. HU06 ("registrarme y crear mi perfil") se cumple en dos pasos: el negocio envía una **solicitud** (HU15) y el administrador la **aprueba** (HU17) antes de que pueda publicar. Ver [ADR-010](../02-arquitectura-software/decisiones/ADR-010-alta-de-negocios-por-solicitud.md).
+>
+> *Agregado en noviembre 2026:* HU18 y HU19 detallan la personalización de perfil con portada y la página pública individual del negocio (`/t/:slug`) ([ADR-012](../02-arquitectura-software/decisiones/ADR-012-perfiles-publicos-de-negocio-y-personalizacion.md)).
