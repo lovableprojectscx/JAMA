@@ -74,6 +74,37 @@ export class OfertaRepositoryPg extends OfertaRepository {
     );
   }
 
+  async actualizar(oferta, tx) {
+    const ejecutor = tx ?? this.pool;
+    await ejecutor.query(
+      `UPDATE ofertas
+         SET titulo = $1,
+             descripcion = $2,
+             foto_url = $3,
+             precio_carta = $4,
+             precio_oferta = $5,
+             stock = $6,
+             hora_limite = $7,
+             estado = $8,
+             actualizado_en = $9,
+             tramos_precio = $10
+       WHERE id = $11`,
+      [
+        oferta.titulo,
+        oferta.descripcion,
+        oferta.fotoUrl,
+        oferta.precioCarta,
+        oferta.precioOferta,
+        oferta.stock,
+        oferta.horaLimite,
+        oferta.estado,
+        oferta.actualizadoEn,
+        JSON.stringify(oferta.tramosPrecio),
+        oferta.id,
+      ]
+    );
+  }
+
   /** `negocioIds`: solo los negocios ACTIVO (RN-13), que Ofertas obtiene de la API de Negocios. */
   async listarVigentes(ahora, negocioIds) {
     const { rows } = await this.pool.query(

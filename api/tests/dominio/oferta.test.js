@@ -287,3 +287,65 @@ describe('Oferta.cambiarEstado (panel: pausar / reanudar)', () => {
     assert.throws(() => oferta.cambiarEstado(EstadoOferta.PAUSADA, AHORA), ReglaNegocioError);
   });
 });
+
+describe('Oferta.editar (panel: modificar oferta activa/pausada)', () => {
+  test('actualiza título, descripción, precios y stock válidos', () => {
+    const oferta = Oferta.publicar(datosValidos({ stock: 2, precioCarta: 40, precioOferta: 20 }), AHORA);
+    const ahoraMasTarde = new Date(AHORA.getTime() + 10 * 60_000);
+    oferta.editar(
+      {
+        titulo: 'Torta de Selva Negra Especial',
+        descripcion: 'Con cerezas frescas',
+        precioCarta: 45,
+        precioOferta: 22,
+        stock: 5,
+      },
+      ahoraMasTarde
+    );
+
+    assert.equal(oferta.titulo, 'Torta de Selva Negra Especial');
+    assert.equal(oferta.descripcion, 'Con cerezas frescas');
+    assert.equal(oferta.precioCarta, 45);
+    assert.equal(oferta.precioOferta, 22);
+    assert.equal(oferta.stock, 5);
+    assert.equal(oferta.actualizadoEn, ahoraMasTarde);
+  });
+
+  test('si una oferta estaba AGOTADA y se añade stock, se reactiva a ACTIVA', () => {
+    const oferta = Oferta.publicar(datosValidos({ stock: 1 }), AHORA);
+    oferta.reservarUnidad(AHORA);
+    assert.equal(oferta.estado, EstadoOferta.AGOTADA);
+
+    oferta.editar({ stock: 3 }, AHORA);
+    assert.equal(oferta.estado, EstadoOferta.ACTIVA);
+    assert.equal(oferta.stock, 3);
+  });
+
+  test('si una oferta ACTIVA reduce stock a 0, pasa a AGOTADA', () => {
+    const oferta = Oferta.publicar(datosValidos({ stock: 2 }), AHORA);
+    oferta.editar({ stock: 0 }, AHORA);
+    assert.equal(oferta.estado, EstadoOferta.AGOTADA);
+    assert.equal(oferta.stock, 0);
+  });
+
+  test('rechaza precio de oferta mayor o igual al de carta (RN-01)', () => {
+    const oferta = Oferta.publicar(datosValidos(), AHORA);
+    assert.throws(() => oferta.editar({ precioOferta: 60, precioCarta: 50 }, AHORA), ReglaNegocioError);
+  });
+
+  test('rechaza stock negativo (RN-03)', () => {
+    const oferta = Oferta.publicar(datosValidos(), AHORA);
+    assert.throws(() => oferta.editar({ stock: -1 }, AHORA), ReglaNegocioError);
+  });
+
+  test('rechaza hora límite en el pasado (RN-03)', () => {
+    const oferta = Oferta.publicar(datosValidos(), AHORA);
+    assert.throws(() => oferta.editar({ horaLimite: HACE_UNA_HORA }, AHORA), ReglaNegocioError);
+  });
+
+  test('rechaza editar una oferta FINALIZADA', () => {
+    const oferta = Oferta.publicar(datosValidos(), AHORA);
+    oferta.estado = EstadoOferta.FINALIZADA;
+    assert.throws(() => oferta.editar({ stock: 5 }, AHORA), ReglaNegocioError);
+  });
+});

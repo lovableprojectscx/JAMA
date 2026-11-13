@@ -10,6 +10,7 @@ import { ListarOfertasVigentes } from './aplicacion/listar-ofertas-vigentes.caso
 import { ObtenerOferta } from './aplicacion/obtener-oferta.caso-uso.js';
 import { ListarMisOfertasDeHoy } from './aplicacion/listar-mis-ofertas-de-hoy.caso-uso.js';
 import { CambiarEstadoDeOferta } from './aplicacion/cambiar-estado-oferta.caso-uso.js';
+import { EditarOferta } from './aplicacion/editar-oferta.caso-uso.js';
 import { SubirFotoOferta } from './aplicacion/subir-foto-oferta.caso-uso.js';
 import { OfertasController } from './presentacion/ofertas.controller.js';
 import { crearRutasOfertasPublicas, crearRutasOfertasNegocio } from './presentacion/ofertas.routes.js';
@@ -28,6 +29,7 @@ export function crearApiOfertas({ pool, reloj, requireAuth, almacenImagenes, api
   const obtenerOferta = new ObtenerOferta({ ofertas: ofertaRepository, negocios });
   const listarMisOfertasDeHoy = new ListarMisOfertasDeHoy({ ofertas: ofertaRepository, reloj });
   const cambiarEstadoDeOferta = new CambiarEstadoDeOferta({ ofertas: ofertaRepository, reloj });
+  const editarOferta = new EditarOferta({ ofertas: ofertaRepository, negocios, reloj });
   const subirFotoOferta = new SubirFotoOferta({ almacenImagenes });
 
   const controller = new OfertasController({
@@ -36,6 +38,7 @@ export function crearApiOfertas({ pool, reloj, requireAuth, almacenImagenes, api
     obtenerOferta,
     listarMisOfertasDeHoy,
     cambiarEstadoDeOferta,
+    editarOferta,
     subirFotoOferta,
     reloj,
   });

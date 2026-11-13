@@ -661,6 +661,38 @@ Siguiendo el diseño de software formal [`plan-gestion-categorias-y-otros.md`](d
    - **Reversión limpia**: Retorno a `PANADERIA` en panel; la vitrina se actualizó de inmediato a `🥖 Panaderías (1)`.
    - Build de Vite limpio en 422ms y 0 errores de linter.
 
+### Etapa 20 — Edición Ágil de Ofertas y Republicación en 1 Toque (esta sesión)
+
+Siguiendo el diseño de software formal [`plan-edicion-y-republicacion-ofertas.md`](docs/03-diseno-de-software/plan-edicion-y-republicacion-ofertas.md) ([RF08](docs/01-analisis-de-sistema/03-requisitos-funcionales.md), [RF09](docs/01-analisis-de-sistema/03-requisitos-funcionales.md), [RF10](docs/01-analisis-de-sistema/03-requisitos-funcionales.md); [HU07](docs/01-analisis-de-sistema/02-historias-del-usuario.md), [HU08](docs/01-analisis-de-sistema/02-historias-del-usuario.md); [ADR-001](docs/02-arquitectura-software/decisiones/ADR-001-monolito-modular.md), [ADR-002](docs/02-arquitectura-software/decisiones/ADR-002-clean-architecture.md)):
+
+1. **Clean Architecture en Dominio y Aplicación**:
+   - **Entidad `Oferta` (`oferta.js`)**: Se incorporó el método `editar({ titulo, descripcion, fotoUrl, precioCarta, precioOferta, stock, horaLimite, tramosPrecio }, ahora)`:
+     - Valida que la oferta no esté `FINALIZADA`.
+     - Si la oferta estaba `AGOTADA` y se añade stock ($> 0$), se reactiva automáticamente a `ACTIVA`. Si una activa reduce su stock a $0$, transiciona a `AGOTADA`.
+     - Exige cumplimiento estricto de RN-01 (`precioOferta < precioCarta`, precios $> 0$) y RN-03 (`stock >= 0`, `horaLimite` futura).
+     - Revalida tramos de precio con `validarTramos` contra los nuevos precios.
+   - **Caso de uso `EditarOferta`**: Asegura el aislamiento por negocio (RN-10: solo el dueño puede editar su oferta, 404 para terceros) y verifica que el negocio esté `ACTIVO` (RN-13).
+   - **Caso de uso `ListarMisOfertasDeHoy`**: Se amplió con el parámetro opcional `filtro: 'hoy' | 'todas'` para permitir recuperar el catálogo histórico del comercio para republicación.
+
+2. **Infraestructura y Rutas REST**:
+   - `OfertaRepositoryPg`: Se implementó el método `actualizar(oferta, tx)` con consulta SQL `UPDATE ofertas SET titulo=$1, descripcion=$2, foto_url=$3, precio_carta=$4, precio_oferta=$5, stock=$6, hora_limite=$7, estado=$8, actualizado_en=$9, tramos_precio=$10 WHERE id=$11`.
+   - `OfertasController`: Nuevos métodos `editar(req, res, next)` y ampliación de `listarMisDeHoy` para aceptar `?dia=todas`.
+   - `ofertas.routes.js`: Montado sobre `PATCH /api/v1/negocios/me/ofertas/:id` manteniendo compatibilidad hacia atrás con el cambio de estado individual.
+   - **121 pruebas unitarias y de arquitectura pasando al 100% (7 pruebas nuevas en `oferta.test.js`)**.
+
+3. **Frontend del Panel (`MisOfertasPantalla.jsx` y `PublicarOfertaPantalla.jsx`)**:
+   - **Pestaña doble en "Mis ofertas"**:
+     - *Ofertas de hoy:* Muestra ofertas activas/pausadas con botones de acción directa: **"✏️ Editar"** y **"Pausar/Reanudar"**.
+     - *Historial / Catálogo:* Muestra las ofertas pasadas con la fecha de elaboración y el botón destacado **"🔁 Republicar para hoy en 1 clic"**.
+   - **Modal Bottom-Sheet de Edición**: Permite corregir en vivo título, descripción, precios, stock y hora límite con recálculo automático de porcentajes y persistencia inmediata.
+   - **Flujo de Republicación en 1 Toque**: Al hacer clic en "Republicar", redirige a la pantalla de publicación con los datos precargados (foto, título, precios y descripción) y las horas ajustadas automáticamente a la tarde de hoy (recojo 6:00 p.m. a 8:00 p.m.), ahorrando tiempo al comerciante.
+
+4. **Certificación Interactiva de Extremo a Extremo (Subagente Browser)**:
+   - En `/panel`, se abrió el modal de edición de "Pack 6 Croissants de Mantequilla", modificando stock de 3 a 6 y precio de S/ 9.00 a S/ 8.50. Guardado exitoso con alerta verde.
+   - En la vitrina pública `/`, se verificó en tiempo real la actualización a S/ 8.50 con recálculo de descuento a -53% y stock disponible de 6 unidades.
+   - En la pestaña "Historial / Catálogo", se presionó "🔁 Republicar para hoy en 1 clic"; el panel redirigió de inmediato a la pantalla de publicación con el banner explicativo amarillo y todos los campos prellenados.
+   - Build de producción Vite completado en 598ms con 0 errores de linter.
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:

@@ -35,6 +35,14 @@ export function cambiarEstadoOferta(token, id, estado) {
   return solicitar(`/negocios/me/ofertas/${id}`, { method: 'PATCH', token, body: { estado } });
 }
 
+export function editarOferta(token, id, datos) {
+  return solicitar(`/negocios/me/ofertas/${id}`, { method: 'PATCH', token, body: datos });
+}
+
+export function obtenerTodasMisOfertas(token) {
+  return solicitar('/negocios/me/ofertas?dia=todas', { token });
+}
+
 export function publicarOferta(token, datos) {
   return solicitar('/negocios/me/ofertas', { method: 'POST', token, body: datos });
 }

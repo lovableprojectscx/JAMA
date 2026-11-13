@@ -183,6 +183,71 @@ export class Oferta {
     this.actualizadoEn = ahora;
   }
 
+  /**
+   * RF09: Permite al negocio editar su oferta activa, pausada o agotada.
+   * Si una oferta agotada recibe stock adicional, se reactiva a ACTIVA.
+   */
+  editar({ titulo, descripcion, fotoUrl, precioCarta, precioOferta, stock, horaLimite, tramosPrecio }, ahora) {
+    if (this.estado === EstadoOferta.FINALIZADA) {
+      throw new ReglaNegocioError('No se puede editar una oferta finalizada');
+    }
+
+    const nuevoTitulo = typeof titulo === 'string' ? titulo.trim() : this.titulo;
+    if (!nuevoTitulo || nuevoTitulo.length < 2 || nuevoTitulo.length > 100) {
+      throw new ReglaNegocioError('RN-15: El título de la oferta debe tener entre 2 y 100 caracteres');
+    }
+
+    const nuevoPrecioCarta = typeof precioCarta !== 'undefined' ? Number(precioCarta) : this.precioCarta;
+    const nuevoPrecioOferta = typeof precioOferta !== 'undefined' ? Number(precioOferta) : this.precioOferta;
+
+    if (!(nuevoPrecioOferta < nuevoPrecioCarta)) {
+      throw new ReglaNegocioError('RN-01: el precio de oferta debe ser menor que el precio de carta');
+    }
+    if (nuevoPrecioOferta <= 0 || nuevoPrecioCarta <= 0) {
+      throw new ReglaNegocioError('RN-01: los precios deben ser mayores a cero');
+    }
+
+    let nuevoStock = typeof stock !== 'undefined' ? Number(stock) : this.stock;
+    if (!Number.isInteger(nuevoStock) || nuevoStock < 0) {
+      throw new ReglaNegocioError('RN-03: el stock debe ser un entero mayor o igual a cero');
+    }
+
+    let nuevaHoraLimite = this.horaLimite;
+    if (typeof horaLimite !== 'undefined') {
+      const fechaLimite = horaLimite instanceof Date ? horaLimite : new Date(horaLimite);
+      if (Number.isNaN(fechaLimite.getTime()) || fechaLimite <= ahora) {
+        throw new ReglaNegocioError('RN-03: la hora límite debe ser futura');
+      }
+      nuevaHoraLimite = fechaLimite;
+    }
+
+    const nuevosTramos = typeof tramosPrecio !== 'undefined'
+      ? validarTramos(tramosPrecio, nuevoPrecioCarta, nuevoPrecioOferta)
+      : validarTramos(this.tramosPrecio, nuevoPrecioCarta, nuevoPrecioOferta);
+
+    this.titulo = nuevoTitulo;
+    if (typeof descripcion !== 'undefined') {
+      this.descripcion = typeof descripcion === 'string' && descripcion.trim() ? descripcion.trim().slice(0, 200) : null;
+    }
+    if (typeof fotoUrl !== 'undefined') {
+      this.fotoUrl = typeof fotoUrl === 'string' ? fotoUrl.trim() : '';
+    }
+    this.precioCarta = nuevoPrecioCarta;
+    this.precioOferta = nuevoPrecioOferta;
+    this.stock = nuevoStock;
+    this.horaLimite = nuevaHoraLimite;
+    this.tramosPrecio = nuevosTramos;
+
+    // Transición de estado reactiva según stock
+    if (this.stock === 0 && this.estado === EstadoOferta.ACTIVA) {
+      this.estado = EstadoOferta.AGOTADA;
+    } else if (this.stock > 0 && this.estado === EstadoOferta.AGOTADA) {
+      this.estado = EstadoOferta.ACTIVA;
+    }
+
+    this.actualizadoEn = ahora;
+  }
+
   /** RN-08: un código NO_CONCRETADO o EXPIRADO devuelve su unidad al stock. */
   liberarUnidad(ahora) {
     this.stock += 1;

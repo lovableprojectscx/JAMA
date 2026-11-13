@@ -20,6 +20,11 @@ export class OfertaRepository {
     throw new Error('OfertaRepository.guardar() no implementado');
   }
 
+  // eslint-disable-next-line no-unused-vars
+  async actualizar(oferta, tx) {
+    throw new Error('OfertaRepository.actualizar() no implementado');
+  }
+
   /** Solo ofertas de los negocios de `negocioIds` (los ACTIVO, RN-13). */
   // eslint-disable-next-line no-unused-vars
   async listarVigentes(ahora, negocioIds) {

@@ -11,6 +11,7 @@ import logoJama from '../assets/jama-logo.png';
 export default function PanelApp() {
   const [sesion, setSesion] = useState(leerSesionGuardada);
   const [pantalla, setPantalla] = useState('ofertas');
+  const [ofertaParaRepublicar, setOfertaParaRepublicar] = useState(null);
 
   function handleIngresar(nuevaSesion) {
     guardarSesion(nuevaSesion);
@@ -20,6 +21,16 @@ export default function PanelApp() {
   function handleSalir() {
     borrarSesion();
     setSesion(null);
+  }
+
+  function handleRepublicar(oferta) {
+    setOfertaParaRepublicar(oferta);
+    setPantalla('publicar');
+  }
+
+  function handleOfertaPublicada() {
+    setOfertaParaRepublicar(null);
+    setPantalla('ofertas');
   }
 
   if (!sesion) {
@@ -43,13 +54,30 @@ export default function PanelApp() {
       </header>
 
       <main className="panel-contenido">
-        {pantalla === 'ofertas' && <MisOfertasPantalla token={sesion.token} />}
-        {pantalla === 'publicar' && <PublicarOfertaPantalla token={sesion.token} />}
+        {pantalla === 'ofertas' && (
+          <MisOfertasPantalla
+            token={sesion.token}
+            onRepublicar={handleRepublicar}
+          />
+        )}
+        {pantalla === 'publicar' && (
+          <PublicarOfertaPantalla
+            token={sesion.token}
+            ofertaPrellenada={ofertaParaRepublicar}
+            onPublicada={handleOfertaPublicada}
+          />
+        )}
         {pantalla === 'pedidos' && <PedidosPantalla token={sesion.token} />}
         {pantalla === 'perfil' && <MiPerfilPantalla token={sesion.token} />}
       </main>
 
-      <NavInferior pantallaActiva={pantalla} onCambiarPantalla={setPantalla} />
+      <NavInferior
+        pantallaActiva={pantalla}
+        onCambiarPantalla={(p) => {
+          if (p !== 'publicar') setOfertaParaRepublicar(null);
+          setPantalla(p);
+        }}
+      />
     </div>
   );
 }

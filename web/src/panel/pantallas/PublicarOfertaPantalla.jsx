@@ -7,6 +7,18 @@ function mensajeAmigable(mensaje) {
   return mensaje?.replace(/^RN-\d+:\s*/, '') ?? 'No pudimos publicar la oferta.';
 }
 
+function obtenerFechaHoyConHora(horas, minutos) {
+  const d = new Date();
+  d.setHours(horas, minutos, 0, 0);
+  const pad = (n) => String(n).padStart(2, '0');
+  const anio = d.getFullYear();
+  const mes = pad(d.getMonth() + 1);
+  const dia = pad(d.getDate());
+  const hh = pad(d.getHours());
+  const mm = pad(d.getMinutes());
+  return `${anio}-${mes}-${dia}T${hh}:${mm}`;
+}
+
 function datosIniciales() {
   return {
     titulo: '',
@@ -20,7 +32,7 @@ function datosIniciales() {
   };
 }
 
-export default function PublicarOfertaPantalla({ token }) {
+export default function PublicarOfertaPantalla({ token, ofertaPrellenada, onPublicada }) {
   const [datos, setDatos] = useState(datosIniciales);
   const [tramos, setTramos] = useState([]);
   const [enviando, setEnviando] = useState(false);
@@ -35,10 +47,39 @@ export default function PublicarOfertaPantalla({ token }) {
     previewFotoRef.current = previewFoto;
   }, [previewFoto]);
 
+  // Si se pasa una oferta para republicar, prellenamos los datos automáticamente
+  useEffect(() => {
+    if (ofertaPrellenada) {
+      setDatos({
+        titulo: ofertaPrellenada.titulo || '',
+        descripcion: ofertaPrellenada.descripcion || '',
+        fotoUrl: ofertaPrellenada.fotoUrl || '',
+        precioCarta: ofertaPrellenada.precioCarta || '',
+        precioOferta: ofertaPrellenada.precioOferta || '',
+        stock: ofertaPrellenada.stock || '',
+        horaElaboracion: obtenerFechaHoyConHora(16, 0),
+        horaLimite: obtenerFechaHoyConHora(20, 0),
+      });
+      if (ofertaPrellenada.fotoUrl) {
+        setPreviewFoto(ofertaPrellenada.fotoUrl);
+      }
+      if (Array.isArray(ofertaPrellenada.tramosPrecio) && ofertaPrellenada.tramosPrecio.length > 0) {
+        setTramos(
+          ofertaPrellenada.tramosPrecio.map((t) => ({
+            desde: t.desde,
+            descuentoPct: t.descuentoPct,
+          }))
+        );
+      }
+    }
+  }, [ofertaPrellenada]);
+
   // Libera el object URL de la vista previa al salir de esta pantalla.
   useEffect(() => {
     return () => {
-      if (previewFotoRef.current) URL.revokeObjectURL(previewFotoRef.current);
+      if (previewFotoRef.current && previewFotoRef.current.startsWith('blob:')) {
+        URL.revokeObjectURL(previewFotoRef.current);
+      }
     };
   }, []);
 
@@ -47,7 +88,7 @@ export default function PublicarOfertaPantalla({ token }) {
   }
 
   function limpiarVistaPreviaFoto() {
-    if (previewFoto) URL.revokeObjectURL(previewFoto);
+    if (previewFoto && previewFoto.startsWith('blob:')) URL.revokeObjectURL(previewFoto);
     setPreviewFoto(null);
   }
 
@@ -110,6 +151,9 @@ export default function PublicarOfertaPantalla({ token }) {
       setDatos(datosIniciales());
       setTramos([]);
       limpiarVistaPreviaFoto();
+      if (onPublicada) {
+        setTimeout(() => onPublicada(), 1200);
+      }
     } catch (err) {
       setError(mensajeAmigable(err.message));
     } finally {
@@ -120,6 +164,12 @@ export default function PublicarOfertaPantalla({ token }) {
   return (
     <div className="panel-pantalla">
       <h1 className="panel-pantalla__titulo">Publicar oferta</h1>
+
+      {ofertaPrellenada && (
+        <div className="panel-aviso panel-aviso--republicar">
+          <span>🔁 Republicando oferta: <strong>{ofertaPrellenada.titulo}</strong>. Revisa el stock y los horarios para hoy.</span>
+        </div>
+      )}
 
       {exito && <p className="panel-aviso panel-aviso--exito">¡Publicada! Ya aparece en la vitrina.</p>}
       {error && <p className="panel-aviso panel-aviso--error">{error}</p>}

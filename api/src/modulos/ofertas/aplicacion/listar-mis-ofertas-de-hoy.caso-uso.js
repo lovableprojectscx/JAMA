@@ -6,10 +6,16 @@ export class ListarMisOfertasDeHoy {
     this.reloj = reloj;
   }
 
-  /** "Hoy" es el día calendario de Lima de la hora de elaboración de la oferta. */
-  async ejecutar({ negocioId }) {
-    const ahora = this.reloj.ahora();
+  /**
+   * "Hoy" es el día calendario de Lima de la hora de elaboración de la oferta.
+   * Si filtro === 'todas', devuelve el historial de ofertas del comercio para permitir republicación.
+   */
+  async ejecutar({ negocioId, filtro = 'hoy' }) {
     const todas = await this.ofertas.listarPorNegocio(negocioId);
+    if (filtro === 'todas') {
+      return todas;
+    }
+    const ahora = this.reloj.ahora();
     return todas.filter((oferta) => esMismoDiaLima(oferta.horaElaboracion, ahora));
   }
 }

@@ -32,6 +32,11 @@ export function crearRutasOfertasNegocio(controller, requireAuth) {
   router.post('/', requireAuth, (req, res, next) => controller.publicar(req, res, next));
   router.get('/', requireAuth, (req, res, next) => controller.listarMisDeHoy(req, res, next));
   router.post('/fotos', requireAuth, manejarSubidaFoto, (req, res, next) => controller.subirFoto(req, res, next));
-  router.patch('/:id', requireAuth, (req, res, next) => controller.cambiarEstado(req, res, next));
+  router.patch('/:id', requireAuth, (req, res, next) => {
+    if (req.body && 'estado' in req.body && Object.keys(req.body).length === 1) {
+      return controller.cambiarEstado(req, res, next);
+    }
+    return controller.editar(req, res, next);
+  });
   return router;
 }
