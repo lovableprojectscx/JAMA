@@ -10,13 +10,13 @@ export class ActualizarPerfil {
    * RN-10: solo modifica el negocio autenticado.
    * RN-13: solo negocios ACTIVO.
    */
-  async ejecutar({ negocioId, descripcion, direccion, yape, horarioAtencion, tipo, tipoDetalle }) {
+  async ejecutar({ negocioId, descripcion, direccion, yape, horarioAtencion, tipo, tipoDetalle, instagram, facebook, tiktok }) {
     const negocio = await this.negocios.obtenerPorId(negocioId);
     if (!negocio) {
       throw new NoEncontradoError('Negocio no encontrado');
     }
 
-    negocio.actualizarPerfil({ descripcion, direccion, yape, horarioAtencion, tipo, tipoDetalle });
+    negocio.actualizarPerfil({ descripcion, direccion, yape, horarioAtencion, tipo, tipoDetalle, instagram, facebook, tiktok });
     await this.negocios.guardarPerfil(negocio);
 
     return {
@@ -29,6 +29,9 @@ export class ActualizarPerfil {
       direccion: negocio.direccion,
       yape: negocio.yape,
       horarioAtencion: negocio.horarioAtencion,
+      instagram: negocio.instagram,
+      facebook: negocio.facebook,
+      tiktok: negocio.tiktok,
       logoUrl: negocio.logoUrl,
       portadaUrl: negocio.portadaUrl,
     };

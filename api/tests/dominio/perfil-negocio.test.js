@@ -47,12 +47,26 @@ describe('Negocio - Métodos de Perfil (RN-18, RN-19)', () => {
       direccion: 'Jr. 28 de Julio 150',
       yape: '912345678',
       horarioAtencion: '6:00 p. m. a 7:30 p. m.',
+      instagram: '@dulce_huamanga',
+      facebook: 'https://facebook.com/dulcehuamanga',
+      tiktok: 'https://www.tiktok.com/@dulce.tiktok',
     });
 
     assert.equal(negocio.descripcion, 'Los mejores pasteles artesanales');
     assert.equal(negocio.direccion, 'Jr. 28 de Julio 150');
     assert.equal(negocio.yape, '912345678');
     assert.equal(negocio.horarioAtencion, '6:00 p. m. a 7:30 p. m.');
+    assert.equal(negocio.instagram, 'dulce_huamanga');
+    assert.equal(negocio.facebook, 'dulcehuamanga');
+    assert.equal(negocio.tiktok, 'dulce.tiktok');
+  });
+
+  test('actualizarPerfil rechaza red social de más de 60 caracteres', () => {
+    const negocio = crearNegocioPrueba();
+    assert.throws(
+      () => negocio.actualizarPerfil({ instagram: 'a'.repeat(61) }),
+      ReglaNegocioError
+    );
   });
 
   test('actualizarPerfil permite cambiar tipo y definir tipoDetalle cuando es OTRO', () => {

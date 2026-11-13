@@ -49,6 +49,14 @@ export class ObtenerPerfilPublico {
       horarioAtencion: negocio.horarioAtencion,
       whatsapp: negocio.whatsapp,
       yape: negocio.yape,
+      instagram: negocio.instagram,
+      facebook: negocio.facebook,
+      tiktok: negocio.tiktok,
+      enlaceInstagram: negocio.instagram ? `https://instagram.com/${negocio.instagram}` : null,
+      enlaceFacebook: negocio.facebook
+        ? (negocio.facebook.startsWith('http') ? negocio.facebook : `https://facebook.com/${negocio.facebook}`)
+        : null,
+      enlaceTiktok: negocio.tiktok ? `https://tiktok.com/@${negocio.tiktok}` : null,
       enlaceMaps: negocio.direccion ? `https://www.google.com/maps/search/?api=1&query=${queryMaps}` : null,
       ofertas: (ofertas ?? []).map((o) => {
         const precioVigente = typeof o.precioVigente === 'function' ? o.precioVigente(ahora) : o.precioOferta;

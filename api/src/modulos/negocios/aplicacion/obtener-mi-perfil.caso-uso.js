@@ -27,6 +27,9 @@ export class ObtenerMiPerfil {
       horarioAtencion: negocio.horarioAtencion,
       whatsapp: negocio.whatsapp,
       yape: negocio.yape,
+      instagram: negocio.instagram,
+      facebook: negocio.facebook,
+      tiktok: negocio.tiktok,
       email: negocio.email,
       estado: negocio.estado,
     };

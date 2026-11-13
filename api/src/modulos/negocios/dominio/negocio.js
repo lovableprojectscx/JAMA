@@ -43,6 +43,21 @@ function exigirLargo(valor, campo, minimo, maximo) {
   return valor;
 }
 
+function limpiarRedSocial(valor) {
+  if (typeof valor !== 'string') return null;
+  let v = valor.trim();
+  if (!v) return null;
+  // Si introducen URL completa, quitamos el dominio y protocolo
+  v = v.replace(/^https?:\/\/(www\.)?(instagram\.com\/?|facebook\.com\/?|tiktok\.com\/@?)/i, '');
+  // Quitar @ inicial, slashes iniciales o finales
+  v = v.replace(/^[@/]+/, '').replace(/\/+$/, '').trim();
+  if (!v) return null;
+  if (v.length > 60) {
+    throw new ReglaNegocioError('El nombre de usuario de red social no debe superar 60 caracteres');
+  }
+  return v;
+}
+
 /** Celular peruano: 9 dígitos que empiezan en 9, con o sin el 51 delante. */
 function nueveDigitosDeCelular(valor) {
   let digitos = String(valor ?? '').replace(/\D/g, '');
@@ -96,6 +111,9 @@ export class Negocio {
     portadaUrl = null,
     descripcion = null,
     horarioAtencion = null,
+    instagram = null,
+    facebook = null,
+    tiktok = null,
   }) {
     this.id = id;
     this.nombre = nombre;
@@ -118,6 +136,9 @@ export class Negocio {
     this.portadaUrl = portadaUrl;
     this.descripcion = descripcion;
     this.horarioAtencion = horarioAtencion;
+    this.instagram = instagram ?? null;
+    this.facebook = facebook ?? null;
+    this.tiktok = tiktok ?? null;
   }
 
   /**
@@ -208,7 +229,7 @@ export class Negocio {
     }
   }
 
-  actualizarPerfil({ descripcion, direccion, yape, horarioAtencion, tipo, tipoDetalle }) {
+  actualizarPerfil({ descripcion, direccion, yape, horarioAtencion, tipo, tipoDetalle, instagram, facebook, tiktok }) {
     this.exigirQuePuedaOperar();
     if (typeof tipo !== 'undefined' && texto(tipo)) {
       const tipoLimpio = texto(tipo).toUpperCase();
@@ -248,6 +269,15 @@ export class Negocio {
     }
     if (typeof horarioAtencion !== 'undefined') {
       this.horarioAtencion = texto(horarioAtencion).slice(0, 100) || null;
+    }
+    if (typeof instagram !== 'undefined') {
+      this.instagram = limpiarRedSocial(instagram);
+    }
+    if (typeof facebook !== 'undefined') {
+      this.facebook = limpiarRedSocial(facebook);
+    }
+    if (typeof tiktok !== 'undefined') {
+      this.tiktok = limpiarRedSocial(tiktok);
     }
   }
 

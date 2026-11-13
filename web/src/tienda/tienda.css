@@ -288,6 +288,66 @@
   box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
 }
 
+/* Redes Sociales Oficiales */
+.tienda-redes-wrapper {
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--borde);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tienda-redes-titulo {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--gris-texto);
+  letter-spacing: 0.04em;
+}
+
+.tienda-redes-fila {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tienda-red-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+
+.tienda-red-boton:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.tienda-red-boton--ig {
+  background: #fdf2f4;
+  color: #c13584;
+  border: 1px solid #f8bbd0;
+}
+
+.tienda-red-boton--fb {
+  background: #eff6ff;
+  color: #1877f2;
+  border: 1px solid #bfdbfe;
+}
+
+.tienda-red-boton--tt {
+  background: #0f172a;
+  color: #ffffff;
+  border: 1px solid #0f172a;
+}
+
+
 /* Sección de Ofertas */
 .tienda-seccion-ofertas {
   display: flex;

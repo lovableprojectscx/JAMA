@@ -17,6 +17,11 @@ import {
 import { obtenerPerfilPublico, pedirOferta } from '../api.js';
 import OfertaCard from '../components/OfertaCard.jsx';
 import logoJama from '../assets/jama-logo.png';
+import {
+  InstagramIcon,
+  FacebookIcon,
+  TikTokIcon,
+} from '../compartido/iconos-redes.jsx';
 import './tienda.css';
 
 export default function PerfilTienda({ slug }) {
@@ -201,6 +206,50 @@ export default function PerfilTienda({ slug }) {
               <MessageCircle size={18} />
               <span>Escribir al WhatsApp del local</span>
             </a>
+
+            {(tienda.enlaceInstagram || tienda.enlaceFacebook || tienda.enlaceTiktok) && (
+              <div className="tienda-redes-wrapper">
+                <span className="tienda-redes-titulo">Canales oficiales:</span>
+                <div className="tienda-redes-fila">
+                  {tienda.enlaceInstagram && (
+                    <a
+                      href={tienda.enlaceInstagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="tienda-red-boton tienda-red-boton--ig press"
+                      title="Visitar Instagram oficial"
+                    >
+                      <InstagramIcon size={16} />
+                      <span>Instagram</span>
+                    </a>
+                  )}
+                  {tienda.enlaceFacebook && (
+                    <a
+                      href={tienda.enlaceFacebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="tienda-red-boton tienda-red-boton--fb press"
+                      title="Visitar página de Facebook oficial"
+                    >
+                      <FacebookIcon size={16} />
+                      <span>Facebook</span>
+                    </a>
+                  )}
+                  {tienda.enlaceTiktok && (
+                    <a
+                      href={tienda.enlaceTiktok}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="tienda-red-boton tienda-red-boton--tt press"
+                      title="Visitar TikTok oficial"
+                    >
+                      <TikTokIcon size={16} />
+                      <span>TikTok</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

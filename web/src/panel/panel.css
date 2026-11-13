@@ -803,6 +803,386 @@
   cursor: not-allowed;
 }
 
+/* --- Kit de Mostrador / QR Físico --- */
+.perfil-qr-card {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+}
+
+.perfil-qr-card__header {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.perfil-qr-card__icono {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #fef3c7;
+  color: #b45309;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.perfil-qr-card__titulos {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.perfil-qr-card__badge-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.perfil-qr-badge {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--azul-marino);
+  background: #e2e8f0;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.perfil-qr-badge-extra {
+  font-size: 11px;
+  font-weight: 700;
+  color: #166534;
+  background: #dcfce7;
+  padding: 2px 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.perfil-qr-card__titulo {
+  margin: 2px 0 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--azul-marino);
+}
+
+.perfil-qr-card__subtitulo {
+  margin: 0;
+  font-size: 13px;
+  color: var(--gris-texto);
+  line-height: 1.45;
+}
+
+.perfil-qr-stand-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+@media (min-width: 580px) {
+  .perfil-qr-stand-preview {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    gap: 20px;
+  }
+}
+
+/* Cartelito simulado tipo acrílico de mostrador */
+.perfil-qr-stand {
+  width: 220px;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.perfil-qr-stand__top {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #ffffff;
+  width: 100%;
+  padding: 10px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.perfil-qr-stand__marca {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  color: #fbbf24;
+}
+
+.perfil-qr-stand__tienda {
+  margin: 2px 0 0;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 4px;
+}
+
+.perfil-qr-stand__lema {
+  margin: 0;
+  font-size: 10px;
+  color: #cbd5e1;
+}
+
+.perfil-qr-stand__codigo {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.perfil-qr-stand__img {
+  width: 160px;
+  height: 160px;
+  display: block;
+  border-radius: 8px;
+}
+
+.perfil-qr-stand__cargando {
+  width: 160px;
+  height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--gris-texto);
+}
+
+.perfil-qr-stand__bottom {
+  width: 100%;
+  padding: 6px 8px 10px;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.perfil-qr-stand__instruccion {
+  font-size: 10px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.perfil-qr-stand__slug {
+  font-size: 9px;
+  color: #b45309;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.perfil-qr-stand__acciones {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.perfil-qr-stand__ventajas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.perfil-qr-ventaja-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: #334155;
+  line-height: 1.4;
+}
+
+.perfil-qr-check {
+  color: #16a34a;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.perfil-qr-stand__botones-fila {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.perfil-btn-descargar-qr {
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+
+.perfil-btn-descargar-qr:hover:not(:disabled) {
+  opacity: 0.95;
+}
+
+.perfil-btn-descargar-qr:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.perfil-btn-imprimir-qr {
+  background: transparent;
+  color: var(--azul-marino);
+  border: 1px solid #cbd5e1;
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 120ms ease;
+}
+
+.perfil-btn-imprimir-qr:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+/* --- Redes Sociales Oficiales --- */
+.perfil-subseccion-redes {
+  margin-top: 14px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--borde);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.perfil-subseccion-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.perfil-subseccion-titulo {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--azul-marino);
+}
+
+.perfil-subseccion-desc {
+  margin: 0;
+  font-size: 12px;
+  color: var(--gris-texto);
+  line-height: 1.4;
+}
+
+.perfil-redes-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 520px) {
+  .perfil-redes-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.perfil-input-prefijo-wrap {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  background: var(--crema);
+  overflow: hidden;
+  transition: border-color 150ms ease;
+}
+
+.perfil-input-prefijo-wrap:focus-within {
+  border-color: var(--azul-marino);
+}
+
+.perfil-input-prefijo {
+  padding: 0 8px 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gris-texto);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.perfil-input-prefijo-wrap input {
+  flex: 1;
+  min-width: 0;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 10px 10px 10px 0 !important;
+  outline: none !important;
+}
+
+.perfil-campo-pista {
+  font-size: 11px;
+  color: var(--gris-texto);
+  margin-top: 2px;
+}
+
+/* Estilos de impresión para el cartel */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .perfil-qr-stand,
+  .perfil-qr-stand * {
+    visibility: visible;
+  }
+  .perfil-qr-stand {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.6);
+    border: none !important;
+    box-shadow: none !important;
+  }
+}
+
+
 /* Pestañas de Ofertas (Hoy vs Historial) */
 .panel-tabs-ofertas {
   display: flex;

@@ -693,6 +693,39 @@ Siguiendo el diseño de software formal [`plan-edicion-y-republicacion-ofertas.m
    - En la pestaña "Historial / Catálogo", se presionó "🔁 Republicar para hoy en 1 clic"; el panel redirigió de inmediato a la pantalla de publicación con el banner explicativo amarillo y todos los campos prellenados.
    - Build de producción Vite completado en 598ms con 0 errores de linter.
 
+### Etapa 21 — Redes Sociales y Kit Físico de Mostrador QR para Comercios (esta sesión)
+
+Siguiendo el diseño de software formal [`plan-redes-sociales-y-qr-mostrador.md`](docs/03-diseno-de-software/plan-redes-sociales-y-qr-mostrador.md) ([RF07](docs/01-analisis-de-sistema/03-requisitos-funcionales.md), [RF24](docs/01-analisis-de-sistema/03-requisitos-funcionales.md); [HU06](docs/01-analisis-de-sistema/02-historias-del-usuario.md), [HU18](docs/01-analisis-de-sistema/02-historias-del-usuario.md), [HU19](docs/01-analisis-de-sistema/02-historias-del-usuario.md); [ADR-002](docs/02-arquitectura-software/decisiones/ADR-002-clean-architecture.md), [ADR-012](docs/02-arquitectura-software/decisiones/ADR-012-perfiles-publicos-de-negocio-y-personalizacion.md)):
+
+1. **Clean Architecture y Base de Datos**:
+   - **Migración PostgreSQL `006_redes_sociales_negocio.sql`**: Se añadieron las columnas `instagram`, `facebook`, `tiktok` (TEXT) a la tabla `negocios`.
+   - **Entidad `Negocio` (`negocio.js`)**: Incorporación de propiedades y sanitización rigurosa de identificadores de redes sociales mediante `limpiarRedSocial()`, removiendo caracteres `@`, diagonales iniciales y prefijos de dominio (`https://instagram.com/`, etc.), validando longitud máxima de 60 caracteres.
+   - **Casos de Uso**:
+     - `ActualizarPerfil`: Recibe y persiste `instagram`, `facebook`, `tiktok`.
+     - `ObtenerMiPerfil`: Expone los identificadores oficiales en el panel privado.
+     - `ObtenerPerfilPublico`: Genera las URLs canónicas completas `enlaceInstagram`, `enlaceFacebook` y `enlaceTiktok` para consumo del frontend.
+   - **Infraestructura**: `NegocioRepositoryPg` mapea las nuevas columnas y actualiza en `guardarPerfil`.
+   - **Pruebas Automatizadas**: 122 pruebas unitarias pasando al 100% (0 fallos).
+
+2. **Frontend del Panel (`MiPerfilPantalla.jsx` y `panel.css`)**:
+   - **Sección "Redes Sociales Oficiales"**: Campos dedicados con prefijos fijos visuales (`@`, `fb.com/`) y pistas de ayuda contextuales para Instagram, Facebook y TikTok.
+   - **Tarjeta "Kit Físico de Mostrador" (Tu Código QR)**:
+     - Renderizado reactivo de soporte acrílico simulado con código QR dinámico (`qrcode`) apuntando a `${window.location.origin}/t/${perfil.slug}`.
+     - Resumen de beneficios para el comerciante huamanguino: fidelización en punto de venta, formato listo para acrílico/papel A5/A4 y sin costo extra.
+     - Botón **"Descargar cartel para mostrador (PNG)"**: Genera un afiche de alta definición en proporción A5 (800 x 1130 px) mediante Canvas API con cabecera corporativa JAMA, lema de rescate de alimentos, nombre de la tienda, código QR nítido, dirección y llamado a la acción.
+     - Botón **"Imprimir cartel"**: Permite impresión directa del soporte vía `window.print()` con reglas de estilo `@media print`.
+
+3. **Frontend de Tienda Pública (`PerfilTienda.jsx` y `tienda.css`)**:
+   - Incorporación del componente compartido de iconografía SVG (`iconos-redes.jsx`) con vectores limpios de Instagram, Facebook y TikTok.
+   - Sección "Canales oficiales" renderizada inmediatamente bajo el botón de WhatsApp con botones píldora táctiles de alta distinción cromática y enlaces con `target="_blank"` y `rel="noopener noreferrer"`.
+
+4. **Certificación Interactiva E2E con Subagente Browser**:
+   - Verificado en navegador Chromium real contra `http://localhost:5173`:
+     - Guardado de redes de `Panadería Ejemplo` (`panaderia_ejemplo`, `panaderia.ejemplo.ayacucho`, `panaderia_ejemplo_pe`) con respuesta instantánea de la API y confirmación verde en pantalla (`step_265_redes_guardadas.png`).
+     - Visualización del Kit de Mostrador QR en el panel con mockup de acrílico y botones de acción (`step_284_kit_mostrador_qr.png`).
+     - Verificación de la página pública `/t/panaderia-ejemplo`: botones oficiales visibles con atributos `href` canónicos y estilos responsivos (`step_271_tienda_redes_publicas.png`).
+   - Linter `oxlint`: 0 errores. Build de producción `vite build`: completado en 509 ms.
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:

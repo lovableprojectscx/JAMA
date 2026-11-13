@@ -28,6 +28,9 @@ function filaANegocio(fila) {
     portadaUrl: fila.portada_url,
     descripcion: fila.descripcion,
     horarioAtencion: fila.horario_atencion,
+    instagram: fila.instagram,
+    facebook: fila.facebook,
+    tiktok: fila.tiktok,
   });
 }
 
@@ -139,8 +142,9 @@ export class NegocioRepositoryPg extends NegocioRepository {
     await ejecutor.query(
       `UPDATE negocios
        SET descripcion = $1, direccion = $2, yape = $3, horario_atencion = $4,
-           logo_url = $5, portada_url = $6, tipo = $7, tipo_detalle = $8
-       WHERE id = $9`,
+           logo_url = $5, portada_url = $6, tipo = $7, tipo_detalle = $8,
+           instagram = $9, facebook = $10, tiktok = $11
+       WHERE id = $12`,
       [
         negocio.descripcion,
         negocio.direccion,
@@ -150,6 +154,9 @@ export class NegocioRepositoryPg extends NegocioRepository {
         negocio.portadaUrl,
         negocio.tipo,
         negocio.tipoDetalle ?? null,
+        negocio.instagram ?? null,
+        negocio.facebook ?? null,
+        negocio.tiktok ?? null,
         negocio.id,
       ]
     );
