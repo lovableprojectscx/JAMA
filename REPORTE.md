@@ -606,6 +606,25 @@ Siguiendo [ADR-012](docs/02-arquitectura-software/decisiones/ADR-012-perfiles-pu
      - `capturas/27-panel-mi-perfil-desktop-1280.png` (Panel Mi Perfil escritorio 1280px)
      - `capturas/28-oferta-publicada-en-perfil.png` (Oferta activa renderizada en la tienda)
      - `capturas/29-reserva-modal-perfil.png` (Modal bottom-sheet de reserva con código de cupón troquelado)
+     - `capturas/30-canje-exitoso-mostrador.png` (Canje exitoso en el mostrador del panel: VENDIDO)
+     - `capturas/31-vitrina-filtros-categoria.png` (Barra de filtros de categoría reactiva en vitrina)
+
+### Etapa 18 — Validación en Mostrador (RF11/HU09) y Filtros por Categoría en Vitrina (RF02/HU02)
+
+Siguiendo el principio de **cierre transaccional sin fricción** y el [Plan de Filtros de Categoría](docs/03-diseno-de-software/plan-filtros-categoria-vitrina.md):
+
+1. **Cierre de Venta en Mostrador ([RF11](docs/01-analisis-de-sistema/03-requisitos-funcionales.md), [HU09](docs/01-analisis-de-sistema/02-historias-del-usuario.md))**:
+   - Se probó en tiempo real la pantalla de pedidos (`PedidosPantalla.jsx`) con el código real generado `KXDS`.
+   - El comerciante ingresó el código en el mostrador y presionó **"Vendido"**; el backend ejecutó la transición de estado a `VENDIDO` (RN-07) mediante HTTP 204.
+   - La base de datos Supabase confirmó el estado `VENDIDO`, precio acordado S/ 9.00 y el stock consolidado en 3 unidades (captura `30-canje-exitoso-mostrador.png`).
+
+2. **Filtros por Categoría en Vitrina ([RF02](docs/01-analisis-de-sistema/03-requisitos-funcionales.md), [HU02](docs/01-analisis-de-sistema/02-historias-del-usuario.md), [ADR-003](docs/02-arquitectura-software/decisiones/ADR-003-filtros-en-cliente.md))**:
+   - **Backend**: `listar-ofertas-vigentes.caso-uso.js` mapea `o.negocioTipo = info.tipo ?? 'OTRO';` y `ofertas.controller.js` expone `negocioTipo` en la serialización pública.
+   - **Frontend**: Componente accesible [FiltroCategorias.jsx](web/src/components/FiltroCategorias.jsx) montado en la vitrina de [App.jsx](web/src/App.jsx).
+     - Pills con conteo reactivo `(N)` que solo muestran rubros con ofertas activas para evitar filtros vacíos engañosos.
+     - Scroll horizontal táctil sin scrollbar visible.
+     - Pill activa de alto contraste en Azul Marino `#1E2B4D` con badge en Lima `#D4DC31` (captura `31-vitrina-filtros-categoria.png`).
+   - **106 pruebas unitarias y de arquitectura** pasando al 100%. Build de producción Vite en 481ms.
 
 ## 2. Cómo correrlo
 

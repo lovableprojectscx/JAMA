@@ -21,6 +21,7 @@ export class ListarOfertasVigentes {
           o.negocioDireccion = info.direccion;
           o.negocioSlug = info.slug;
           o.negocioLogoUrl = info.logo_url;
+          o.negocioTipo = info.tipo ?? 'OTRO';
         }
         return o;
       });

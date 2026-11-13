@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Check, Compass, MapPin, MessageCircle, Store, X } from 'lucide-react';
 import Header from './components/Header.jsx';
 import Hero from './components/Hero.jsx';
 import OfertaCard from './components/OfertaCard.jsx';
+import FiltroCategorias from './components/FiltroCategorias.jsx';
 import EjemplosIlustrativos from './components/EjemplosIlustrativos.jsx';
 import ComoFunciona from './components/ComoFunciona.jsx';
 import Faq from './components/Faq.jsx';
@@ -19,8 +20,22 @@ export default function App() {
   const [ofertaEnProceso, setOfertaEnProceso] = useState(null);
   const [confirmacion, setConfirmacion] = useState(null);
   const [avisoError, setAvisoError] = useState(null);
+  const [categoriaActiva, setCategoriaActiva] = useState('TODAS');
 
   const refOfertas = useRef(null);
+
+  const { conteos, ofertasFiltradas } = useMemo(() => {
+    const mapaConteos = { TODAS: ofertas.length };
+    for (const o of ofertas) {
+      const tipo = o.negocioTipo || 'OTRO';
+      mapaConteos[tipo] = (mapaConteos[tipo] || 0) + 1;
+    }
+    const filtradas =
+      categoriaActiva === 'TODAS'
+        ? ofertas
+        : ofertas.filter((o) => (o.negocioTipo || 'OTRO') === categoriaActiva);
+    return { conteos: mapaConteos, ofertasFiltradas: filtradas };
+  }, [ofertas, categoriaActiva]);
 
   async function cargarOfertas(opciones = {}) {
     const { silencioso = false } = opciones;
@@ -84,16 +99,24 @@ export default function App() {
           </div>
           <h2 className="seccion__titulo">La JAMA de hoy</h2>
           <p className="seccion__bajada">
-            Lotes frescos de pastelerías del centro a mitad de precio.
+            Excedentes frescos de locales del Centro de Huamanga a mitad de precio.
           </p>
         </div>
+
+        {!cargandoLista && !errorLista && ofertas.length > 0 && (
+          <FiltroCategorias
+            categoriaSeleccionada={categoriaActiva}
+            onSeleccionarCategoria={setCategoriaActiva}
+            conteos={conteos}
+          />
+        )}
 
         {cargandoLista && <p className="estado">Cargando ofertas de hoy...</p>}
         {!cargandoLista && errorLista && <p className="estado estado--error">{errorLista}</p>}
         {!cargandoLista && !errorLista && ofertas.length === 0 && <EjemplosIlustrativos />}
-        {!cargandoLista && !errorLista && ofertas.length > 0 && (
+        {!cargandoLista && !errorLista && ofertas.length > 0 && ofertasFiltradas.length > 0 && (
           <div className="lista-ofertas">
-            {ofertas.map((oferta) => (
+            {ofertasFiltradas.map((oferta) => (
               <OfertaCard
                 key={oferta.id}
                 oferta={oferta}
@@ -101,6 +124,22 @@ export default function App() {
                 cargando={ofertaEnProceso === oferta.id}
               />
             ))}
+          </div>
+        )}
+        {!cargandoLista && !errorLista && ofertas.length > 0 && ofertasFiltradas.length === 0 && (
+          <div className="filtro-vacio">
+            <span className="filtro-vacio__icono">🔍</span>
+            <h3 className="filtro-vacio__titulo">No hay ofertas en esta categoría hoy</h3>
+            <p className="filtro-vacio__desc">
+              Los locales de este rubro aún no han publicado excedentes para hoy. Puedes revisar más tarde o explorar las demás opciones.
+            </p>
+            <button
+              type="button"
+              className="filtro-vacio__btn press"
+              onClick={() => setCategoriaActiva('TODAS')}
+            >
+              Ver todas las ofertas
+            </button>
           </div>
         )}
       </main>
