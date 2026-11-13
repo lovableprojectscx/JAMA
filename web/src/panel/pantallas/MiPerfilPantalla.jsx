@@ -114,6 +114,8 @@ export default function MiPerfilPantalla({ token }) {
         direccion: perfil.direccion,
         yape: perfil.yape,
         horarioAtencion: perfil.horarioAtencion,
+        tipo: perfil.tipo,
+        tipoDetalle: perfil.tipo === 'OTRO' ? perfil.tipoDetalle : null,
       });
       setMensajeExito('¡Perfil actualizado con éxito!');
     } catch (err) {
@@ -255,6 +257,42 @@ export default function MiPerfilPantalla({ token }) {
       {/* Formulario de Datos Comerciales */}
       <form onSubmit={handleGuardar} className="perfil-form-card">
         <h4 className="perfil-seccion-titulo">Información Comercial</h4>
+
+        <div className="perfil-campo-grid">
+          <div className="perfil-campo">
+            <label htmlFor="perfil-tipo">
+              <Store size={16} /> Rubro comercial:
+            </label>
+            <select
+              id="perfil-tipo"
+              className="perfil-select"
+              value={perfil.tipo}
+              onChange={(e) => setPerfil({ ...perfil, tipo: e.target.value })}
+            >
+              <option value="PASTELERIA">Pastelería</option>
+              <option value="PANADERIA">Panadería</option>
+              <option value="CAFETERIA">Cafetería</option>
+              <option value="POLLERIA">Pollería</option>
+              <option value="RESTAURANTE">Restaurante / Menú</option>
+              <option value="OTRO">Otro rubro</option>
+            </select>
+          </div>
+
+          {perfil.tipo === 'OTRO' && (
+            <div className="perfil-campo">
+              <label htmlFor="perfil-tipo-detalle">¿Cuál es tu rubro o especialidad?</label>
+              <input
+                id="perfil-tipo-detalle"
+                type="text"
+                maxLength={60}
+                required
+                placeholder="Ej: Heladería, Juguería, Pizzería"
+                value={perfil.tipoDetalle}
+                onChange={(e) => setPerfil({ ...perfil, tipoDetalle: e.target.value })}
+              />
+            </div>
+          )}
+        </div>
 
         <div className="perfil-campo">
           <label htmlFor="perfil-desc">

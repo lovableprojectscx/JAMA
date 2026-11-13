@@ -208,8 +208,27 @@ export class Negocio {
     }
   }
 
-  actualizarPerfil({ descripcion, direccion, yape, horarioAtencion }) {
+  actualizarPerfil({ descripcion, direccion, yape, horarioAtencion, tipo, tipoDetalle }) {
     this.exigirQuePuedaOperar();
+    if (typeof tipo !== 'undefined' && texto(tipo)) {
+      const tipoLimpio = texto(tipo).toUpperCase();
+      if (!TIPOS_DE_NEGOCIO.includes(tipoLimpio)) {
+        throw new ReglaNegocioError(`RN-15: Tipo de negocio inválido. Opciones: ${TIPOS_DE_NEGOCIO.join(', ')}`);
+      }
+      this.tipo = tipoLimpio;
+      if (this.tipo !== 'OTRO') {
+        this.tipoDetalle = null;
+      }
+    }
+    if (this.tipo === 'OTRO' && typeof tipoDetalle !== 'undefined') {
+      const detalle = texto(tipoDetalle);
+      if (detalle) {
+        if (detalle.length < 2 || detalle.length > 60) {
+          throw new ReglaNegocioError('RN-15: El detalle del tipo debe tener entre 2 y 60 caracteres');
+        }
+        this.tipoDetalle = detalle;
+      }
+    }
     if (typeof descripcion !== 'undefined') {
       this.descripcion = texto(descripcion).slice(0, 200) || null;
     }

@@ -1,22 +1,14 @@
+import { CATEGORIAS_BASE } from '../compartido/categorias.js';
 import './FiltroCategorias.css';
 
-const DEFINICION_CATEGORIAS = [
-  { id: 'TODAS', etiqueta: 'Todas', emoji: '✨' },
-  { id: 'PASTELERIA', etiqueta: 'Pastelerías', emoji: '🍰' },
-  { id: 'PANADERIA', etiqueta: 'Panaderías', emoji: '🥖' },
-  { id: 'CAFETERIA', etiqueta: 'Cafeterías', emoji: '☕' },
-  { id: 'RESTAURANTE', etiqueta: 'Comida', emoji: '🍲' },
-  { id: 'JUGUERIA', etiqueta: 'Juguerías', emoji: '🥤' },
-  { id: 'OTRO', etiqueta: 'Otros', emoji: '🏪' },
-];
-
 export default function FiltroCategorias({
+  categorias = CATEGORIAS_BASE,
   categoriaSeleccionada = 'TODAS',
   onSeleccionarCategoria,
   conteos = {},
 }) {
   // Solo mostramos 'TODAS' y las categorías que tienen al menos 1 oferta activa
-  const categoriasVisibles = DEFINICION_CATEGORIAS.filter(
+  const categoriasVisibles = categorias.filter(
     (cat) => cat.id === 'TODAS' || (conteos[cat.id] ?? 0) > 0
   );
 

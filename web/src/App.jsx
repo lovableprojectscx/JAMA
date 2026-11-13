@@ -4,6 +4,12 @@ import Header from './components/Header.jsx';
 import Hero from './components/Hero.jsx';
 import OfertaCard from './components/OfertaCard.jsx';
 import FiltroCategorias from './components/FiltroCategorias.jsx';
+import {
+  CATEGORIAS_BASE,
+  normalizarClave,
+  resolverEmojiDetalle,
+  capitalizar,
+} from './compartido/categorias.js';
 import EjemplosIlustrativos from './components/EjemplosIlustrativos.jsx';
 import ComoFunciona from './components/ComoFunciona.jsx';
 import Faq from './components/Faq.jsx';
@@ -24,17 +30,48 @@ export default function App() {
 
   const refOfertas = useRef(null);
 
-  const { conteos, ofertasFiltradas } = useMemo(() => {
+  const { categorias, conteos, ofertasFiltradas } = useMemo(() => {
     const mapaConteos = { TODAS: ofertas.length };
-    for (const o of ofertas) {
-      const tipo = o.negocioTipo || 'OTRO';
-      mapaConteos[tipo] = (mapaConteos[tipo] || 0) + 1;
+    const categoriasDinamicasMap = new Map();
+
+    function resolverCategoriaId(oferta) {
+      const tipo = oferta.negocioTipo || 'OTRO';
+      const detalle = (oferta.negocioTipoDetalle || '').trim();
+      if (tipo === 'OTRO' && detalle) {
+        return `OTRO:${normalizarClave(detalle)}`;
+      }
+      return tipo;
     }
+
+    for (const o of ofertas) {
+      const catId = resolverCategoriaId(o);
+      mapaConteos[catId] = (mapaConteos[catId] || 0) + 1;
+
+      if (catId.startsWith('OTRO:') && !categoriasDinamicasMap.has(catId)) {
+        const detalle = o.negocioTipoDetalle.trim();
+        categoriasDinamicasMap.set(catId, {
+          id: catId,
+          etiqueta: capitalizar(detalle),
+          emoji: resolverEmojiDetalle(detalle),
+        });
+      }
+    }
+
+    const categoriasCompletas = [
+      ...CATEGORIAS_BASE,
+      ...Array.from(categoriasDinamicasMap.values()),
+    ];
+
     const filtradas =
       categoriaActiva === 'TODAS'
         ? ofertas
-        : ofertas.filter((o) => (o.negocioTipo || 'OTRO') === categoriaActiva);
-    return { conteos: mapaConteos, ofertasFiltradas: filtradas };
+        : ofertas.filter((o) => resolverCategoriaId(o) === categoriaActiva);
+
+    return {
+      categorias: categoriasCompletas,
+      conteos: mapaConteos,
+      ofertasFiltradas: filtradas,
+    };
   }, [ofertas, categoriaActiva]);
 
   async function cargarOfertas(opciones = {}) {
@@ -105,6 +142,7 @@ export default function App() {
 
         {!cargandoLista && !errorLista && ofertas.length > 0 && (
           <FiltroCategorias
+            categorias={categorias}
             categoriaSeleccionada={categoriaActiva}
             onSeleccionarCategoria={setCategoriaActiva}
             conteos={conteos}

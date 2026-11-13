@@ -55,6 +55,30 @@ describe('Negocio - Métodos de Perfil (RN-18, RN-19)', () => {
     assert.equal(negocio.horarioAtencion, '6:00 p. m. a 7:30 p. m.');
   });
 
+  test('actualizarPerfil permite cambiar tipo y definir tipoDetalle cuando es OTRO', () => {
+    const negocio = crearNegocioPrueba();
+    negocio.actualizarPerfil({
+      tipo: 'OTRO',
+      tipoDetalle: 'Heladería artesanal',
+    });
+
+    assert.equal(negocio.tipo, 'OTRO');
+    assert.equal(negocio.tipoDetalle, 'Heladería artesanal');
+
+    // Cambiar a tipo estándar limpia tipoDetalle automáticamente
+    negocio.actualizarPerfil({ tipo: 'PANADERIA' });
+    assert.equal(negocio.tipo, 'PANADERIA');
+    assert.equal(negocio.tipoDetalle, null);
+  });
+
+  test('actualizarPerfil rechaza tipo de negocio no permitido', () => {
+    const negocio = crearNegocioPrueba();
+    assert.throws(
+      () => negocio.actualizarPerfil({ tipo: 'SUPERMERCADO' }),
+      ReglaNegocioError
+    );
+  });
+
   test('actualizarPerfil rechaza Yape que no tenga 9 dígitos', () => {
     const negocio = crearNegocioPrueba();
     assert.throws(

@@ -17,6 +17,7 @@ function serializarOferta(oferta, ahora) {
     negocioSlug: oferta.negocioSlug ?? null,
     negocioLogoUrl: oferta.negocioLogoUrl ?? null,
     negocioTipo: oferta.negocioTipo ?? null,
+    negocioTipoDetalle: oferta.negocioTipoDetalle ?? null,
     zona: 'Centro',
     enlaceMaps: oferta.negocioDireccion
       ? `https://www.google.com/maps/search/?api=1&query=${queryMaps}`

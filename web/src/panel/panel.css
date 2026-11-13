@@ -754,7 +754,8 @@
 }
 
 .perfil-campo input,
-.perfil-campo textarea {
+.perfil-campo textarea,
+.perfil-campo select {
   font-family: inherit;
   font-size: 14px;
   padding: 10px 12px;
@@ -767,7 +768,8 @@
 }
 
 .perfil-campo input:focus,
-.perfil-campo textarea:focus {
+.perfil-campo textarea:focus,
+.perfil-campo select:focus {
   border-color: var(--azul-marino);
 }
 

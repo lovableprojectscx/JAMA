@@ -99,7 +99,7 @@ export class NegocioRepositoryPg extends NegocioRepository {
 
   async listarActivosConDetalle() {
     const { rows } = await this.pool.query(
-      `SELECT id, nombre, direccion, whatsapp, slug, logo_url, portada_url, descripcion, horario_atencion, tipo
+      `SELECT id, nombre, direccion, whatsapp, slug, logo_url, portada_url, descripcion, horario_atencion, tipo, tipo_detalle
        FROM negocios
        WHERE estado = 'ACTIVO'`
     );
@@ -139,8 +139,8 @@ export class NegocioRepositoryPg extends NegocioRepository {
     await ejecutor.query(
       `UPDATE negocios
        SET descripcion = $1, direccion = $2, yape = $3, horario_atencion = $4,
-           logo_url = $5, portada_url = $6
-       WHERE id = $7`,
+           logo_url = $5, portada_url = $6, tipo = $7, tipo_detalle = $8
+       WHERE id = $9`,
       [
         negocio.descripcion,
         negocio.direccion,
@@ -148,6 +148,8 @@ export class NegocioRepositoryPg extends NegocioRepository {
         negocio.horarioAtencion,
         negocio.logoUrl,
         negocio.portadaUrl,
+        negocio.tipo,
+        negocio.tipoDetalle ?? null,
         negocio.id,
       ]
     );

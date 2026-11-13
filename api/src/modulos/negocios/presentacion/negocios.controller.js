@@ -92,13 +92,15 @@ export class NegociosController {
   async actualizarMiPerfil(req, res, next) {
     try {
       const negocioId = req.usuario?.negocioId;
-      const { descripcion, direccion, yape, horarioAtencion } = req.body ?? {};
+      const { descripcion, direccion, yape, horarioAtencion, tipo, tipoDetalle } = req.body ?? {};
       const resultado = await this.actualizarPerfil.ejecutar({
         negocioId,
         descripcion,
         direccion,
         yape,
         horarioAtencion,
+        tipo,
+        tipoDetalle,
       });
       return res.status(200).json(resultado);
     } catch (error) {

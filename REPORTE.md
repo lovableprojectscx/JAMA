@@ -626,6 +626,41 @@ Siguiendo el principio de **cierre transaccional sin fricción** y el [Plan de F
      - Pill activa de alto contraste en Azul Marino `#1E2B4D` con badge en Lima `#D4DC31` (captura `31-vitrina-filtros-categoria.png`).
    - **106 pruebas unitarias y de arquitectura** pasando al 100%. Build de producción Vite en 481ms.
 
+### Etapa 19 — Gestión Extensible de Categorías y Resolución Dinámica de "OTRO" (esta sesión)
+
+Siguiendo el diseño de software formal [`plan-gestion-categorias-y-otros.md`](docs/03-diseno-de-software/plan-gestion-categorias-y-otros.md) ([RF02](docs/01-analisis-de-sistema/03-requisitos-funcionales.md), [RF07](docs/01-analisis-de-sistema/03-requisitos-funcionales.md), [RF19](docs/01-analisis-de-sistema/03-requisitos-funcionales.md); [HU02](docs/01-analisis-de-sistema/02-historias-del-usuario.md), [HU06](docs/01-analisis-de-sistema/02-historias-del-usuario.md); [ADR-003](docs/02-arquitectura-software/decisiones/ADR-003-filtros-en-cliente.md), [ADR-012](docs/02-arquitectura-software/decisiones/ADR-012-perfiles-publicos-de-negocio-y-personalizacion.md)):
+
+1. **Diagnóstico Técnico y Restricciones de Base de Datos**:
+   - Inspección del catálogo de PostgreSQL en Supabase: se identificó el constraint `negocios_tipo_check`: `CHECK (tipo IN ('PANADERIA', 'PASTELERIA', 'POLLERIA', 'RESTAURANTE', 'CAFETERIA', 'OTRO'))`.
+   - Se descartó la inserción arbitraria de enums en `tipo` para preservar la integridad referencial y evitar migraciones destructivas en producción.
+   - Arquitectura adoptada: negocios no contemplados en la lista fija se registran o actualizan como `tipo = 'OTRO'` con su subrubro explícito en `tipo_detalle` (ej. "Heladería artesanal", "Juguería", "Pizzería", "Dulcería").
+
+2. **Clean Architecture en el Backend**:
+   - **Dominio (`negocio.js`)**: `actualizarPerfil({ descripcion, direccion, yape, horarioAtencion, tipo, tipoDetalle })` valida `tipo` contra `TIPOS_DE_NEGOCIO`. Si `tipo === 'OTRO'`, exige que `tipoDetalle` tenga entre 2 y 60 caracteres; si cambia a un rubro estándar, limpia automáticamente `tipoDetalle` a `null`.
+   - **Aplicación**: `ActualizarPerfil` y `ListarOfertasVigentes` propagan `negocioTipo` y `negocioTipoDetalle`.
+   - **Infraestructura (`negocio-repository-pg.js`)**: Se actualizó `guardarPerfil` (`tipo = $7, tipo_detalle = $8`) y `listarActivosConDetalle` incorporando `tipo_detalle` en la consulta `SELECT` de comercios activos.
+   - **Presentación (`negocios.controller.js` y `ofertas.controller.js`)**: Serialización pública de `negocioTipo` y `negocioTipoDetalle`.
+   - **Pruebas unitarias**: **114 pruebas unitarias y de arquitectura** pasando al 100% (2 pruebas de dominio añadidas en `perfil-negocio.test.js`).
+
+3. **Frontend del Comerciante (`MiPerfilPantalla.jsx`)**:
+   - Selector comercial reactivo en "Mi Perfil" (`PASTELERIA`, `PANADERIA`, `CAFETERIA`, `POLLERIA`, `RESTAURANTE`, `OTRO`).
+   - Campo condicional interactivo: "¿Cuál es tu rubro o especialidad?" visible únicamente cuando `tipo === 'OTRO'`, persistiendo mediante `PATCH /api/v1/negocios/me/perfil`.
+
+4. **Vitrina Dinámica e Inteligente (`compartido/categorias.js`, `FiltroCategorias.jsx` y `App.jsx`)**:
+   - Módulo desacoplado `web/src/compartido/categorias.js`:
+     - `CATEGORIAS_BASE`: rubros institucionales con emojis semánticos (`POLLERIA`: 🍗, `JUGUERIA`: 🥤, etc.).
+     - `normalizarClave()`: normalización NFD sin acentos para agrupación de subrubros idénticos.
+     - `resolverEmojiDetalle()`: detector semántico por palabras clave (`helad` $\rightarrow$ 🍦, `jug/licuad` $\rightarrow$ 🥤, `pizz` $\rightarrow$ 🍕, `hamb/sang` $\rightarrow$ 🍔, `dulc` $\rightarrow$ 🍬, `chifa` $\rightarrow$ 🥡, etc.).
+     - `capitalizar()`: presentación estética de etiquetas.
+   - `App.jsx`: `useMemo` dinámico que crea pills exclusivas para especialidades de comercios `OTRO` (ej. `🍦 Heladería artesanal (1)`) en vez de esconderlos en un "Otros" genérico. Filtrado client-side instantáneo según [ADR-003](docs/02-arquitectura-software/decisiones/ADR-003-filtros-en-cliente.md).
+
+5. **Certificación en Vivo de Extremo a Extremo con Subagente Browser**:
+   - **Configuración en panel**: Panadería Ejemplo cambió rubro a `OTRO` con detalle "Heladería artesanal"; guardado con éxito 200 OK.
+   - **Página pública (`/t/panaderia-ejemplo`)**: Badge actualizado a `HELADERÍA ARTESANAL`.
+   - **Vitrina principal (`/`)**: Generación en tiempo real de la pill `🍦 Heladería artesanal (1)` y filtro activo mostrando su oferta a S/ 9.00 (-50%).
+   - **Reversión limpia**: Retorno a `PANADERIA` en panel; la vitrina se actualizó de inmediato a `🥖 Panaderías (1)`.
+   - Build de Vite limpio en 422ms y 0 errores de linter.
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:

@@ -63,6 +63,7 @@ export class ObtenerPerfilPublico {
           negocioSlug: negocio.slug,
           negocioLogoUrl: negocio.logoUrl,
           negocioTipo: negocio.tipo,
+          negocioTipoDetalle: negocio.tipoDetalle ?? null,
           zona: 'Centro',
           titulo: o.titulo,
           descripcion: o.descripcion,
