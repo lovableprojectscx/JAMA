@@ -59,6 +59,16 @@ describe('Negocio - Métodos de Perfil (RN-18, RN-19)', () => {
     assert.equal(negocio.instagram, 'dulce_huamanga');
     assert.equal(negocio.facebook, 'dulcehuamanga');
     assert.equal(negocio.tiktok, 'dulce.tiktok');
+
+    // Prueba con dominios sueltos sin protocolo (ej. copiado rápido desde móvil)
+    negocio.actualizarPerfil({
+      instagram: 'instagram.com/panaderia_ayacucho',
+      facebook: 'fb.com/panaderia.ayacucho',
+      tiktok: 'tiktok.com/@panaderia_ayacucho',
+    });
+    assert.equal(negocio.instagram, 'panaderia_ayacucho');
+    assert.equal(negocio.facebook, 'panaderia.ayacucho');
+    assert.equal(negocio.tiktok, 'panaderia_ayacucho');
   });
 
   test('actualizarPerfil rechaza red social de más de 60 caracteres', () => {

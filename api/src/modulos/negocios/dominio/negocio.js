@@ -47,8 +47,8 @@ function limpiarRedSocial(valor) {
   if (typeof valor !== 'string') return null;
   let v = valor.trim();
   if (!v) return null;
-  // Si introducen URL completa, quitamos el dominio y protocolo
-  v = v.replace(/^https?:\/\/(www\.)?(instagram\.com\/?|facebook\.com\/?|tiktok\.com\/@?)/i, '');
+  // Si introducen URL completa o dominio suelto, quitamos dominio y protocolo
+  v = v.replace(/^(https?:\/\/)?(www\.)?(instagram\.com\/?|facebook\.com\/?|fb\.com\/?|tiktok\.com\/@?)/i, '');
   // Quitar @ inicial, slashes iniciales o finales
   v = v.replace(/^[@/]+/, '').replace(/\/+$/, '').trim();
   if (!v) return null;
