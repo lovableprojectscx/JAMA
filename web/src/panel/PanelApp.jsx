@@ -3,6 +3,7 @@ import LoginPantalla from './pantallas/LoginPantalla.jsx';
 import MisOfertasPantalla from './pantallas/MisOfertasPantalla.jsx';
 import PublicarOfertaPantalla from './pantallas/PublicarOfertaPantalla.jsx';
 import PedidosPantalla from './pantallas/PedidosPantalla.jsx';
+import ImpactoPantalla from './pantallas/ImpactoPantalla.jsx';
 import MiPerfilPantalla from './pantallas/MiPerfilPantalla.jsx';
 import NavInferior from './componentes/NavInferior.jsx';
 import { leerSesionGuardada, guardarSesion, borrarSesion } from './sesion.js';
@@ -58,6 +59,7 @@ export default function PanelApp() {
           <MisOfertasPantalla
             token={sesion.token}
             onRepublicar={handleRepublicar}
+            onVerImpacto={() => setPantalla('impacto')}
           />
         )}
         {pantalla === 'publicar' && (
@@ -68,6 +70,12 @@ export default function PanelApp() {
           />
         )}
         {pantalla === 'pedidos' && <PedidosPantalla token={sesion.token} />}
+        {pantalla === 'impacto' && (
+          <ImpactoPantalla
+            token={sesion.token}
+            negocioNombre={sesion.negocio?.nombre}
+          />
+        )}
         {pantalla === 'perfil' && <MiPerfilPantalla token={sesion.token} />}
       </main>
 

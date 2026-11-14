@@ -10,11 +10,13 @@ import { PedirOferta } from './aplicacion/pedir-oferta.caso-uso.js';
 import { ResolverPedido } from './aplicacion/resolver-pedido.caso-uso.js';
 import { ExpirarReservas } from './aplicacion/expirar-reservas.caso-uso.js';
 import { ListarPedidosPorConfirmar } from './aplicacion/listar-pedidos-por-confirmar.caso-uso.js';
+import { ObtenerMetricasNegocio } from './aplicacion/obtener-metricas-negocio.caso-uso.js';
 import { PedidosController } from './presentacion/pedidos.controller.js';
 import {
   crearRutasPedidosPublicas,
   crearRutasPedidosNegocio,
   crearRutasPedidosMeNegocio,
+  crearRutasMetricasMeNegocio,
 } from './presentacion/pedidos.routes.js';
 
 /**
@@ -68,12 +70,23 @@ export function crearModuloPedidos({
     resumenDeOfertas,
   });
 
-  const controller = new PedidosController({ pedirOferta, resolverPedido, listarPedidosPorConfirmar });
+  const obtenerMetricasNegocio = new ObtenerMetricasNegocio({
+    codigos: codigoCanjeRepository,
+    reloj,
+  });
+
+  const controller = new PedidosController({
+    pedirOferta,
+    resolverPedido,
+    listarPedidosPorConfirmar,
+    obtenerMetricasNegocio,
+  });
 
   return {
     routerPublico: crearRutasPedidosPublicas(controller, limitarPedidos),
     routerNegocio: crearRutasPedidosNegocio(controller, requireAuth),
     routerMeNegocio: crearRutasPedidosMeNegocio(controller, requireAuth),
+    routerMetricas: crearRutasMetricasMeNegocio(controller, requireAuth),
     expirarReservas,
   };
 }

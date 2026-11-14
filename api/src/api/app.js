@@ -36,6 +36,9 @@ export function crearApp({
   v1.use('/ofertas', pedidosModule.routerPublico);
   v1.use('/negocios/me/ofertas', apiOfertas.routerNegocio);
   v1.use('/negocios/me/pedidos', pedidosModule.routerMeNegocio);
+  if (pedidosModule.routerMetricas) {
+    v1.use('/negocios/me/metricas', pedidosModule.routerMetricas);
+  }
   v1.use('/pedidos', pedidosModule.routerNegocio);
 
   // Disparado por un Vercel Cron Job (ver vercel.json); en desarrollo local

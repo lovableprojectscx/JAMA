@@ -31,7 +31,7 @@ function aDatetimeLocal(fechaIso) {
 
 const PUEDE_CAMBIAR_ESTADO = new Set(['ACTIVA', 'PAUSADA']);
 
-export default function MisOfertasPantalla({ token, onRepublicar }) {
+export default function MisOfertasPantalla({ token, onRepublicar, onVerImpacto }) {
   const [tabActiva, setTabActiva] = useState('hoy'); // 'hoy' | 'historial'
   const [ofertasHoy, setOfertasHoy] = useState([]);
   const [ofertasTodas, setOfertasTodas] = useState([]);
@@ -142,7 +142,19 @@ export default function MisOfertasPantalla({ token, onRepublicar }) {
 
   return (
     <div className="panel-pantalla">
-      <h1 className="panel-pantalla__titulo">Mis ofertas</h1>
+      <div className="panel-pantalla__titulo-row">
+        <h1 className="panel-pantalla__titulo">Mis ofertas</h1>
+        {onVerImpacto && (
+          <button
+            type="button"
+            onClick={onVerImpacto}
+            className="panel-btn-impacto-pill press"
+            title="Ver métricas de impacto comercial"
+          >
+            🌱 Ver mi impacto
+          </button>
+        )}
+      </div>
 
       {/* Selector de pestañas: Hoy vs Historial */}
       <div className="panel-tabs-ofertas" role="tablist">

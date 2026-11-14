@@ -82,4 +82,67 @@ export class CodigoCanjeRepositoryPg extends CodigoCanjeRepository {
     );
     return rows.map(filaACodigoCanje);
   }
+
+  /**
+   * RF18 / RF19: métricas agregadas de negocio en el período dado.
+   * Agrupa ventas concretadas, reservas, dinero recuperado e impacto ambiental.
+   */
+  async obtenerMetricas(negocioId, { desde = null, hasta = null } = {}) {
+    const consultaKpis = `
+      SELECT
+        COUNT(*) FILTER (WHERE c.estado = 'VENDIDO') AS total_vendidos,
+        COALESCE(SUM(c.precio) FILTER (WHERE c.estado = 'VENDIDO'), 0) AS total_dinero_recuperado,
+        COALESCE(SUM(o.precio_carta) FILTER (WHERE c.estado = 'VENDIDO'), 0) AS total_valor_original,
+        COUNT(*) FILTER (WHERE c.estado = 'RESERVADO') AS total_reservados,
+        COUNT(*) FILTER (WHERE c.estado = 'NO_CONCRETADO') AS total_no_concretados,
+        COUNT(*) FILTER (WHERE c.estado = 'EXPIRADO') AS total_expirados,
+        COUNT(*) AS total_pedidos
+      FROM codigos_canje c
+      LEFT JOIN ofertas o ON c.oferta_id = o.id
+      WHERE c.negocio_id = $1
+        AND ($2::timestamptz IS NULL OR c.creado_en >= $2)
+        AND ($3::timestamptz IS NULL OR c.creado_en <= $3);
+    `;
+
+    const consultaTop = `
+      SELECT
+        o.id,
+        o.titulo,
+        o.foto_url,
+        COUNT(c.id) AS raciones_vendidas,
+        COALESCE(SUM(c.precio), 0) AS dinero_recuperado
+      FROM codigos_canje c
+      JOIN ofertas o ON c.oferta_id = o.id
+      WHERE c.negocio_id = $1
+        AND c.estado = 'VENDIDO'
+        AND ($2::timestamptz IS NULL OR c.creado_en >= $2)
+        AND ($3::timestamptz IS NULL OR c.creado_en <= $3)
+      GROUP BY o.id, o.titulo, o.foto_url
+      ORDER BY raciones_vendidas DESC, dinero_recuperado DESC
+      LIMIT 5;
+    `;
+
+    const [resKpis, resTop] = await Promise.all([
+      this.pool.query(consultaKpis, [negocioId, desde, hasta]),
+      this.pool.query(consultaTop, [negocioId, desde, hasta]),
+    ]);
+
+    const kpi = resKpis.rows[0] || {};
+    return {
+      totalVendidos: Number(kpi.total_vendidos || 0),
+      totalDineroRecuperado: Number(kpi.total_dinero_recuperado || 0),
+      totalValorOriginal: Number(kpi.total_valor_original || 0),
+      totalReservados: Number(kpi.total_reservados || 0),
+      totalNoConcretados: Number(kpi.total_no_concretados || 0),
+      totalExpirados: Number(kpi.total_expirados || 0),
+      totalPedidos: Number(kpi.total_pedidos || 0),
+      topOfertas: resTop.rows.map((r) => ({
+        id: r.id,
+        titulo: r.titulo,
+        fotoUrl: r.foto_url,
+        racionesVendidas: Number(r.raciones_vendidas || 0),
+        dineroRecuperado: Number(r.dinero_recuperado || 0),
+      })),
+    };
+  }
 }

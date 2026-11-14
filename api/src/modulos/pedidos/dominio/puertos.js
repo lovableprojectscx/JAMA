@@ -23,6 +23,11 @@ export class CodigoCanjeRepository {
   async listarPorNegocioYEstado(negocioId, estado) {
     throw new Error('CodigoCanjeRepository.listarPorNegocioYEstado() no implementado');
   }
+
+  // eslint-disable-next-line no-unused-vars
+  async obtenerMetricas(negocioId, { desde, hasta }) {
+    throw new Error('CodigoCanjeRepository.obtenerMetricas() no implementado');
+  }
 }
 
 /** Lo que Pedidos necesita de Ofertas, sin conocer su dominio. */

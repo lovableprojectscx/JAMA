@@ -2,6 +2,7 @@ const PESTANAS = [
   { id: 'ofertas', etiqueta: 'Ofertas' },
   { id: 'publicar', etiqueta: 'Publicar' },
   { id: 'pedidos', etiqueta: 'Pedidos' },
+  { id: 'impacto', etiqueta: 'Impacto' },
   { id: 'perfil', etiqueta: 'Mi Perfil' },
 ];
 

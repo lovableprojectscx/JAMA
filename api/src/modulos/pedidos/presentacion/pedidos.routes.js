@@ -20,3 +20,10 @@ export function crearRutasPedidosMeNegocio(controller, requireAuth) {
   router.get('/', requireAuth, (req, res, next) => controller.listarPorConfirmar(req, res, next));
   return router;
 }
+
+/** Se monta en /api/v1/negocios/me/metricas → GET (negocio autenticado). */
+export function crearRutasMetricasMeNegocio(controller, requireAuth) {
+  const router = Router();
+  router.get('/', requireAuth, (req, res, next) => controller.obtenerMetricas(req, res, next));
+  return router;
+}

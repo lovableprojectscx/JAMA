@@ -15,10 +15,27 @@ function serializarPedidoPorConfirmar({ codigoCanje, oferta, minutosRestantes })
 }
 
 export class PedidosController {
-  constructor({ pedirOferta, resolverPedido, listarPedidosPorConfirmar }) {
+  constructor({ pedirOferta, resolverPedido, listarPedidosPorConfirmar, obtenerMetricasNegocio }) {
     this.pedirOferta = pedirOferta;
     this.resolverPedido = resolverPedido;
     this.listarPedidosPorConfirmar = listarPedidosPorConfirmar;
+    this.obtenerMetricasNegocio = obtenerMetricasNegocio;
+  }
+
+  async obtenerMetricas(req, res, next) {
+    try {
+      const periodo = req.query.periodo || 'mes';
+      const metricas = await this.obtenerMetricasNegocio.ejecutar({
+        negocioId: req.usuario.negocioId,
+        periodo,
+      });
+      return res.status(200).json(metricas);
+    } catch (error) {
+      if (error instanceof ReglaNegocioError) {
+        return res.status(400).json({ error: error.message });
+      }
+      return next(error);
+    }
   }
 
   async listarPorConfirmar(req, res, next) {

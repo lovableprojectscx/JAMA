@@ -726,6 +726,39 @@ Siguiendo el diseño de software formal [`plan-redes-sociales-y-qr-mostrador.md`
      - Verificación de la página pública `/t/panaderia-ejemplo`: botones oficiales visibles con atributos `href` canónicos y estilos responsivos (`step_271_tienda_redes_publicas.png`).
    - Linter `oxlint`: 0 errores. Build de producción `vite build`: completado en 509 ms.
 
+### Etapa 22 — Reportes y Métricas de Impacto Comercial (esta sesión)
+
+Siguiendo el diseño de software formal [`plan-metricas-impacto-comercial.md`](docs/03-diseno-de-software/plan-metricas-impacto-comercial.md) ([RF18](docs/01-analisis-de-sistema/03-requisitos-funcionales.md), [RF19](docs/01-analisis-de-sistema/03-requisitos-funcionales.md); [HU09](docs/01-analisis-de-sistema/02-historias-del-usuario.md), [HU18](docs/01-analisis-de-sistema/02-historias-del-usuario.md); [ADR-001](docs/02-arquitectura-software/decisiones/ADR-001-monolito-modular.md), [ADR-002](docs/02-arquitectura-software/decisiones/ADR-002-clean-architecture.md)):
+
+1. **Clean Architecture en Backend**:
+   - **Repositorio PostgreSQL `CodigoCanjeRepositoryPg`**: Implementación de `obtenerMetricas(negocioId, { desde, hasta })` con dos consultas SQL optimizadas:
+     - Consulta de agregación para calcular: dinero total recuperado de ventas concretadas (`c.precio`), valor original de carta evitado (`o.precio_carta`), total de raciones vendidas, reservas activas, pedidos no concretados y expirados.
+     - Consulta de ranking para identificar el Top 5 de productos más rescatados ordenados por raciones vendidas.
+   - **Caso de Uso `ObtenerMetricasNegocio`**:
+     - Filtro por períodos: `'hoy'` (desde 00:00:00 en zona `America/Lima`), `'semana'` (últimos 7 días), `'mes'` (desde el primer día del mes actual) e `'historico'` (sin límite inferior).
+     - Métricas computadas: Dinero recuperado (S/), Raciones rescatadas, Ahorro al cliente (S/), Descuento promedio (%), Tasa de efectividad de canje (%) e Impacto ecológico en Huamanga (kg CO₂e evitados = raciones * 2.5 kg; litros de agua preservados = raciones * 800 L).
+   - **Rutas y Controlador**: Endpoint montado en `GET /api/v1/negocios/me/metricas` con autenticación por JWT y claim `rol: 'NEGOCIO'`.
+   - **126 pruebas unitarias pasando al 100% (4 pruebas nuevas en `metricas-negocio.test.js`)**.
+
+2. **Frontend del Panel (`ImpactoPantalla.jsx`, `MisOfertasPantalla.jsx`, `panel.css`)**:
+   - **Pantalla "Métricas de Impacto"**:
+     - Selector de períodos en pestañas móviles: "Hoy", "7 días", "Este mes", "Histórico".
+     - Cuadrícula de 4 KPIs con iconografía de Lucide y código de color temático: Dinero Recuperado (Ámbar), Raciones Rescatadas (Rojo), Efectividad en Mostrador (Azul/Violeta) y CO₂ Evitado (Verde).
+     - Banner de reconocimiento: "Comercio Sostenible de Ayacucho" con botón de acción inmediata "Compartir en WhatsApp" para publicar en estados de WhatsApp.
+     - Sección "Productos Más Rescatados en el Período": Ranking numerado (#1, #2...) con nombre del producto, raciones y monto recuperado.
+   - **Acceso Rápido desde "Mis Ofertas"**:
+     - Píldora superior interactiva `🌱 Ver mi impacto` que lleva directamente a la pantalla de métricas.
+   - **Navegación Inferior Móvil (`NavInferior.jsx`)**:
+     - Menú inferior expandido a 5 pestañas responsivas (Ofertas, Publicar, Pedidos, Impacto, Mi Perfil) adaptadas a pantallas desde 320px hasta 1280px.
+
+3. **Certificación Interactiva E2E con Subagente Browser**:
+   - Verificado en Chromium real en `http://localhost:5173/panel`:
+     - Píldora `🌱 Ver mi impacto` visible y funcional (`step_314_pildora_impacto.png`).
+     - Pantalla de Impacto cargando métricas reales de PostgreSQL: S/ 9.00 recuperados, 1 ración, 100% efectividad, 2.5 kg CO₂e y ranking con `#1 Pack 6 Croissants de Mantequilla` (`step_322_pantalla_impacto_kpis.png`).
+     - Cambio reactivo entre pestañas de período sin recarga de página.
+     - Medición de desborde horizontal en 390px móvil: exactamente 0px de desborde (`scrollWidth <= clientWidth`).
+   - Linter `oxlint`: 0 errores. Build de producción `vite build`: completado en 1.01 s.
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:

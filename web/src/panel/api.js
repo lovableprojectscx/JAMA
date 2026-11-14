@@ -120,3 +120,8 @@ export async function subirFotoLogo(token, archivo) {
   }
   return cuerpo;
 }
+
+export function obtenerMetricas(token, periodo = 'mes') {
+  return solicitar(`/negocios/me/metricas?periodo=${periodo}`, { token });
+}
+
