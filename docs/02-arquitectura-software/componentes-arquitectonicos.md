@@ -1,109 +1,88 @@
 # Componentes arquitectónicos
 
-> Etapa 9: **¿qué componentes existen y cómo se relacionan?**
-> Estilo: monolito modular en capas ([ADR-001](decisiones/ADR-001-monolito-modular.md)) · Enfoque interno: Clean Architecture ([ADR-002](decisiones/ADR-002-clean-architecture.md))
+> Estilo: Monolito modular en capas ([ADR-001](decisiones/ADR-001-monolito-modular.md)) · Enfoque interno: Clean Architecture ([ADR-002](decisiones/ADR-002-clean-architecture.md))
 
 ## Diagrama de componentes
 
 ```mermaid
 flowchart TB
-    CL(["👤 Cliente<br/><small>Persona · compra ofertas sin registrarse</small>"])
-    NE(["👤 Negocio<br/><small>Persona · publica ofertas y confirma códigos</small>"])
-    AD(["👤 Administrador<br/><small>Persona · verifica y modera</small>"])
+    CL(["👤 Cliente<br/><small>Persona · compra ofertas con Yape Concierge</small>"])
+    NE(["👤 Negocio<br/><small>Persona · publica ofertas, entrega y mide impacto</small>"])
+    AD(["👤 Administrador<br/><small>Persona · verifica, valida pagos y asiste</small>"])
 
-    WEB["Aplicación web<br/><small>[Contenedor: SPA React]</small><br/>Vitrina · Panel negocio · Panel admin"]
+    WEB["Aplicación web<br/><small>[Contenedor: SPA React + Vite]</small><br/>Vitrina · Tiendas /t/:slug · Panel negocio · Panel admin concierge"]
 
-    subgraph API["API Marketplace — [Contenedor: Node.js + Express · monolito modular]"]
+    subgraph API["API Marketplace — [Contenedor: Node.js + Express · Monolito Modular]"]
         REST["API REST<br/><small>[Componente: rutas + middlewares]</small><br/>/api/v1 · JWT · validación · rate limiting"]
 
-        subgraph MOD["Módulos de negocio"]
-            ACC["Acceso<br/><small>[Componente: módulo]</small><br/>Login, tokens y roles"]
-            NEG["Negocios<br/><small>[Componente: módulo]</small><br/>Perfil, verificación, plan, ciudad"]
-            OFE["Ofertas<br/><small>[Componente: módulo]</small><br/>Publicar, listar, stock, vigencia<br/>+ caché en memoria"]
-            PED["Pedidos<br/><small>[Componente: módulo]</small><br/>Código de canje, reserva, confirmación"]
-            REP["Reportes<br/><small>[Componente: módulo]</small><br/>Métricas mensuales"]
+        subgraph MOD["Módulos de negocio (Clean Architecture)"]
+            ACC["Acceso<br/><small>[Componente: módulo]</small><br/>Login, tokens JWT y roles NEGOCIO / ADMIN"]
+            NEG["Negocios<br/><small>[Componente: módulo]</small><br/>Solicitud, aprobación, perfil /t/:slug, redes y kit QR"]
+            OFE["Ofertas<br/><small>[Componente: módulo]</small><br/>Publicar, editar, stock, vigencia<br/>y publicación asistida admin"]
+            PED["Pedidos<br/><small>[Componente: módulo]</small><br/>Código de canje, reserva, cobro Yape,<br/>validación admin y métricas de impacto"]
+            REP["Reportes<br/><small>[Componente: módulo / Pedidos]</small><br/>Métricas comerciales y ecológicas"]
             MODR["Moderación<br/><small>[Componente: módulo]</small><br/>Denuncias y suspensiones"]
         end
 
-        JOB["Tarea programada<br/><small>[Componente: node-cron, cada 1 min]</small>"]
+        JOB["Tarea programada<br/><small>[Componente: node-cron / Vercel Cron, cada 1 min]</small>"]
     end
 
-    DB[("Base de datos<br/><small>[Contenedor: PostgreSQL]</small>")]
+    DB[("Base de datos<br/><small>[Contenedor: PostgreSQL · Supabase]</small>")]
 
-    IMG["Almacenamiento de imágenes<br/><small>[Sistema externo: Cloudinary]</small>"]
-    WA["WhatsApp<br/><small>[Sistema externo]</small>"]
-    MAP["Mapas / geolocalización<br/><small>[Sistema externo]</small>"]
+    IMG["Almacenamiento de imágenes<br/><small>[Sistema externo: Supabase Storage]</small>"]
+    WA["WhatsApp<br/><small>[Sistema externo: wa.me]</small>"]
+    MAP["Mapas / geolocalización<br/><small>[Sistema externo: Google Maps]</small>"]
 
     CL -->|Usa| WEB
     NE -->|Usa| WEB
     AD -->|Usa| WEB
     WEB -->|"Llama a la API<br/>[HTTPS/JSON]"| REST
-    WEB -->|"Abre el chat con el enlace wa.me"| WA
-    WEB -->|"Obtiene la ubicación"| MAP
+    WEB -->|"Envía comprobante / coordina con wa.me"| WA
+    WEB -->|"Obtiene dirección y ruta"| MAP
 
     REST -->|"Invoca casos de uso"| MOD
-    REST -.->|"Valida el token"| ACC
+    REST -.->|"Valida el token y rol"| ACC
     NEG -->|"Crea la cuenta del negocio"| ACC
-    OFE -->|"Verifica plan y estado del negocio"| NEG
-    PED -->|"Reserva y libera unidades"| OFE
-    PED -->|"Obtiene el WhatsApp del negocio"| NEG
-    REP -->|"Lee el historial de códigos"| PED
-    MODR -->|"Suspende negocios"| NEG
-    MODR -->|"Retira ofertas"| OFE
-    JOB -->|"Ejecuta ExpirarReservas"| PED
-
+    OFE -->|"Verifica estado ACTIVO del negocio (RN-13)"| NEG
+    PED -->|"Reserva y libera unidades (tx)"| OFE
+    PED -->|"Obtiene contacto del negocio"| NEG
+    NEG -->|"Publicación asistida admin"| OFE
+    REP -->|"Lee historial y agregaciones de canje"| PED
+    JOB -->|"ExpirarReservas"| PED
+    MOD -->|"Persistencia relacional [SQL]"| DB
     OFE -->|"Sube fotos [HTTPS/REST]"| IMG
-    API -->|"Cada módulo lee y escribe solo sus tablas<br/>[SQL]"| DB
-
-    classDef persona fill:#1e3a5f,stroke:#0f2540,color:#fff
-    classDef contenedor fill:#2f6db5,stroke:#1d4f8a,color:#fff
-    classDef componente fill:#8fb8e8,stroke:#4a7fbf,color:#0b2340
-    classDef externo fill:#9a9a9a,stroke:#6b6b6b,color:#fff
-    class CL,NE,AD persona
-    class WEB,DB contenedor
-    class REST,ACC,NEG,OFE,PED,REP,MODR,JOB componente
-    class IMG,WA,MAP externo
+    NEG -->|"Sube portada y logo [HTTPS/REST]"| IMG
 ```
-
-**Leyenda:** azul oscuro = persona · azul = contenedor · celeste = componente · gris = sistema externo.
 
 **Notas:**
 - Cada componente es un módulo del monolito: todos se despliegan juntos.
-- Un módulo usa a otro **solo a través de su API pública** (`index.js`), nunca leyendo sus tablas.
-- La caché es **en memoria, dentro del módulo Ofertas**, no un contenedor aparte ([ADR-008](decisiones/ADR-008-cache-e-imagenes.md)).
-- **Yape** no aparece: el pago ocurre fuera del sistema (RC06).
-- El backend **no llama** a WhatsApp: solo construye el enlace `wa.me`, y el navegador del cliente lo abre ([ADR-007](decisiones/ADR-007-integraciones-puertos-adaptadores.md)).
+- Un módulo usa a otro **solo a través de su API pública** (`index.js`), nunca leyendo sus tablas directamente.
+- Pedidos y Ofertas comparten la transacción (`tx`) al reservar stock: `SELECT ... FOR UPDATE` en PostgreSQL ([ADR-003](decisiones/ADR-003-postgresql-transacciones.md)).
+- El backend construye enlaces oficiales estructurados `wa.me`, y el navegador del cliente o del administrador los ejecuta ([ADR-007](decisiones/ADR-007-integraciones-puertos-adaptadores.md)).
+- En el modelo Concierge ([ADR-013](decisiones/ADR-013-flujo-concierge-cobro-yape-y-publicacion-asistida.md)), el cliente Yapea a JAMA y el administrador valida en `/admin` y liquida al comercio.
 
 ## Responsabilidad de cada componente
 
 | Componente | Responsabilidad | Casos de uso principales | Carpeta en el código |
 |---|---|---|---|
-| **API REST** | Punto de entrada HTTP: rutas `/api/v1`, autenticación, validación, límite de peticiones y manejo de errores | — | `src/api/` |
-| **Acceso** | Identidad y roles (NEGOCIO, ADMIN); el cliente es anónimo | `IniciarSesion`, `RenovarToken` | `src/modulos/acceso/` |
-| **Negocios** | Perfil del negocio, verificación del precio de carta, ciudad y zona, plan Gratis/Pro | `RegistrarNegocio`, `VerificarNegocio`, `CambiarPlan` | `src/modulos/negocios/` |
-| **Ofertas** | Publicar, editar, pausar y listar ofertas; controlar stock y vigencia | `PublicarOferta`, `ListarOfertasCercanas`, `PausarOferta` | `src/modulos/ofertas/` |
-| **Pedidos** | Código de canje, reserva de stock, enlace `wa.me`, confirmación y expiración | `PedirOferta`, `ResolverPedido` (confirmar o rechazar), `ExpirarReservas` | `src/modulos/pedidos/` |
-| **Reportes** | Pedidos, ventas, conversión y clientes nuevos por negocio y mes | `GenerarReporteMensual` | `src/modulos/reportes/` |
-| **Moderación** | Denuncias de clientes, suspensión de negocios y retiro de ofertas | `ReportarOferta`, `ResolverDenuncia`, `SuspenderNegocio` | `src/modulos/moderacion/` |
-| **Tarea programada** | Disparar la expiración cada minuto | — (invoca a Pedidos) | `src/jobs/` |
+| **API REST** | Punto de entrada HTTP: rutas `/api/v1`, autenticación, validación, límite de peticiones y manejo de errores | Middlewares de Auth, RateLimit y ErrorHandler | `src/api/` |
+| **Acceso** | Identidad y roles (`NEGOCIO`, `ADMIN`); el cliente es anónimo | `Login`, `LoginAdmin` | `src/modulos/acceso/` |
+| **Negocios** | Solicitudes de registro, ciclo PENDIENTE → ACTIVO/RECHAZADO, perfil público `/t/:slug`, redes y kit QR de mostrador | `RegistrarSolicitud`, `ResolverSolicitud`, `ObtenerPerfilPublico`, `ActualizarPerfil`, `SubirFotoNegocio` | `src/modulos/negocios/` |
+| **Ofertas** | Publicar, editar en vivo, pausar, listar ofertas vigentes y publicación asistida desde `/admin` | `PublicarOferta`, `EditarOferta`, `ListarOfertasVigentes`, `SubirFotoOferta` | `src/modulos/ofertas/` |
+| **Pedidos** | Código de canje, reserva de stock, cobro Concierge Yape, validación admin (`esAdmin: true`), expiración y métricas de impacto comercial y ecológico | `PedirOferta`, `ResolverPedido`, `ExpirarReservas`, `ObtenerMetricasNegocio` | `src/modulos/pedidos/` |
+| **Tarea programada** | Disparar la expiración automática cada minuto | `ExpirarReservas` | `src/jobs/` y `/cron/` |
 
 ## Trazabilidad: ¿de qué requisito sale cada componente?
 
-Esta tabla permite responder, para **cualquier caja del diagrama**, por qué existe.
-
-| Componente | Historias de usuario | Requisitos funcionales | Drivers | Decisiones (ADR) | Escenarios de calidad |
-|---|---|---|---|---|---|
-| **Aplicación web** | HU01–HU13 | RF01–RF03, RF06 | DA05, DA08 | ADR-009 | EQ-01, EQ-05 |
-| **API REST** | Todas | RF17 | DA04, DA08 | ADR-001, ADR-006 | EQ-04 |
-| **Acceso** | HU06, HU11–HU13 | RF17 | DA04 | ADR-006 | EQ-04 |
-| **Negocios** | HU06, HU11, HU12 | RF07, RF13, RF15 | DA04, DA07 | ADR-001 | EQ-08 |
-| **Ofertas** | HU01–HU03, HU07, HU08 | RF01–RF03, RF08–RF10, RF13 | DA03, DA05, DA07 | ADR-005, ADR-008 | EQ-01, EQ-06, EQ-08 |
-| **Pedidos** | HU04, HU09 | RF04–RF06, RF11 | **DA01, DA02**, DA03, DA06 | **ADR-003, ADR-004**, ADR-005, ADR-007 | **EQ-02**, EQ-06, EQ-07 |
-| **Reportes** | HU10 | RF12 | DA01 | ADR-004 | EQ-07 |
-| **Moderación** | HU05, HU13 | RF14–RF16 | DA04 | ADR-006 | EQ-04 |
-| **Tarea programada** | HU07, HU09 (indirectas) | RF05, RF10 | DA03 | ADR-005 | EQ-06 |
-| **PostgreSQL** | — | RF05 | DA02, DA08 | ADR-003 | EQ-02, EQ-07 |
-| **Almacenamiento de imágenes** | HU03, HU07, HU11 | RF03, RF08 | DA05, DA06 | ADR-007, ADR-008 | EQ-01 |
-| **WhatsApp (enlace)** | HU04 | RF06 | DA06 | ADR-007 | EQ-05, EQ-09 |
-
-**Ejemplo para la exposición:** *"¿Por qué existe el módulo Pedidos separado de Ofertas?"* → Porque la venta ocurre en WhatsApp y hay que rastrearla (DA01, RF04, RF11). Su ciclo de vida, reservado → vendido / no concretado / expirado, es distinto del de la oferta (ADR-004), y es el que abre la transacción concurrente sobre el stock, pidiéndole a Ofertas la reserva a través de su API pública (DA02, ADR-003, EQ-02).
+| Componente | Historias de usuario | Requisitos funcionales | Drivers | Decisiones (ADR) |
+|---|---|---|---|---|
+| **Aplicación web** | HU01–HU05, HU14–HU23 | RF01–RF04, RF06, RF18, RF24–RF26 | DA05, DA08 | ADR-009, ADR-012, ADR-013 |
+| **API REST** | Todas | RF17 | DA04, DA08 | ADR-001, ADR-006 |
+| **Acceso** | HU06, HU11, HU17 | RF17 | DA04 | ADR-006, ADR-011 |
+| **Negocios** | HU06, HU14–HU18, HU20 | RF07, RF15, RF18–RF24 | DA04, DA07 | ADR-010, ADR-011, ADR-012 |
+| **Ofertas** | HU01–HU03, HU07, HU08, HU23 | RF01–RF03, RF08–RF10, RF26 | DA03, DA05, DA07 | ADR-005, ADR-008, ADR-013 |
+| **Pedidos** | HU04, HU09, HU10, HU21, HU22 | RF04–RF06, RF11, RF12, RF25 | **DA01, DA02**, DA03, DA06 | **ADR-003, ADR-004**, ADR-005, ADR-007, ADR-013 |
+| **Tarea programada** | HU07, HU09 (indirectas) | RF05, RF10 | DA03 | ADR-005 |
+| **PostgreSQL** | — | RF05, RF11, RF19 | DA02, DA08 | ADR-003 |
+| **Supabase Storage** | HU03, HU07, HU18 | RF03, RF07, RF08, RF24 | DA05, DA06 | ADR-007, ADR-012 |
+| **WhatsApp (enlace)** | HU04, HU17, HU22 | RF06, RF22, RF25 | DA06 | ADR-007, ADR-013 |

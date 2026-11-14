@@ -33,7 +33,11 @@ classDiagram
         }
         class ResolverPedido {
             <<caso de uso>>
-            +ejecutar(codigo, negocioId, concretado)
+            +ejecutar(codigo, negocioId, concretado, esAdmin)
+        }
+        class ObtenerMetricasNegocio {
+            <<caso de uso>>
+            +ejecutar(negocioId, periodo)
         }
         class ExpirarReservas {
             <<caso de uso>>
@@ -196,31 +200,33 @@ sequenceDiagram
 
 | Clase | Tipo | Capa | Responsabilidad |
 |---|---|---|---|
-| `PedidosController` | Controlador | Presentación | Recibe `POST /ofertas/:id/pedidos` y `PATCH /pedidos/:codigo` |
-| `PedirOferta` | Caso de uso | Aplicación | Reserva el stock, crea el código y arma el enlace en una transacción |
-| `ResolverPedido` | Caso de uso | Aplicación | Confirma o rechaza un código del propio negocio |
-| `ExpirarReservas` | Caso de uso | Aplicación | Expira las reservas vencidas y devuelve el stock |
-| `CodigoCanje` | Entidad | Dominio | Máquina de estados del pedido, con historial |
+| `PedidosController` | Controlador | Presentación | Gestiona `POST /ofertas/:id/pedidos`, `PATCH /pedidos/:codigo`, `GET /negocios/me/pedidos`, `GET /negocios/me/metricas`, `GET /admin/pedidos` y `PATCH /admin/pedidos/:codigo` |
+| `PedirOferta` | Caso de uso | Aplicación | Reserva stock, crea código único y arma datos de pago Concierge Yape y enlaces wa.me |
+| `ResolverPedido` | Caso de uso | Aplicación | Valida o rechaza un código del negocio (`esAdmin: false`) o del administrador Concierge (`esAdmin: true`) |
+| `ObtenerMetricasNegocio` | Caso de uso | Aplicación | Calcula KPIs económicos, efectividad y ecológicos (CO₂e, agua) por período |
+| `ExpirarReservas` | Caso de uso | Aplicación | Expira las reservas vencidas a los 30 min y devuelve el stock |
+| `CodigoCanje` | Entidad | Dominio | Máquina de estados del pedido, con historial (RESERVADO → VENDIDO / NO_CONCRETADO / EXPIRADO) |
 | `EstadoCodigo` | Enumeración | Dominio | RESERVADO, VENDIDO, NO_CONCRETADO, EXPIRADO |
-| `CodigoCanjeRepository` | Interfaz | Dominio | Contrato de persistencia de códigos |
+| `CodigoCanjeRepository` | Interfaz | Dominio | Contrato de persistencia de códigos, listados y agregaciones |
+| `CodigoCanjeRepositoryPg` | Repositorio | Infraestructura | Implementación PostgreSQL: transacciones, métricas agregadas y listado de admin |
 | `ReservaDeStock` | Interfaz | Dominio | Lo que Pedidos necesita de Ofertas |
 | `ContactoNegocio` | Interfaz | Dominio | Lo que Pedidos necesita de Negocios |
-| `EnlaceMensajeria` | Interfaz | Dominio | Contrato para construir el enlace de chat |
-| `GeneradorCodigo` | Interfaz | Dominio | Contrato para generar códigos cortos |
-| `CodigoCanjeRepositoryMemoria` | Repositorio | Infraestructura | Implementación en memoria (el ejemplo y las pruebas) |
+| `EnlaceMensajeria` | Interfaz | Dominio | Contrato para construir enlaces de chat WhatsApp |
+| `GeneradorCodigo` | Interfaz | Dominio | Contrato para generar códigos cortos únicos |
 | `WaMeEnlaceAdapter` | Adaptador | Infraestructura | Implementa `EnlaceMensajeria` con `wa.me` |
 | `GeneradorCodigoAleatorio` | Adaptador | Infraestructura | 4 caracteres sin ambigüedades (sin 0/O, 1/I/L) |
 | `ReservaDeStockConOfertas` | Adaptador | Infraestructura | Traduce `ReservaDeStock` a la fachada de Ofertas |
 | `ContactoNegocioConNegocios` | Adaptador | Infraestructura | Traduce `ContactoNegocio` a la fachada de Negocios |
 
-## 7. Clases del módulo Ofertas (parte usada por Pedidos)
+## 7. Clases del módulo Ofertas (parte usada por Pedidos y Admin)
 
 | Clase | Tipo | Capa | Responsabilidad |
 |---|---|---|---|
-| `Oferta` | Entidad | Dominio | RN-01 a RN-03 al publicar; RN-05 al reservar; RN-08 al liberar |
+| `Oferta` | Entidad | Dominio | RN-01 a RN-03 al publicar; RN-05 al reservar; RN-08 al liberar; tramos de precio |
 | `EstadoOferta` | Enumeración | Dominio | ACTIVA, PAUSADA, AGOTADA, FINALIZADA |
 | `OfertaRepository` | Interfaz | Dominio | Obtener con bloqueo, guardar, listar vigentes |
-| `OfertaRepositoryPg` | Repositorio | Infraestructura | PostgreSQL con `SELECT … FOR UPDATE` |
-| `OfertaRepositoryMemoria` | Repositorio | Infraestructura | Implementación en memoria |
+| `OfertaRepositoryPg` | Repositorio | Infraestructura | PostgreSQL con `SELECT … FOR UPDATE` y consultas por negocio |
+| `PublicarOferta` | Caso de uso | Aplicación | Crea ofertas verificando que el negocio esté ACTIVO (RN-13) |
+| `EditarOferta` | Caso de uso | Aplicación | Modifica ofertas activas/pausadas y recalcula stock |
 | `ListarOfertasVigentes` | Caso de uso | Aplicación | RF01: listado para la vitrina |
-| `crearApiOfertas` (`index.js`) | Fachada | Módulo | API pública: `reservarUnidad`, `liberarUnidad` |
+| `crearApiOfertas` (`index.js`) | Fachada | Módulo | API pública: `reservarUnidad`, `liberarUnidad`, `publicarParaNegocio`, `subirFoto` |

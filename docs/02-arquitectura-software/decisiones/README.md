@@ -4,7 +4,7 @@ Un **ADR** (*Architecture Decision Record*) documenta una decisión importante d
 
 | ID | Decisión arquitectónica | Driver relacionado | Justificación | Resultado |
 |---|---|---|---|---|
-| [ADR-001](ADR-001-monolito-modular.md) | Monolito modular cliente-servidor | DA07, DA08, DA09 | Un solo desarrollador y una ciudad: un solo despliegue, con módulos independientes por dentro. | Módulos: Acceso, Negocios, Ofertas, Pedidos, Reportes y Moderación. |
+| [ADR-001](ADR-001-monolito-modular.md) | Monolito modular cliente-servidor | DA07, DA08, DA09 | Un solo desarrollador y una ciudad: un solo despliegue, con módulos independientes por dentro. | Módulos: Acceso, Negocios, Ofertas, Pedidos. |
 | [ADR-002](ADR-002-clean-architecture.md) | Clean Architecture | DA09 | Separar las reglas del negocio de Express, PostgreSQL y WhatsApp. | Capas: Dominio, Aplicación, Infraestructura y Presentación. |
 | [ADR-003](ADR-003-postgresql-transacciones.md) | PostgreSQL con transacción y bloqueo de fila para las reservas | DA02 | Garantizar que nunca se reserve más stock del que existe. | `SELECT … FOR UPDATE` dentro del caso de uso *PedirOferta*. |
 | [ADR-004](ADR-004-codigo-de-canje.md) | Código de canje con máquina de estados | DA01 | Rastrear una venta que ocurre fuera del sistema. | Entidad `CodigoCanje` con estados y su historial. |
@@ -16,5 +16,6 @@ Un **ADR** (*Architecture Decision Record*) documenta una decisión importante d
 | [ADR-010](ADR-010-alta-de-negocios-por-solicitud.md) | Alta de negocios por solicitud con aprobación | DA04 | Que las tiendas se unan solas sin que publique nadie sin revisar (AC06). | Estado `PENDIENTE` → `ACTIVO`/`RECHAZADO` en la entidad `Negocio`; solo un negocio ACTIVO opera (RN-13). |
 | [ADR-011](ADR-011-cuentas-de-administrador.md) | Cuentas de administrador en tabla propia | DA04 | Aprobar solicitudes requiere un administrador real y trazable. | Tabla `administradores` en Acceso, creada por script; login y rutas separadas por rol. |
 | [ADR-012](ADR-012-perfiles-publicos-de-negocio-y-personalizacion.md) | Perfiles públicos de negocios y personalización de marca | DA04, AC05, AC06 | Los comercios requieren enlace propio ("link en bio") con su marca y ofertas exclusivas, reforzando la trazabilidad de la tesis. | URL `/t/:slug`, portada y logo en Supabase Storage, gestión en `/panel`, y filtrado solo para comercios ACTIVO. |
+| [ADR-013](ADR-013-flujo-concierge-cobro-yape-y-publicacion-asistida.md) | Flujo Concierge de cobro centralizado con Yape y publicación asistida | DA01, DA06, RC06 | Eliminar pérdidas por no-shows y reducir la fricción técnica de los comerciantes sin costos de pasarelas. | Cobro centralizado JAMA Yape en 3 pasos, validación en `/admin` y creación asistida de ofertas. |
 
 **Estado de todas:** Aceptada · **Fecha:** octubre/noviembre 2026

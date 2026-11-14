@@ -1,7 +1,7 @@
 # Nivel 3 · Diagrama de componentes
 
-> **Proyecto:** Marketplace de Ofertas de Cierre · **Contenedor detallado:** API Marketplace
-> **Modelo:** C4 · Nivel 3 de 4 · **Versión:** 1.0
+> **Proyecto:** Marketplace de Ofertas de Cierre (JAMA) · **Contenedor detallado:** API Marketplace  
+> **Modelo:** C4 · Nivel 3 de 4 · **Versión:** 1.2 (Actualizado a Flujo Concierge y Métricas)  
 
 ---
 
@@ -12,8 +12,8 @@ Abrir el contenedor **API Marketplace** del nivel 2 y mostrar sus **componentes*
 | Aspecto | Descripción |
 |---|---|
 | Pregunta que responde | ¿Cómo se divide el backend por dentro y qué hace cada parte? |
-| Audiencia | Arquitectos y desarrolladores |
-| Qué es un componente | Un grupo de funcionalidades con una responsabilidad clara, accesible mediante una interfaz. Aquí, cada **módulo** del monolito es un componente |
+| Audiencia | Arquitectos, evaluadores y desarrolladores |
+| Qué es un componente | Grupo de funcionalidades con responsabilidad acotada y expuesta por API pública (`index.js`) |
 | Nivel anterior | [`Nivel2-DiagramadeContenedores.md`](Nivel2-DiagramadeContenedores.md) |
 | Siguiente nivel | [`Nivel4-DiagramadeCodigo.md`](Nivel4-DiagramadeCodigo.md) |
 
@@ -23,52 +23,44 @@ Abrir el contenedor **API Marketplace** del nivel 2 y mostrar sus **componentes*
 
 ```mermaid
 flowchart TB
-    WEB["Aplicación web<br/><small>[Contenedor: SPA React]</small>"]
+    WEB["Aplicación web<br/><small>[Contenedor: SPA React + Vite]</small>"]
 
-    subgraph API["API Marketplace — [Contenedor: Node.js + Express · monolito modular]"]
+    subgraph API["API Marketplace — [Contenedor: Node.js + Express · Monolito Modular]"]
         REST["<b>API REST</b><br/><small>[Componente: rutas + middlewares Express]</small><br/>/api/v1 · JWT · validación · rate limiting · errores"]
 
         subgraph MOD["Módulos de negocio (Clean Architecture cada uno)"]
-            ACC["<b>Acceso</b><br/><small>[Componente: módulo]</small><br/>Login de negocios y admins,<br/>tokens, roles"]
-            NEG["<b>Negocios</b><br/><small>[Componente: módulo]</small><br/>Solicitud y aprobación,<br/>estado, perfil, plan, ciudad"]
-            OFE["<b>Ofertas</b><br/><small>[Componente: módulo]</small><br/>Publicar, listar, stock,<br/>vigencia, caché"]
-            PED["<b>Pedidos</b><br/><small>[Componente: módulo]</small><br/>Código de canje, reserva,<br/>confirmación, expiración"]
-            REP["<b>Reportes</b><br/><small>[Componente: módulo]</small><br/>Métricas mensuales"]
-            MODR["<b>Moderación</b><br/><small>[Componente: módulo]</small><br/>Denuncias, suspensiones"]
+            ACC["<b>Acceso</b><br/><small>[Componente: módulo]</small><br/>Login de negocios y admins,<br/>tokens JWT, roles NEGOCIO y ADMIN"]
+            NEG["<b>Negocios</b><br/><small>[Componente: módulo]</small><br/>Solicitud y aprobación (ADR-010),<br/>estado, perfil /t/:slug, redes y kit QR"]
+            OFE["<b>Ofertas</b><br/><small>[Componente: módulo]</small><br/>Publicar, editar, pausar, stock,<br/>publicación asistida admin (ADR-013)"]
+            PED["<b>Pedidos</b><br/><small>[Componente: módulo]</small><br/>Código de canje, reserva, cobro concierge Yape,<br/>validación admin, expiración y métricas de impacto"]
+            REP["<b>Reportes</b><br/><small>[Componente: módulo / Pedidos]</small><br/>Métricas comerciales y ecológicas"]
         end
 
-        JOB["<b>Tarea programada</b><br/><small>[Componente: node-cron · cada 1 min]</small>"]
+        JOB["<b>Tarea programada</b><br/><small>[Componente: node-cron / Vercel Cron · cada 1 min]</small>"]
     end
 
-    DB[("Base de datos<br/><small>[Contenedor: PostgreSQL]</small>")]
-    IMG["Almacenamiento de imágenes<br/><small>[Sistema externo]</small>"]
+    DB[("Base de datos<br/><small>[Contenedor: PostgreSQL · Supabase]</small>")]
+    IMG["Almacenamiento de imágenes<br/><small>[Sistema externo · Supabase Storage]</small>"]
 
-    WEB -->|"Llama a la API<br/>[HTTPS/JSON]"| REST
+    WEB -->|"Llama endpoints públicos y protegidos<br/>[HTTPS/JSON]"| REST
     REST -->|"Invoca casos de uso"| MOD
-    REST -.->|"Valida token y rol"| ACC
-    ACC -->|"Credenciales y estado ACTIVO (RN-13)"| NEG
-    OFE -->|"Verifica plan y estado (RN-04, RN-13)"| NEG
-    PED -->|"reservarUnidad / liberarUnidad<br/>(misma transacción)"| OFE
+    REST -.->|"Valida token y rol (requireAuth, requireRol)"| ACC
+    ACC -->|"Verifica credenciales y estado ACTIVO (RN-13)"| NEG
+    OFE -->|"Verifica estado activo (RN-13)"| NEG
+    PED -->|"reservarUnidad / liberarUnidad<br/>(misma transacción tx)"| OFE
     PED -->|"obtenerContacto"| NEG
-    REP -->|"Lee el historial de códigos"| PED
-    MODR -->|"Suspende"| NEG
-    MODR -->|"Retira ofertas"| OFE
+    NEG -->|"publicarParaNegocio (concierge asistido)"| OFE
     JOB -->|"ExpirarReservas"| PED
-    OFE -->|"Sube fotos [HTTPS/REST]"| IMG
-    MOD -->|"Cada módulo lee y escribe<br/>solo sus tablas [SQL]"| DB
+    OFE -->|"Sube fotos de ofertas y perfiles [HTTPS/REST]"| IMG
+    MOD -->|"Lectura y escritura transaccional [SQL]"| DB
 
     classDef contenedor fill:#2f6db5,stroke:#1d4f8a,color:#fff
     classDef componente fill:#8fb8e8,stroke:#4a7fbf,color:#0b2340
     classDef externo fill:#9a9a9a,stroke:#6b6b6b,color:#fff
     class WEB,DB contenedor
-    class REST,ACC,NEG,OFE,PED,REP,MODR,JOB componente
+    class REST,ACC,NEG,OFE,PED,REP,JOB componente
     class IMG externo
 ```
-
-**Notas:**
-- Todos los componentes se despliegan juntos (un solo proceso).
-- Un módulo usa a otro **solo a través de su API pública** (`index.js`), nunca leyendo sus tablas.
-- Pedidos y Ofertas comparten la **transacción** al reservar stock: es posible porque están en el mismo proceso y en la misma base de datos (ADR-001, ADR-003).
 
 ---
 
@@ -76,14 +68,12 @@ flowchart TB
 
 | Componente | Responsabilidad | Funcionalidades principales | Carpeta en el código |
 |---|---|---|---|
-| **API REST** | Punto de entrada HTTP | Rutas `/api/v1`, autenticación JWT, validación, límite de peticiones, traducción de errores a HTTP | `src/api/` |
-| **Acceso** | Identidad y roles | Inicio de sesión de negocios y de administradores (tabla `administradores`, ADR-011), tokens, roles NEGOCIO y ADMIN | `src/modulos/acceso/` |
-| **Negocios** | Gestión de negocios | Solicitud de registro, ciclo de vida PENDIENTE → ACTIVO / RECHAZADO / SUSPENDIDO y su aprobación por el administrador (ADR-010), verificación del precio de carta, plan Gratis/Pro, ciudad y zona | `src/modulos/negocios/` |
-| **Ofertas** | Ofertas de cierre | Publicar, editar, pausar, listar por cercanía; stock y vigencia; caché del listado | `src/modulos/ofertas/` |
-| **Pedidos** | Trazabilidad de la venta | Código de canje, reserva de stock, enlace `wa.me`, confirmación, rechazo y expiración | `src/modulos/pedidos/` |
-| **Reportes** | Métricas por negocio | Pedidos, ventas concretadas, conversión y clientes nuevos por mes | `src/modulos/reportes/` |
-| **Moderación** | Confianza | Denuncias de clientes, suspensión de negocios y retiro de ofertas | `src/modulos/moderacion/` |
-| **Tarea programada** | Expiración automática | Ejecuta `ExpirarReservas` cada minuto | `src/jobs/` |
+| **API REST** | Punto de entrada HTTP | Rutas `/api/v1`, autenticación JWT, validación, límite de peticiones por IP, manejo global de errores | `src/api/` |
+| **Acceso** | Identidad y roles | Login de negocios y administradores (tabla `administradores`, ADR-011), tokens JWT con claims de rol (`ADMIN` / `NEGOCIO`) | `src/modulos/acceso/` |
+| **Negocios** | Gestión comercial | Solicitudes de registro, ciclo PENDIENTE → ACTIVO/RECHAZADO, perfil público `/t/:slug`, redes y kit QR de mostrador (ADR-012) | `src/modulos/negocios/` |
+| **Ofertas** | Ofertas de cierre | Publicar, editar en vivo, pausar, listar vigentes, fotos y publicación asistida desde `/admin` (ADR-013) | `src/modulos/ofertas/` |
+| **Pedidos** | Canjes, Cobro Concierge y Métricas | Código único, reserva de stock, enlaces WhatsApp para Yape y tienda, validación admin (`esAdmin: true`), expiración y KPIs de impacto (`/negocios/me/metricas`) | `src/modulos/pedidos/` |
+| **Tarea programada** | Expiración automática | Ejecuta `ExpirarReservas` cada minuto (cron local o Vercel Cron) | `src/jobs/` y `/cron/` |
 
 ---
 
@@ -93,19 +83,12 @@ flowchart TB
 |---|---|---|---|
 | Aplicación web | API REST | Llama a la API | HTTPS/JSON |
 | API REST | Módulos de negocio | Invoca los casos de uso | Llamada en memoria |
-| API REST | Acceso | Valida el token y el rol en cada petición protegida | Llamada en memoria (middleware) |
-| Acceso | Negocios | Verifica credenciales y que el negocio esté ACTIVO al iniciar sesión (RN-13) | Llamada en memoria (API pública) |
-| Ofertas | Negocios | Verifica el plan (1 oferta al día en Gratis) y que el negocio esté ACTIVO (RN-13) | Llamada en memoria (API pública) |
-| Pedidos | Ofertas | Reserva y libera unidades **dentro de la misma transacción** | Llamada en memoria (API pública + `tx`) |
-| Pedidos | Negocios | Obtiene el nombre y el WhatsApp del negocio | Llamada en memoria (API pública) |
-| Reportes | Pedidos | Lee el historial de códigos para calcular las métricas | Llamada en memoria (API pública de consulta) |
-| Moderación | Negocios / Ofertas | Suspende negocios y retira ofertas | Llamada en memoria (API pública) |
-| Tarea programada | Pedidos | Dispara `ExpirarReservas` | Llamada en memoria |
-| Módulos | PostgreSQL | Cada módulo accede solo a sus tablas | SQL |
-| Ofertas | Almacenamiento de imágenes | Sube las fotos | HTTPS/REST |
-
----
-
-## 5. Trazabilidad
-
-La matriz completa componente → HU → RF → driver → ADR → escenario de calidad está en [`componentes-arquitectonicos.md`](../02-arquitectura-software/componentes-arquitectonicos.md#trazabilidad-de-qué-requisito-sale-cada-componente).
+| API REST | Acceso | Valida el token y el rol en cada petición protegida | Middleware Express |
+| Acceso | Negocios | Verifica credenciales y que el negocio esté ACTIVO al iniciar sesión (RN-13) | En memoria (API pública) |
+| Ofertas | Negocios | Verifica que el negocio esté ACTIVO (RN-13) | En memoria (API pública) |
+| Pedidos | Ofertas | Reserva y libera unidades **dentro de la misma transacción** | En memoria (API pública + `tx`) |
+| Pedidos | Negocios | Obtiene el nombre, dirección y WhatsApp del negocio | En memoria (API pública) |
+| Negocios (Admin) | Ofertas | Permite al administrador publicar ofertas asistidas a nombre del local | En memoria (API pública) |
+| Tarea programada | Pedidos | Dispara `ExpirarReservas` | En memoria |
+| Módulos | PostgreSQL | Cada módulo accede solo a sus tablas mediante pooler | SQL |
+| Ofertas / Negocios | Supabase Storage | Sube fotos mediante adaptador de infraestructura | HTTPS/REST |

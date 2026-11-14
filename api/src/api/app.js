@@ -24,8 +24,12 @@ export function crearApp({
 
   const v1 = express.Router();
   v1.use('/auth', apiAcceso.router);
-  v1.use('/negocios/solicitudes', apiNegocios.routerSolicitudes);
-  v1.use('/negocios/publico', apiNegocios.routerPublico);
+  if (apiNegocios.routerSolicitudes) {
+    v1.use('/negocios/solicitudes', apiNegocios.routerSolicitudes);
+  }
+  if (apiNegocios.routerPublico) {
+    v1.use('/negocios/publico', apiNegocios.routerPublico);
+  }
   if (routerAdminNegocios) {
     v1.use('/admin/negocios', routerAdminNegocios);
   }

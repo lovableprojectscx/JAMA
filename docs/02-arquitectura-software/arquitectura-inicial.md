@@ -52,8 +52,8 @@ flowchart TD
     subgraph EXTERNOS["SISTEMAS EXTERNOS"]
         WA["WhatsApp (wa.me)"]
         Mapas["Mapas y geolocalización"]
-        Img["Almacenamiento de imágenes"]
-        Yape["Yape (sin integración)"]
+        Img["Supabase Storage (imágenes)"]
+        Yape["Yape (Concierge centralizado)"]
     end
 
     %% =========================
@@ -71,10 +71,11 @@ flowchart TD
     %% =========================
     %% INTEGRACIONES
     %% =========================
-    Pedidos -->|"genera enlace con código"| WA
+    Pedidos -->|"genera enlace comprobante y tienda"| WA
     Vitrina -->|"ubicación del cliente"| Mapas
-    Ofertas -->|"fotos"| Img
-    Cliente -.->|"paga directo al negocio"| Yape
+    Ofertas -->|"subida y CDN fotos"| Img
+    Cliente -.->|"transfiere a JAMA (Paso 1)"| Yape
+    Admin -.->|"valida Yape y avisa al negocio"| WA
 
     %% =========================
     %% ESTILOS
@@ -108,28 +109,31 @@ flowchart TD
 | **Moderación** | Recibir los reportes de los clientes, resolverlos y suspender negocios. | RF14, RF16 | — |
 | **Tareas programadas** | Cada minuto: finalizar las ofertas vencidas o agotadas y liberar las reservas no confirmadas. | RF05, RF10 | DA03 |
 
-## Flujo crítico: pedir una oferta (DA01 + DA02)
+## Flujo crítico: pedir una oferta y cobro Concierge (DA01 + DA02 + ADR-013)
 
 ```mermaid
 sequenceDiagram
     actor C as Cliente
-    participant V as Vitrina web
+    participant V as Vitrina web / Modal
     participant API as API REST
     participant P as Pedidos y códigos
     participant BD as PostgreSQL
+    actor O as Operador JAMA (Admin)
     actor N as Negocio
 
-    C->>V: Toca "Pedir"
-    V->>API: POST /api/ofertas/:id/pedidos
-    API->>P: crearPedido(ofertaId)
+    C->>V: Toca "Pedir oferta"
+    V->>API: POST /api/v1/ofertas/:id/pedidos
+    API->>P: PedirOferta.ejecutar(ofertaId)
     P->>BD: BEGIN + SELECT oferta FOR UPDATE
     alt Hay stock y la oferta está vigente
         P->>BD: stock - 1, INSERT código (RESERVADO) + COMMIT
-        P-->>API: código K7P2 y enlace wa.me
+        P-->>API: { codigo, expiraEn, minutosReserva, enlaceWhatsapp, enlaceWhatsappTienda, pago: { yapeNumero, yapeTitular, monto } }
         API-->>V: 201 Created
-        V-->>C: Abre WhatsApp con "Hola, vi tu oferta... código K7P2"
-        C->>N: Paga por Yape y coordina el recojo
-        N->>API: PATCH /api/pedidos/K7P2 (VENDIDO)
+        V-->>C: Modal 3 Pasos: (1) Yape JAMA, (2) WhatsApp comprobante, (3) Código K7P2
+        C->>O: Envía Yape a JAMA y comprobante por WhatsApp
+        O->>API: PATCH /api/v1/admin/pedidos/K7P2 (VENDIDO)
+        O->>N: Notifica por WhatsApp con pedido pagado y código
+        C->>N: Recoge el producto en tienda mostrando código K7P2
     else Sin stock o vencida
         P->>BD: ROLLBACK
         API-->>V: 409 Conflict (oferta agotada)
@@ -142,8 +146,8 @@ sequenceDiagram
 ```mermaid
 stateDiagram-v2
     [*] --> RESERVADO: cliente pide
-    RESERVADO --> VENDIDO: negocio confirma
-    RESERVADO --> NO_CONCRETADO: negocio lo rechaza
+    RESERVADO --> VENDIDO: negocio o admin confirma (validación Yape)
+    RESERVADO --> NO_CONCRETADO: negocio o admin lo rechaza
     RESERVADO --> EXPIRADO: pasan 30 min sin respuesta
     NO_CONCRETADO --> [*]
     EXPIRADO --> [*]
@@ -157,11 +161,11 @@ stateDiagram-v2
 | Tres capas con un monolito modular | Microservicios | Hay un solo desarrollador y el volumen es de una ciudad; los microservicios agregan despliegue y comunicación de red sin beneficio en esta etapa (DA08, RC10). |
 | PostgreSQL | Base de datos NoSQL | Las transacciones y el bloqueo de fila garantizan que no haya sobreventa (DA02). |
 | WhatsApp por enlace `wa.me` | API de WhatsApp Business | Costo cero y sin trámite de aprobación; es suficiente para el MVP (DA06). |
-| Sin pasarela de pago | Integrar Culqi o Niubiz | El pago por Yape ya es un hábito del cliente y evita comisiones y cumplimiento de pagos (RC06). |
+| Flujo Concierge Yape | Pasarela de tarjetas compleja | El pago por Yape es el hábito dominante en Ayacucho y Perú; JAMA centraliza el cobro de cara al cliente y liquida semanalmente a los comercios, reduciendo fricción y asegurando la recaudación (RC06, ADR-013). |
 | Tarea programada dentro del backend | Servicio o cola independiente | Es simple y basta para el volumen de una ciudad; puede extraerse después si crece (DA03). |
 
 ## Integración con sistemas externos
-- **Pedidos y códigos → WhatsApp:** el backend construye el enlace `https://wa.me/<número>?text=<mensaje>`; no hay llamadas a una API.
-- **Vitrina → Mapas y geolocalización:** el navegador obtiene la ubicación aproximada con permiso del cliente; si no la da, se usa la zona elegida manualmente.
-- **Ofertas → Almacenamiento de imágenes:** las fotos se suben a un servicio externo y se sirven comprimidas; en la base de datos solo se guarda la URL.
-- **Yape:** no se integra. El pago es entre el cliente y el negocio, y el sistema solo muestra el número Yape del negocio.
+- **Pedidos y códigos → WhatsApp:** el backend construye el enlace `https://wa.me/<número>?text=<mensaje>` para comprobante a JAMA y aviso a la tienda; sin costos de mensajería API.
+- **Vitrina → Mapas y geolocalización:** el navegador obtiene la ubicación aproximada con permiso del cliente o calcula la ruta hacia Google Maps.
+- **Ofertas → Almacenamiento de imágenes:** las fotos se suben a Supabase Storage (ADR-007 / ADR-008) y se sirven públicamente; en PostgreSQL solo se guarda la URL pública.
+- **Yape:** operado mediante modelo Concierge (ADR-013). La vitrina expone los datos de recaudación de operaciones JAMA, el cliente transfiere y adjunta comprobante, el administrador valida el pedido desde `/admin` y transiciona el código a VENDIDO.

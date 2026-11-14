@@ -15,7 +15,7 @@ Documentar los patrones de diseño aplicados en el backend: dónde se usan, qué
 | **Repository** | Todos los módulos → base de datos | El negocio no debe conocer SQL | `pg` (PostgreSQL) | `oferta-repository.js`, `oferta-repository-pg.js`, `codigo-canje-repository-memoria.js` | ✅ En el ejemplo |
 | **Adapter** | Pedidos → WhatsApp | WhatsApp tiene su propio formato de enlace | URL `wa.me` | `puertos.js` (`EnlaceMensajeria`), `wame-enlace.adapter.js` | ✅ En el ejemplo |
 | **Adapter** | Pedidos → Ofertas y Negocios | Pedidos no debe depender de las clases internas de otros módulos | API pública del módulo | `modulos-vecinos.adapters.js` | ✅ En el ejemplo |
-| **Adapter** | Ofertas → almacenamiento de imágenes | El proveedor tiene su propia API | SDK de Cloudinary | `AlmacenImagenes`, `CloudinaryAdapter` | 📋 Diseñado (ADR-007) |
+| **Adapter** | Ofertas → almacenamiento de imágenes | El proveedor tiene su propia API de subida y CDN | Supabase Storage (SDK REST) | `AlmacenImagenes`, `supabase-storage.adapter.js` | ✅ Implementado (ADR-007) |
 | **Unit of Work** | Pedidos (reservar, resolver, expirar) | El stock y el código deben confirmarse juntos o no confirmarse (ADR-003) | `BEGIN/COMMIT/ROLLBACK` de PostgreSQL | `puertos.js` (`UnidadDeTrabajo`), `unidad-de-trabajo-pg.js`, `unidad-de-trabajo-memoria.js` | ✅ En el ejemplo |
 | **Máquina de estados** (State simplificado) | Entidad `CodigoCanje` | Impedir transiciones inválidas (por ejemplo, vender un código expirado) | Estado como enumeración y transiciones privadas | `codigo-canje.js` | ✅ En el ejemplo |
 | **Facade** | API pública de cada módulo | Otros módulos usan una sola puerta de entrada sin conocer el interior | `index.js` por módulo | `ofertas/index.js`, `negocios/index.js` | ✅ En el ejemplo |

@@ -63,24 +63,24 @@ Cada atributo de [`04-atributos-de-calidad.md`](04-atributos-de-calidad.md) se c
 | **Artefacto** | Middleware de autenticación, casos de uso de **Ofertas** y **Pedidos**, repositorios |
 | **Entorno** | Producción |
 | **Respuesta** | Rechaza la operación sin modificar datos ni revelar información del otro negocio |
-| **Medida** | 100 % de intentos no autorizados rechazados (`401`/`403`/`404`); máximo 10 pedidos por minuto por IP (`429`). El límite no es más bajo porque muchos estudiantes comparten la IP del wifi de la UNSCH |
+| **Medida** | 100 % de intentos no autorizados rechazados (`401`/`403`/`404`); máximo 30 pedidos por minuto por IP (`429`). El límite se ajustó a 30 para permitir concurrencia real de clientes detrás de una misma red o proxy móvil compartido |
 | **Verificación** | Pruebas automáticas con tokens de dos negocios distintos y sin token; prueba de *rate limiting* |
 | **Táctica asociada** | JWT con roles, `negocioId` tomado del token y nunca del cuerpo de la petición, *rate limiting* ([ADR-006](../02-arquitectura-software/decisiones/ADR-006-autenticacion-roles.md)) |
-| **Estado** | Pendiente de implementar las pruebas |
+| **Estado** | Implementado y verificado con pruebas de aislamiento (`tests/seguridad/aislamiento-negocios.test.js`) |
 
-## EQ-05. Usabilidad: primera compra desde WhatsApp
+## EQ-05. Usabilidad: compra inmediata mediante flujo Concierge Yape
 
 | Elemento | Descripción |
 |---|---|
 | **Atributo de calidad** | Usabilidad (AC05) |
 | **Fuente del estímulo** | Un cliente nuevo que nunca usó la plataforma |
-| **Estímulo** | Abre un link compartido en WhatsApp y quiere pedir una oferta |
-| **Artefacto** | Aplicación web (vitrina pública) |
-| **Entorno** | Celular de gama media, sin registro previo |
-| **Respuesta** | Llega al chat de WhatsApp del negocio con el mensaje y el código ya escritos |
-| **Medida** | ≤ 3 toques y ≤ 30 s desde que abre el link; 0 formularios de registro. El negocio publica una oferta en ≤ 60 s |
-| **Verificación** | Prueba con 5 usuarios reales (estudiantes UNSCH) y 3 negocios, cronometrando cada tarea |
-| **Estado** | Se validará en el piloto |
+| **Estímulo** | Abre un link compartido en WhatsApp o escanea el QR de mostrador y pide una oferta |
+| **Artefacto** | Aplicación web (vitrina pública y modal Concierge de 3 pasos) |
+| **Entorno** | Celular de gama media o móvil 390px, sin registro previo |
+| **Respuesta** | Muestra el modal guiado de 3 pasos: (1) Datos de Yape a JAMA con botón de copiado rápido, (2) Envío de comprobante por WhatsApp a operaciones JAMA, y (3) Código de canje único de 4 caracteres con cuenta regresiva de 30 min y enlace a Google Maps |
+| **Medida** | ≤ 3 toques y ≤ 30 s desde que abre el link; 0 formularios de registro. El negocio o administrador publica una oferta en ≤ 60 s ([ADR-013](../02-arquitectura-software/decisiones/ADR-013-flujo-concierge-cobro-yape-y-publicacion-asistida.md)) |
+| **Verificación** | Prueba con usuarios reales y certificación E2E automatizada con navegador Chromium |
+| **Estado** | Implementado y verificado E2E |
 
 ## EQ-06. Confiabilidad de la información: ofertas vencidas
 
@@ -97,20 +97,20 @@ Cada atributo de [`04-atributos-de-calidad.md`](04-atributos-de-calidad.md) se c
 | **Táctica asociada** | Tarea programada cada minuto más el filtro `hora_limite > ahora` en el listado ([ADR-005](../02-arquitectura-software/decisiones/ADR-005-tareas-programadas.md)) |
 | **Estado** | Medida definida |
 
-## EQ-07. Trazabilidad: reporte mensual del negocio
+## EQ-07. Trazabilidad y métricas de impacto comercial y ambiental
 
 | Elemento | Descripción |
 |---|---|
 | **Atributo de calidad** | Trazabilidad (AC07) |
-| **Fuente del estímulo** | Un negocio |
-| **Estímulo** | Consulta su reporte del mes |
-| **Artefacto** | Módulo **Reportes** y el historial de `CodigoCanje` |
-| **Entorno** | Fin de mes |
-| **Respuesta** | Muestra los pedidos recibidos, las ventas concretadas, la conversión y los clientes nuevos |
+| **Fuente del estímulo** | Un negocio o administrador |
+| **Estímulo** | Consulta el panel de impacto comercial y ambiental o el reporte mensual |
+| **Artefacto** | Módulo **Reportes** / caso de uso `ObtenerMetricasNegocio` y el historial de `CodigoCanje` |
+| **Entorno** | Operación continua y cierre mensual |
+| **Respuesta** | Muestra los pedidos recibidos, ventas concretadas, conversión, clientes nuevos, dinero recuperado (S/), ahorro transferido al consumidor (S/), kilogramos de merma de comida evitados y raciones de alimentos rescatadas |
 | **Medida** | 100 % de los códigos con estado final y fecha de cada cambio; los totales del reporte coinciden con un conteo directo en la base de datos |
-| **Verificación** | Consulta SQL de control frente al reporte generado |
-| **Táctica asociada** | Máquina de estados con historial ([ADR-004](../02-arquitectura-software/decisiones/ADR-004-codigo-de-canje.md)) |
-| **Estado** | Medida definida |
+| **Verificación** | Consulta SQL de control frente al reporte generado y prueba unitaria/integración de `ObtenerMetricasNegocio` |
+| **Táctica asociada** | Máquina de estados con historial ([ADR-004](../02-arquitectura-software/decisiones/ADR-004-codigo-de-canje.md)) y agregaciones por estado en base de datos relacional |
+| **Estado** | Implementado y verificado en `/panel` y `/admin` |
 
 ## EQ-08. Escalabilidad: nueva ciudad
 

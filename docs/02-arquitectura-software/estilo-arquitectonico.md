@@ -51,7 +51,7 @@ flowchart TB
         end
 
         subgraph D["3 · DATOS E INFRAESTRUCTURA — repositorios y adaptadores"]
-            DR["UsuarioRepo · NegocioRepo · OfertaRepo + caché · CodigoCanjeRepo · ReporteRepo · DenunciaRepo<br/>WaMeEnlaceAdapter · CloudinaryAdapter"]
+            DR["UsuarioRepo · NegocioRepo · OfertaRepo + caché · CodigoCanjeRepo · ReporteRepo · DenunciaRepo<br/>WaMeEnlaceAdapter · SupabaseStorageAdapter"]
         end
 
         CRON["Tarea programada (cada 1 min)<br/>ExpirarReservas"]
@@ -62,9 +62,9 @@ flowchart TB
     subgraph EXT["SISTEMAS EXTERNOS"]
         direction LR
         WA["WhatsApp (wa.me)"]
-        IMG["Almacenamiento de imágenes (CDN)"]
+        IMG["Supabase Storage (CDN público)"]
         MAP["Mapas y geolocalización"]
-        YAPE["Yape — sin integración"]
+        YAPE["Yape (Cobro Concierge centralizado)"]
     end
 
     C --> WEB
@@ -76,10 +76,11 @@ flowchart TB
     L --> D
     CRON --> L
     D -->|"SQL / transacciones"| DB
-    L4 -.->|"genera enlace"| WA
+    L4 -.->|"genera enlaces WA"| WA
     L3 -.->|"sube fotos"| IMG
     WEB -.->|"ubicación"| MAP
-    C -.->|"paga directo al negocio"| YAPE
+    C -.->|"paga vía Yape a JAMA (Concierge)"| YAPE
+    A -.->|"valida Yape y avisa al negocio"| WA
 ```
 
 **Leyenda:** las flechas continuas indican llamadas dentro del sistema, en una sola dirección hacia abajo. Las flechas punteadas indican integraciones externas.

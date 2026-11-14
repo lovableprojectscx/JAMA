@@ -39,6 +39,8 @@ Son las reglas que viven en el **dominio**. Cada una tiene su prueba automática
 | RN-14 | Un negocio solo cambia de estado por las transiciones permitidas: PENDIENTE → ACTIVO o RECHAZADO; ACTIVO → SUSPENDIDO; SUSPENDIDO → ACTIVO. RECHAZADO es final | `Negocio.#transicion()` |
 | RN-15 | Una solicitud de registro debe tener: nombre del negocio y del responsable, tipo de negocio permitido (panadería, pastelería, pollería, restaurante, cafetería u **otro**, y en ese caso qué tipo de negocio es, de 2 a 60 caracteres, para que el administrador lo revise al aprobar; no supermercados — RC09), WhatsApp peruano de 9 dígitos que empiece en 9, correo válido, contraseña de al menos 8 caracteres y la declaración de que solo publicará productos aptos y dentro de su fecha (RC08) aceptada | `Negocio.solicitar()` |
 | RN-16 | El correo y el número de WhatsApp no se repiten entre negocios | Índices únicos en `negocios` + `RegistrarSolicitud` |
+| RN-17 | En el flujo Concierge de cobro centralizado, el cliente abona a JAMA vía Yape y envía comprobante; un operador administrador puede validar y resolver pedidos de cualquier negocio (`esAdmin: true`) transicionando a VENDIDO | `ResolverPedido` / `PedidosController.resolverAdmin()` (ADR-013) |
+| RN-18 | La administración puede publicar ofertas asistidas a nombre de cualquier comercio afiliado activo previa autorización o mensaje del titular | `AdminNegociosController` / `PublicarOferta` (ADR-013) |
 
 ---
 
@@ -158,6 +160,8 @@ classDiagram
         -resolverPedido: ResolverPedido
         +pedir(req, res)
         +resolver(req, res)
+        +listarAdmin(req, res)
+        +resolverAdmin(req, res)
     }
 
     class PedirOferta {
@@ -165,7 +169,7 @@ classDiagram
         -codigoUnico(tx) string
     }
     class ResolverPedido {
-        +ejecutar(codigo, negocioId, concretado)
+        +ejecutar(codigo, negocioId, concretado, opciones)
     }
     class ExpirarReservas {
         +ejecutar() expirados

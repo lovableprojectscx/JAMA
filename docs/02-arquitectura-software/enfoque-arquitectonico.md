@@ -15,17 +15,17 @@
 ```mermaid
 flowchart TB
     subgraph FW["FRAMEWORKS Y DRIVERS — detalles externos"]
-        FWN["Express · PostgreSQL · node-cron · Cloudinary · wa.me · JWT/bcrypt"]
+        FWN["Express · PostgreSQL · node-cron · Supabase Storage · wa.me · JWT/bcrypt"]
     end
 
     subgraph AD["ADAPTADORES DE INTERFAZ"]
         direction LR
-        PRES["PRESENTACIÓN<br/>OfertaController · PedidoController<br/>NegocioController · DTOs · middleware auth"]
-        INF["INFRAESTRUCTURA<br/>PgOfertaRepository · PgCodigoCanjeRepository<br/>PgUnidadDeTrabajo · WaMeEnlaceAdapter<br/>CloudinaryAdapter · ExpiracionJob"]
+        PRES["PRESENTACIÓN<br/>OfertaController · PedidoController<br/>NegocioController · AdminNegociosController · DTOs · middleware auth"]
+        INF["INFRAESTRUCTURA<br/>PgOfertaRepository · PgCodigoCanjeRepository<br/>PgUnidadDeTrabajo · WaMeEnlaceAdapter<br/>SupabaseStorageAdapter · ExpiracionJob"]
     end
 
     subgraph APP["APLICACIÓN — casos de uso"]
-        UC["PublicarOferta · ListarOfertasCercanas · PedirOferta<br/>ResolverPedido · ExpirarReservas · GenerarReporteMensual"]
+        UC["PublicarOferta · ListarOfertasCercanas · PedirOferta<br/>ResolverPedido · ExpirarReservas · ObtenerMetricasNegocio"]
     end
 
     subgraph DOM["DOMINIO — no depende de nadie"]
@@ -50,23 +50,24 @@ flowchart TB
 ### Dominio (núcleo)
 | Elemento | Regla del negocio que protege |
 |---|---|
-| `Oferta` | `precioOferta < precioCarta`; no se publica si `fechaVencimiento < hoy`; `stock ≥ 0`; estados ACTIVA → PAUSADA / AGOTADA / FINALIZADA. |
-| `Negocio` | El plan Gratis permite 1 oferta al día; un negocio suspendido no publica; se verifica su precio de carta. |
-| `CodigoCanje` | Máquina de estados RESERVADO → VENDIDO / NO_CONCRETADO / EXPIRADO; una reserva expira a los 30 min ([ADR-004](decisiones/ADR-004-codigo-de-canje.md)). |
+| `Oferta` | `precioOferta < precioCarta`; no se publica si `fechaVencimiento < hoy`; `stock ≥ 0`; estados ACTIVA → PAUSADA / AGOTADA / FINALIZADA; tramos dinámicos de precio que solo bajan. |
+| `Negocio` | El plan Gratis permite 1 oferta al día; un negocio suspendido o pendiente no opera; se verifica su precio de carta; perfiles públicos y kit QR. |
+| `CodigoCanje` | Máquina de estados RESERVADO → VENDIDO / NO_CONCRETADO / EXPIRADO; una reserva expira a los 30 min ([ADR-004](decisiones/ADR-004-codigo-de-canje.md), [ADR-013](decisiones/ADR-013-flujo-concierge-cobro-yape-y-publicacion-asistida.md)). |
 | `Ciudad` | Negocios y ofertas pertenecen a una ciudad (DA07). |
-| Puertos | Contratos que la infraestructura debe cumplir. |
+| Puertos | Contratos que la infraestructura debe cumplir (`AlmacenImagenes`, `EnlaceMensajeria`, `ReservaDeStock`). |
 
 ### Aplicación (casos de uso)
-Orquestan el dominio y los puertos, y no conocen HTTP ni SQL. Ejemplo de **`PedirOferta`**:
+Orquestan el dominio y los puertos, y no conocen HTTP ni SQL. Ejemplo de **`PedirOferta`** (con flujo Concierge):
 1. Abre la unidad de trabajo (transacción).
 2. `ofertaRepo.obtenerParaActualizar(id)`, que bloquea la fila.
 3. `oferta.reservarUnidad(reloj.ahora())`, que aplica la regla del dominio.
-4. `codigo = CodigoCanje.crear(generador.nuevo(), oferta)`.
-5. `enlace = mensajeria.generarEnlace(negocio.whatsapp, mensaje)`.
-6. Hace el commit y devuelve `{ codigo, enlace }`.
+4. `codigo = CodigoCanje.crear(generador.nuevo(), oferta, precioVigente)`.
+5. `enlaceWhatsapp = mensajeria.generarEnlace(adminOpsWhatsapp, mensajeComprobante)`.
+6. `enlaceWhatsappTienda = mensajeria.generarEnlace(negocio.whatsapp, mensajeTienda)`.
+7. Hace el commit y devuelve `{ codigo, expiraEn, minutosReserva, enlaceWhatsapp, enlaceWhatsappTienda, pago: { yapeNumero, yapeTitular, monto } }`.
 
 ### Infraestructura
-Repositorios con `pg`, el adaptador `wa.me`, Cloudinary, JWT, bcrypt, la caché del listado ([ADR-008](decisiones/ADR-008-cache-e-imagenes.md)) y la tarea programada ([ADR-005](decisiones/ADR-005-tareas-programadas.md)).
+Repositorios con `pg`, el adaptador `wa.me`, Supabase Storage (`SupabaseStorageAdapter`), JWT, bcrypt, la caché del listado ([ADR-008](decisiones/ADR-008-cache-e-imagenes.md)) y la tarea programada ([ADR-005](decisiones/ADR-005-tareas-programadas.md)).
 
 ### Presentación
 Rutas y controladores de Express: traducen HTTP ↔ DTO, validan la entrada, llaman al caso de uso y devuelven el código HTTP correspondiente (`201`, `409 oferta agotada`, `403`). También incluye la aplicación web del cliente.

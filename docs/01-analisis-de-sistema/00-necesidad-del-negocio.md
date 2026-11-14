@@ -29,16 +29,16 @@ El modelo ya funciona en Lima (Cirkula, más de 500 mil usuarios) y en México (
 
 | Para | Valor |
 |---|---|
-| **Negocio** | Recupera dinero de un producto que iba a perder y gana clientes nuevos, sin dañar su imagen: se habla de "ofertas de cierre", no de "merma". |
-| **Cliente** | Comida del día con 40 % a 70 % de descuento cerca de él. Sin app ni registro: pide por WhatsApp y paga con Yape. |
-| **Ciudad** | Menos desperdicio de alimentos. |
+| **Negocio** | Recupera dinero de un producto que iba a perder y gana clientes nuevos, sin dañar su imagen: se habla de "ofertas de cierre", no de "merma". Cuenta con vitrina digital, publicación asistida y perfil propio con kit QR imprimible. |
+| **Cliente** | Comida del día con 40 % a 70 % de descuento cerca de él. Sin app ni registro: reserva su código, realiza el pago digital centralizado vía Yape (flujo concierge) y recoge en tienda. |
+| **Ciudad** | Menos desperdicio de alimentos y fomento del consumo sostenible de proximidad. |
 
 ## Modelo de negocio
-Freemium: **Gratis** (1 oferta al día) y **Pro** (S/ 25 al mes: ofertas ilimitadas, posición destacada y reporte de ventas). Los primeros 2 a 3 meses, todos los negocios usan el plan Pro gratis.
+Freemium: **Gratis** (1 oferta al día) y **Pro** (S/ 25 al mes: ofertas ilimitadas, posición destacada y reporte de ventas). Durante la fase de validación y piloto, todos los negocios acceden a las capacidades completas (incluyendo publicación asistida y métricas de impacto). En el flujo transaccional inicial, JAMA opera un modelo Concierge de cobro centralizado con Yape y liquidación semanal a los comercios.
 
 ## Alcance del sistema (MVP)
-- **Incluye:** vitrina pública de ofertas, pedidos por WhatsApp con código de canje, panel del negocio, reporte mensual, verificación y moderación.
-- **No incluye:** pago dentro de la plataforma, logística de envío, app móvil, supermercados ni alertas automáticas.
+- **Incluye:** vitrina pública de ofertas, filtros dinámicos por categoría y búsqueda, perfiles públicos de negocio (`/t/:slug`), kit QR de mostrador imprimible, pedidos con reserva de stock y código de canje único de 4 caracteres, flujo concierge de cobro centralizado con Yape a JAMA y validación en `/admin`, publicación asistida de ofertas desde el panel de administración, panel del negocio con métricas de impacto comercial y ambiental, reporte mensual, verificación y moderación.
+- **No incluye:** pasarela de pagos con tarjeta de crédito/débito integrada (se opera con Yape concierge), logística o delivery propio (recojo presencial en tienda del negocio), ni app móvil nativa instalable (SPA/PWA web ultraligera optimizada para móviles).
 
 ## Interesados (stakeholders)
 Negocios de comida, clientes (estudiantes de la UNSCH y trabajadores del centro), el administrador y fundador, la incubadora UNSCH y entidades reguladoras (Indecopi y municipalidad).
