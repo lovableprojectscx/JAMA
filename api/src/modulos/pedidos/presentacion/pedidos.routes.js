@@ -27,3 +27,14 @@ export function crearRutasMetricasMeNegocio(controller, requireAuth) {
   router.get('/', requireAuth, (req, res, next) => controller.obtenerMetricas(req, res, next));
   return router;
 }
+
+/** Se monta en /api/v1/admin/pedidos → GET, PATCH /:codigo (admin autenticado). */
+export function crearRutasAdminPedidos(controller, requireAuth, requireRolAdmin) {
+  const router = Router();
+  router.use(requireAuth);
+  router.use(requireRolAdmin);
+
+  router.get('/', (req, res, next) => controller.listarAdmin(req, res, next));
+  router.patch('/:codigo', (req, res, next) => controller.resolverAdmin(req, res, next));
+  return router;
+}

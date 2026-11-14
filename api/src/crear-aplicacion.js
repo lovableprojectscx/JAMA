@@ -58,7 +58,9 @@ export function crearAplicacion() {
     unidadDeTrabajo,
     apiOfertas,
     apiNegocios,
-    requireAuth: requireNegocio,
+    requireAuth,
+    requireNegocio,
+    requireRolAdmin,
     limitarPedidos,
   });
 

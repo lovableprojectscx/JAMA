@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Check, Compass, MapPin, MessageCircle, Store, X } from 'lucide-react';
+import { Check, Compass, Copy, MapPin, MessageCircle, Store, X } from 'lucide-react';
 import Header from './components/Header.jsx';
 import Hero from './components/Hero.jsx';
 import OfertaCard from './components/OfertaCard.jsx';
@@ -27,6 +27,15 @@ export default function App() {
   const [confirmacion, setConfirmacion] = useState(null);
   const [avisoError, setAvisoError] = useState(null);
   const [categoriaActiva, setCategoriaActiva] = useState('TODAS');
+  const [copiadoYape, setCopiadoYape] = useState(false);
+
+  function handleCopiarYape(numero) {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(numero);
+      setCopiadoYape(true);
+      setTimeout(() => setCopiadoYape(false), 2000);
+    }
+  }
 
   const refOfertas = useRef(null);
 
@@ -182,97 +191,146 @@ export default function App() {
         )}
       </main>
 
-      {/* Modal interactivo de confirmación (Bottom Sheet en móvil, Modal centrado en escritorio) */}
-      {confirmacion && (
-        <div
-          className="modal-confirmacion-overlay"
-          onClick={() => setConfirmacion(null)}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="modal-confirmacion" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              className="modal-confirmacion__cerrar"
-              onClick={() => setConfirmacion(null)}
-              aria-label="Cerrar modal"
-            >
-              <X size={20} />
-            </button>
+      {/* Modal interactivo de confirmación con Flujo Concierge Yape */}
+      {confirmacion && (() => {
+        const yapeNumero = confirmacion.pago?.yapeNumero || import.meta.env.VITE_JAMA_YAPE_NUMERO || '987654321';
+        const yapeTitular = confirmacion.pago?.yapeTitular || import.meta.env.VITE_JAMA_YAPE_TITULAR || 'JAMA Huamanga';
+        const monto = Number(confirmacion.precio ?? confirmacion.oferta?.precioOferta ?? 0);
 
-            <div className="modal-confirmacion__cabecera">
-              <div className="modal-confirmacion__icono-exito">
-                <Check size={28} />
-              </div>
-              <h2 className="modal-confirmacion__titulo">¡Reserva confirmada!</h2>
-              <p className="modal-confirmacion__subtitulo">
-                Tienes <strong>30 minutos</strong> de reserva. Pagas en el local.
-              </p>
-            </div>
-
-            {/* Caja destacada del código de canje */}
-            <div className="modal-confirmacion__codigo-caja">
-              <span className="modal-confirmacion__codigo-etiqueta">Tu código de recojo</span>
-              <div className="modal-confirmacion__codigo-valor">{confirmacion.codigo}</div>
-              <span className="modal-confirmacion__codigo-nota">
-                Muestra este código al llegar · Pagas con Yape o efectivo
-              </span>
-            </div>
-
-            {/* Ficha del comercio y punto de recojo en Zona Centro */}
-            <div className="modal-confirmacion__comercio-ficha">
-              <div className="modal-confirmacion__comercio-icono">
-                <Store size={22} />
-              </div>
-              <div className="modal-confirmacion__comercio-info">
-                <h4 className="modal-confirmacion__comercio-nombre">
-                  {confirmacion.negocioNombre || confirmacion.oferta?.negocioNombre || 'Comercio afiliado'}
-                </h4>
-                <p className="modal-confirmacion__comercio-dir">
-                  📍 {confirmacion.negocioDireccion || confirmacion.oferta?.negocioDireccion || 'Centro, Huamanga'}
-                </p>
-                <p className="modal-confirmacion__comercio-item">
-                  🛍️ <strong>{confirmacion.oferta?.titulo}</strong> · S/{' '}
-                  {(confirmacion.precio ?? confirmacion.oferta?.precioOferta ?? 0).toFixed(2)}
-                </p>
-              </div>
-            </div>
-
-            {/* Acciones principales */}
-            <div className="modal-confirmacion__acciones">
-              <a
-                className="modal-confirmacion__btn-wa press"
-                href={confirmacion.enlaceWhatsapp}
-                target="_blank"
-                rel="noopener noreferrer"
+        return (
+          <div
+            className="modal-confirmacion-overlay"
+            onClick={() => setConfirmacion(null)}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="modal-confirmacion" onClick={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                className="modal-confirmacion__cerrar"
+                onClick={() => setConfirmacion(null)}
+                aria-label="Cerrar modal"
               >
-                <MessageCircle size={20} />
-                <span>WhatsApp del negocio</span>
-              </a>
+                <X size={20} />
+              </button>
 
-              {(confirmacion.enlaceMaps || confirmacion.oferta?.enlaceMaps) && (
+              <div className="modal-confirmacion__cabecera">
+                <div className="modal-confirmacion__icono-exito">
+                  <Check size={28} />
+                </div>
+                <h2 className="modal-confirmacion__titulo">¡Reserva generada!</h2>
+                <p className="modal-confirmacion__subtitulo">
+                  Sigue estos 3 sencillos pasos para confirmar y recoger tu pedido:
+                </p>
+              </div>
+
+              {/* Paso 1: Paga con Yape a JAMA */}
+              <div className="modal-confirmacion__paso-caja modal-confirmacion__paso-caja--yape">
+                <div className="modal-confirmacion__paso-cabecera">
+                  <span className="modal-confirmacion__paso-badge">Paso 1</span>
+                  <span className="modal-confirmacion__paso-titulo">Yapea el monto a JAMA</span>
+                </div>
+                <div className="modal-confirmacion__yape-monto">
+                  <span className="modal-confirmacion__yape-monto-lbl">Total a pagar:</span>
+                  <strong className="modal-confirmacion__yape-monto-val">S/ {monto.toFixed(2)}</strong>
+                </div>
+                <div className="modal-confirmacion__yape-datos">
+                  <div className="modal-confirmacion__yape-fila">
+                    <span>Número Yape / Plin:</span>
+                    <div className="modal-confirmacion__yape-copiar">
+                      <strong>{yapeNumero}</strong>
+                      <button
+                        type="button"
+                        onClick={() => handleCopiarYape(yapeNumero)}
+                        className="modal-confirmacion__btn-copiar"
+                        title="Copiar número"
+                      >
+                        {copiadoYape ? <Check size={12} /> : <Copy size={12} />}
+                        <span>{copiadoYape ? '¡Copiado!' : 'Copiar'}</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div className="modal-confirmacion__yape-fila">
+                    <span>Titular:</span>
+                    <strong>{yapeTitular}</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Paso 2: Envía tu comprobante por WhatsApp a JAMA */}
+              <div className="modal-confirmacion__paso-caja">
+                <div className="modal-confirmacion__paso-cabecera">
+                  <span className="modal-confirmacion__paso-badge">Paso 2</span>
+                  <span className="modal-confirmacion__paso-titulo">Envía constancia a JAMA</span>
+                </div>
+                <p className="modal-confirmacion__paso-desc">
+                  Envíanos la captura de tu Yape por WhatsApp para validar tu pago y emitirte la orden autorizada:
+                </p>
                 <a
-                  className="modal-confirmacion__btn-maps press"
-                  href={confirmacion.enlaceMaps || confirmacion.oferta?.enlaceMaps}
+                  className="modal-confirmacion__btn-wa press"
+                  href={confirmacion.enlaceWhatsapp}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Compass size={18} />
-                  <span>Cómo llegar (Google Maps)</span>
+                  <MessageCircle size={20} />
+                  <span>Enviar constancia por WhatsApp a JAMA</span>
                 </a>
-              )}
-            </div>
+              </div>
 
-            <button
-              type="button"
-              className="modal-confirmacion__btn-listo"
-              onClick={() => setConfirmacion(null)}
-            >
-              Listo, volver a las ofertas
-            </button>
+              {/* Paso 3: Código de recojo y dirección de la tienda */}
+              <div className="modal-confirmacion__paso-caja modal-confirmacion__paso-caja--recojo">
+                <div className="modal-confirmacion__paso-cabecera">
+                  <span className="modal-confirmacion__paso-badge">Paso 3</span>
+                  <span className="modal-confirmacion__paso-titulo">Recoge con tu código</span>
+                </div>
+                <div className="modal-confirmacion__codigo-caja" style={{ margin: '8px 0 12px' }}>
+                  <span className="modal-confirmacion__codigo-etiqueta">Tu código de recojo</span>
+                  <div className="modal-confirmacion__codigo-valor">{confirmacion.codigo}</div>
+                  <span className="modal-confirmacion__codigo-nota">
+                    Reserva válida por 30 minutos · Muestra este código al llegar
+                  </span>
+                </div>
+                <div className="modal-confirmacion__comercio-ficha" style={{ margin: 0 }}>
+                  <div className="modal-confirmacion__comercio-icono">
+                    <Store size={22} />
+                  </div>
+                  <div className="modal-confirmacion__comercio-info">
+                    <h4 className="modal-confirmacion__comercio-nombre">
+                      {confirmacion.negocioNombre || confirmacion.oferta?.negocioNombre || 'Comercio afiliado'}
+                    </h4>
+                    <p className="modal-confirmacion__comercio-dir">
+                      📍 {confirmacion.negocioDireccion || confirmacion.oferta?.negocioDireccion || 'Centro, Huamanga'}
+                    </p>
+                    <p className="modal-confirmacion__comercio-item">
+                      🛍️ <strong>{confirmacion.oferta?.titulo}</strong> · S/ {monto.toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+                {(confirmacion.enlaceMaps || confirmacion.oferta?.enlaceMaps) && (
+                  <a
+                    className="modal-confirmacion__btn-maps press"
+                    href={confirmacion.enlaceMaps || confirmacion.oferta?.enlaceMaps}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ marginTop: 10 }}
+                  >
+                    <Compass size={18} />
+                    <span>Cómo llegar al local (Google Maps)</span>
+                  </a>
+                )}
+              </div>
+
+              <button
+                type="button"
+                className="modal-confirmacion__btn-listo"
+                onClick={() => setConfirmacion(null)}
+              >
+                Listo, volver a las ofertas
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       <ComoFunciona />
       <Faq />

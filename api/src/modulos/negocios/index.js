@@ -64,7 +64,12 @@ export function crearApiNegocios({ pool, reloj, limitarSolicitudes, almacenImage
     subirFotoNegocio,
   });
 
-  const adminController = new AdminNegociosController({ listarSolicitudes, resolverSolicitud });
+  const adminController = new AdminNegociosController({
+    listarSolicitudes,
+    resolverSolicitud,
+    ofertasApiRef,
+    reloj,
+  });
 
   return {
     routerSolicitudes: crearRutasSolicitudes(controller, limitarSolicitudes),

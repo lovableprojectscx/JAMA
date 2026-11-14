@@ -8,14 +8,15 @@ export class ResolverPedido {
     this.reservaDeStock = reservaDeStock;
   }
 
-  async ejecutar({ codigo, negocioId, concretado }) {
+  async ejecutar({ codigo, negocioId, concretado, esAdmin = false }) {
     return this.unidadDeTrabajo.ejecutar(async (tx) => {
       const ahora = this.reloj.ahora();
       const codigoCanje = await this.codigos.buscarPorCodigo(codigo, tx);
 
       // RN-10: un negocio solo opera sobre sus propios códigos.
       // Inexistente o de otro negocio responde igual: 404, nunca 403.
-      if (!codigoCanje || !codigoCanje.perteneceA(negocioId)) {
+      // Si esAdmin es true (Concierge JAMA), puede validar/resolver cualquier código.
+      if (!codigoCanje || (!esAdmin && !codigoCanje.perteneceA(negocioId))) {
         throw new NoEncontradoError('Código no encontrado');
       }
 

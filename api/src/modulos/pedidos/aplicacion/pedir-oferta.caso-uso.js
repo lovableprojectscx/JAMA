@@ -29,8 +29,18 @@ export class PedirOferta {
       await this.codigos.guardar(codigoCanje, tx);
 
       const contacto = await this.contactoNegocio.obtenerContacto(reserva.negocioId, tx);
-      const mensaje = `Hola ${contacto.nombre}, vi tu oferta "${reserva.titulo}" en JAMA. Quiero recogerla hoy. Mi código es ${codigo}.`;
-      const enlaceWhatsapp = this.mensajeria.generarEnlace(contacto.whatsapp, mensaje);
+
+      // Flujo de Cobro Centralizado Concierge (JAMA Huamanga)
+      const jamaWhatsapp = process.env.JAMA_WHATSAPP || '51987654321';
+      const jamaYapeNumero = process.env.JAMA_YAPE_NUMERO || '987654321';
+      const jamaYapeTitular = process.env.JAMA_YAPE_TITULAR || 'JAMA Huamanga';
+
+      const precioFormateado = Number(codigoCanje.precio ?? 0).toFixed(2);
+      const mensajeJama = `¡Hola JAMA! Quiero confirmar mi pedido y pagar con Yape:\n🛍️ Oferta: ${reserva.titulo}\n🏪 Local: ${contacto.nombre}\n💰 Monto a Yapear: S/ ${precioFormateado}\n🔑 Código de reserva: ${codigo}\n\nAdjunto mi comprobante para que me emitan mi orden de recojo.`;
+      const enlaceWhatsapp = this.mensajeria.generarEnlace(jamaWhatsapp, mensajeJama);
+
+      const mensajeTienda = `Hola ${contacto.nombre}, vi tu oferta "${reserva.titulo}" en JAMA. Quiero recogerla hoy. Mi código es ${codigo}.`;
+      const enlaceWhatsappTienda = this.mensajeria.generarEnlace(contacto.whatsapp, mensajeTienda);
 
       const queryMaps = encodeURIComponent(`${contacto.nombre} ${contacto.direccion ?? ''} Huamanga Ayacucho`.trim());
       const enlaceMaps = contacto.direccion ? `https://www.google.com/maps/search/?api=1&query=${queryMaps}` : null;
@@ -38,11 +48,17 @@ export class PedirOferta {
       return {
         codigo,
         enlaceWhatsapp,
+        enlaceWhatsappTienda,
         expiraEn: codigoCanje.expiraEn,
         precio: codigoCanje.precio,
         negocioNombre: contacto.nombre,
         negocioDireccion: contacto.direccion,
         enlaceMaps,
+        pago: {
+          yapeNumero: jamaYapeNumero,
+          yapeTitular: jamaYapeTitular,
+          monto: codigoCanje.precio,
+        },
       };
     });
   }

@@ -17,6 +17,7 @@ import {
   crearRutasPedidosNegocio,
   crearRutasPedidosMeNegocio,
   crearRutasMetricasMeNegocio,
+  crearRutasAdminPedidos,
 } from './presentacion/pedidos.routes.js';
 
 /**
@@ -31,6 +32,8 @@ export function crearModuloPedidos({
   apiOfertas,
   apiNegocios,
   requireAuth,
+  requireNegocio,
+  requireRolAdmin,
   limitarPedidos,
 }) {
   const codigoCanjeRepository = new CodigoCanjeRepositoryPg(pool);
@@ -80,13 +83,17 @@ export function crearModuloPedidos({
     resolverPedido,
     listarPedidosPorConfirmar,
     obtenerMetricasNegocio,
+    codigos: codigoCanjeRepository,
   });
+
+  const middlewareNegocio = requireNegocio ?? requireAuth;
 
   return {
     routerPublico: crearRutasPedidosPublicas(controller, limitarPedidos),
-    routerNegocio: crearRutasPedidosNegocio(controller, requireAuth),
-    routerMeNegocio: crearRutasPedidosMeNegocio(controller, requireAuth),
-    routerMetricas: crearRutasMetricasMeNegocio(controller, requireAuth),
+    routerNegocio: crearRutasPedidosNegocio(controller, middlewareNegocio),
+    routerMeNegocio: crearRutasPedidosMeNegocio(controller, middlewareNegocio),
+    routerMetricas: crearRutasMetricasMeNegocio(controller, middlewareNegocio),
+    routerAdminPedidos: requireRolAdmin ? crearRutasAdminPedidos(controller, requireAuth, requireRolAdmin) : null,
     expirarReservas,
   };
 }

@@ -759,6 +759,42 @@ Siguiendo el diseño de software formal [`plan-metricas-impacto-comercial.md`](d
      - Medición de desborde horizontal en 390px móvil: exactamente 0px de desborde (`scrollWidth <= clientWidth`).
    - Linter `oxlint`: 0 errores. Build de producción `vite build`: completado en 1.01 s.
 
+### Etapa 23 — Flujo Concierge de Cobro Centralizado con Yape y Publicación Asistida (esta sesión)
+
+Siguiendo el diseño de software formal [`plan-flujo-concierge-cobro-yape-y-publicacion-asistida.md`](docs/03-diseno-de-software/plan-flujo-concierge-cobro-yape-y-publicacion-asistida.md) ([RF04](docs/01-analisis-de-sistema/03-requisitos-funcionales.md), [RF06](docs/01-analisis-de-sistema/03-requisitos-funcionales.md), [RF15](docs/01-analisis-de-sistema/03-requisitos-funcionales.md), [RF18](docs/01-analisis-de-sistema/03-requisitos-funcionales.md); [HU04](docs/01-analisis-de-sistema/02-historias-del-usuario.md), [HU07](docs/01-analisis-de-sistema/02-historias-del-usuario.md), [HU09](docs/01-analisis-de-sistema/02-historias-del-usuario.md); [ADR-001](docs/02-arquitectura-software/decisiones/ADR-001-monolito-modular.md), [ADR-002](docs/02-arquitectura-software/decisiones/ADR-002-clean-architecture.md), [ADR-011](docs/02-arquitectura-software/decisiones/ADR-011-panel-de-administracion-y-avisos-whatsapp.md)):
+
+1. **Clean Architecture y Backend**:
+   - **Flujo de Cobro Centralizado**: Caso de uso `PedirOferta` enriquecido con datos oficiales de recaudo JAMA (`JAMA_YAPE_NUMERO`, `JAMA_YAPE_TITULAR`, `JAMA_WHATSAPP`) y generación de `enlaceWhatsapp` a Operaciones JAMA con mensaje prellenado detallando oferta, local, monto y código de reserva.
+   - **Validación Operativa Concierge**: `ResolverPedido` actualizado para admitir `esAdmin: true`, permitiendo a operadores JAMA validar transferencias Yape y concretar o cancelar pedidos sin restricción de `negocioId`.
+   - **Repositorio PostgreSQL `CodigoCanjeRepositoryPg`**: Implementación de `listarParaAdmin({ estado, limite })` con joins a `negocios` y `ofertas`.
+   - **Publicación Asistida por Admin**: Endpoints `POST /api/v1/admin/negocios/:id/ofertas` y `POST /api/v1/admin/negocios/:id/ofertas/fotos` para que el equipo JAMA publique ofertas al instante cuando los dueños envíen fotos/detalles por WhatsApp.
+   - **Endpoints de Canjes**: `GET /api/v1/admin/pedidos` y `PATCH /api/v1/admin/pedidos/:codigo`.
+   - **128 pruebas unitarias aprobadas al 100% (0 fallos)** en 9.5 s (+2 nuevas pruebas en `resolver-pedido-vencido.test.js`).
+
+2. **Frontend Público y Modal de Cobro Concierge (`App.jsx`, `PerfilTienda.jsx`, `index.css`)**:
+   - **Modal de 3 Pasos Visuales**:
+     - **Paso 1 (Yapea el monto a JAMA)**: Desglose de monto total en S/, número de Yape/Plin (`987654321`), titular oficial (`JAMA Huamanga`) y botón interactivo "Copiar" con toast reactivo "¡Copiado!".
+     - **Paso 2 (Envía constancia a JAMA)**: Botón verde destacado para abrir WhatsApp de Operaciones JAMA con mensaje prellenado.
+     - **Paso 3 (Recoge con tu código)**: Código de reserva en recuadro destacado (vigencia de 30 minutos), dirección física del local y enlace a Google Maps.
+
+3. **Frontend del Panel de Administración (`AdminPanel.jsx`, `api.js`, `admin.css`)**:
+   - **Pestaña "Pedidos / Canjes Yape"**:
+     - Filtros por estado ("Todos", "Por Validar Pago", "Validados / Vendidos").
+     - Tarjetas completas de pedido con monto, código, comercio, oferta y fecha/hora.
+     - Botón "Validar pago Yape (Marcar pagado)" que ejecuta la transición a `VENDIDO`.
+     - Botón "Avisar a tienda por WhatsApp" que preconfigura el mensaje oficial de autorización de recojo y liquidación al comercio.
+   - **Pestaña "Comercios Afiliados"**:
+     - Botón naranja "➕ Publicar oferta asistida" en cada comercio activo.
+     - Modal completo con validaciones de precio de carta, precio oferta, stock, hora límite y carga de foto.
+
+4. **Certificación Interactiva E2E con Subagente Browser (390px)**:
+   - Verificado en Chromium real (`step_337_modal_concierge.png`, `step_374_modal_publicacion_asistida.png`, `step_378_vitrina_oferta_asistida_nano.png`, `step_386_modal_concierge_yape.png`):
+     - Modal de cobro de 3 pasos y botón de copiado de Yape funcional.
+     - Login admin (`admin@jama.pe` / `admin1234`) y validación de pago en "Pedidos / Canjes Yape".
+     - Aprobación de nuevo comercio "Nano" y publicación asistida de "1/4 Pollo a la Brasa" (S/ 11.00).
+     - Reflejo automático en vitrina pública con píldora dinámica `🍗 Pollerías (1)`.
+   - Linter `oxlint`: 0 errores. Build de producción `vite build`: completado en 1.10 s.
+
 ## 2. Cómo correrlo
 
 Ver [`README.md`](README.md) para el detalle completo. Resumen:

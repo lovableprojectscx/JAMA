@@ -29,6 +29,9 @@ export function crearApp({
   if (routerAdminNegocios) {
     v1.use('/admin/negocios', routerAdminNegocios);
   }
+  if (pedidosModule.routerAdminPedidos) {
+    v1.use('/admin/pedidos', pedidosModule.routerAdminPedidos);
+  }
   if (routerMeNegocios) {
     v1.use('/negocios/me', routerMeNegocios);
   }

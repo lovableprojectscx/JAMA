@@ -387,3 +387,237 @@
     padding: 24px;
   }
 }
+
+/* ==========================================================================
+   Estilos Pedidos Concierge y Publicación Asistida (/admin)
+   ========================================================================== */
+
+.admin-subfiltros {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-subfiltro-btn {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-subfiltro-btn--activo {
+  background: var(--azul-marino);
+  color: var(--blanco);
+  border-color: var(--azul-marino);
+}
+
+.admin-tarjeta-pedido {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-grande);
+  padding: 20px;
+  box-shadow: var(--sombra-suave);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.admin-tarjeta-pedido__cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.admin-tarjeta-pedido__codigo {
+  font-family: monospace;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--azul-marino);
+  background: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.admin-tarjeta-pedido__monto {
+  font-size: 18px;
+  font-weight: 900;
+  color: #15803d;
+}
+
+.admin-tarjeta-pedido__cuerpo {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  font-size: 13.5px;
+}
+
+@media (min-width: 640px) {
+  .admin-tarjeta-pedido__cuerpo {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.admin-tarjeta-pedido__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-tarjeta-pedido__etiqueta {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.admin-tarjeta-pedido__valor {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.admin-tarjeta-pedido__acciones {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.admin-btn-validar {
+  background: #15803d;
+  color: #ffffff;
+  border: none;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 800;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s ease;
+}
+
+.admin-btn-validar:hover {
+  background: #166534;
+}
+
+.admin-btn-publicar-asistida {
+  background: var(--naranja);
+  color: var(--blanco);
+  border: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  transition: opacity 0.15s ease;
+}
+
+.admin-btn-publicar-asistida:hover {
+  opacity: 0.9;
+}
+
+/* Modal de Publicación Asistida */
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.admin-modal {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  position: relative;
+  box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.3);
+}
+
+.admin-modal__cerrar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.admin-modal__titulo {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--azul-marino);
+  margin: 0 0 4px;
+}
+
+.admin-modal__subtitulo {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 18px;
+}
+
+.admin-form-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+.admin-form-grupo label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.admin-form-input,
+.admin-form-textarea {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--borde);
+  background: #ffffff;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.admin-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}

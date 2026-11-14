@@ -145,4 +145,54 @@ export class CodigoCanjeRepositoryPg extends CodigoCanjeRepository {
       })),
     };
   }
+
+  /**
+   * RF15 / RF18 / HU09: Listado de pedidos/canjes para el panel de administración central JAMA.
+   */
+  async listarParaAdmin({ estado = null, limite = 50 } = {}) {
+    const query = `
+      SELECT
+        c.id,
+        c.codigo,
+        c.estado,
+        c.precio,
+        c.creado_en,
+        c.expira_en,
+        c.historial,
+        n.id AS negocio_id,
+        n.nombre AS negocio_nombre,
+        n.whatsapp AS negocio_whatsapp,
+        n.direccion AS negocio_direccion,
+        o.id AS oferta_id,
+        o.titulo AS oferta_titulo,
+        o.precio_carta AS oferta_precio_carta
+      FROM codigos_canje c
+      JOIN negocios n ON c.negocio_id = n.id
+      JOIN ofertas o ON c.oferta_id = o.id
+      WHERE ($1::text IS NULL OR c.estado = $1)
+      ORDER BY c.creado_en DESC
+      LIMIT $2;
+    `;
+    const { rows } = await this.pool.query(query, [estado, limite]);
+    return rows.map((r) => ({
+      id: r.id,
+      codigo: r.codigo,
+      estado: r.estado,
+      precio: r.precio != null ? Number(r.precio) : null,
+      creadoEn: r.creado_en,
+      expiraEn: r.expira_en,
+      historial: r.historial,
+      negocio: {
+        id: r.negocio_id,
+        nombre: r.negocio_nombre,
+        whatsapp: r.negocio_whatsapp,
+        direccion: r.negocio_direccion,
+      },
+      oferta: {
+        id: r.oferta_id,
+        titulo: r.oferta_titulo,
+        precioCarta: r.oferta_precio_carta != null ? Number(r.oferta_precio_carta) : null,
+      },
+    }));
+  }
 }

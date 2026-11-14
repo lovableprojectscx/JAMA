@@ -95,4 +95,30 @@ describe('ResolverPedido: corrección del código ya vencido', () => {
     const resuelto = await resolverPedido.ejecutar({ codigo: 'K7P2', negocioId: 'neg-1', concretado: true });
     assert.equal(resuelto.estado, EstadoCodigo.VENDIDO);
   });
+
+  test('con esAdmin: true puede validar y resolver el pedido sin negocioId (flujo concierge)', async () => {
+    const reloj = new RelojFijo(new Date('2026-10-20T18:00:00.000Z'));
+    const codigo = CodigoCanje.reservar(
+      { id: 'c-concierge', codigo: 'ADM-99', ofertaId: 'of-1', negocioId: 'neg-distinto', precio: 15 },
+      reloj.ahora()
+    );
+    const resolverPedido = construir(codigo, reloj);
+
+    const resuelto = await resolverPedido.ejecutar({ codigo: 'ADM-99', concretado: true, esAdmin: true });
+    assert.equal(resuelto.estado, EstadoCodigo.VENDIDO);
+  });
+
+  test('sin esAdmin: true y con negocioId distinto responde NoEncontradoError', async () => {
+    const reloj = new RelojFijo(new Date('2026-10-20T18:00:00.000Z'));
+    const codigo = CodigoCanje.reservar(
+      { id: 'c-concierge-2', codigo: 'NEG-88', ofertaId: 'of-1', negocioId: 'neg-real', precio: 15 },
+      reloj.ahora()
+    );
+    const resolverPedido = construir(codigo, reloj);
+
+    await assert.rejects(
+      () => resolverPedido.ejecutar({ codigo: 'NEG-88', negocioId: 'neg-intruso', concretado: true, esAdmin: false }),
+      /Código no encontrado/
+    );
+  });
 });

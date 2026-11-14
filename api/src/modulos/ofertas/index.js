@@ -88,5 +88,15 @@ export function crearApiOfertas({ pool, reloj, requireAuth, almacenImagenes, api
     async listarVigentesPorNegocio(negocioId, ahora) {
       return ofertaRepository.listarVigentes(ahora ?? reloj.ahora(), [negocioId]);
     },
+
+    /** Usado por el Admin Concierge para publicar ofertas a nombre de un negocio. */
+    async publicarParaNegocio(datos) {
+      return publicarOferta.ejecutar(datos);
+    },
+
+    /** Usado por el Admin Concierge para subir fotos de ofertas. */
+    async subirFoto({ buffer, mimetype }) {
+      return subirFotoOferta.ejecutar({ buffer, mimetype });
+    },
   };
 }
