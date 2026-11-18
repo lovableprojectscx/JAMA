@@ -28,12 +28,11 @@ flowchart TB
     subgraph API["API Marketplace — [Contenedor: Node.js + Express · Monolito Modular]"]
         REST["<b>API REST</b><br/><small>[Componente: rutas + middlewares Express]</small><br/>/api/v1 · JWT · validación · rate limiting · errores"]
 
-        subgraph MOD["Módulos de negocio (Clean Architecture cada uno)"]
+        subgraph MOD["Módulos de negocio reales (4 módulos · Clean Architecture)"]
             ACC["<b>Acceso</b><br/><small>[Componente: módulo]</small><br/>Login de negocios y admins,<br/>tokens JWT, roles NEGOCIO y ADMIN"]
             NEG["<b>Negocios</b><br/><small>[Componente: módulo]</small><br/>Solicitud y aprobación (ADR-010),<br/>estado, perfil /t/:slug, redes y kit QR"]
             OFE["<b>Ofertas</b><br/><small>[Componente: módulo]</small><br/>Publicar, editar, pausar, stock,<br/>publicación asistida admin (ADR-013)"]
-            PED["<b>Pedidos</b><br/><small>[Componente: módulo]</small><br/>Código de canje, reserva, cobro concierge Yape,<br/>validación admin, expiración y métricas de impacto"]
-            REP["<b>Reportes</b><br/><small>[Componente: módulo / Pedidos]</small><br/>Métricas comerciales y ecológicas"]
+            PED["<b>Pedidos y Métricas</b><br/><small>[Componente: módulo pedidos]</small><br/>Código de canje, reserva, cobro concierge Yape,<br/>validación admin, expiración y KPIs de impacto"]
         end
 
         JOB["<b>Tarea programada</b><br/><small>[Componente: node-cron / Vercel Cron · cada 1 min]</small>"]
@@ -51,14 +50,15 @@ flowchart TB
     PED -->|"obtenerContacto"| NEG
     NEG -->|"publicarParaNegocio (concierge asistido)"| OFE
     JOB -->|"ExpirarReservas"| PED
-    OFE -->|"Sube fotos de ofertas y perfiles [HTTPS/REST]"| IMG
+    OFE -->|"Sube fotos de ofertas [HTTPS/REST]"| IMG
+    NEG -->|"Sube portada y logo [HTTPS/REST]"| IMG
     MOD -->|"Lectura y escritura transaccional [SQL]"| DB
 
     classDef contenedor fill:#2f6db5,stroke:#1d4f8a,color:#fff
     classDef componente fill:#8fb8e8,stroke:#4a7fbf,color:#0b2340
     classDef externo fill:#9a9a9a,stroke:#6b6b6b,color:#fff
     class WEB,DB contenedor
-    class REST,ACC,NEG,OFE,PED,REP,JOB componente
+    class REST,ACC,NEG,OFE,PED,JOB componente
     class IMG externo
 ```
 

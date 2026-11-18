@@ -8,7 +8,7 @@ El cliente entra desde un link de WhatsApp o un QR, casi siempre desde el celula
 
 ## Decisión
 - Construir la interfaz como una **SPA** (*Single Page Application*) con **React + Vite**, servida como archivos estáticos desde un CDN.
-- Una sola aplicación con tres áreas, separadas por ruta y rol: **vitrina pública** (`/`), **panel del negocio** (`/negocio`) y **panel de administración** (`/admin`).
+- Una sola aplicación con rutas y áreas separadas por rol: **vitrina pública** (`/`), **perfil público de tienda** (`/t/:slug`), **captación y alta** (`/negocios`, `/negocios/registro`, `/terminos`), **panel del negocio** (`/panel`) y **panel de administración concierge** (`/admin`).
 - Diseño *mobile-first*; preparada para funcionar como PWA (instalable sin pasar por una tienda de apps) en una iteración futura.
 - La SPA no guarda datos de negocio: todo pasa por la API REST.
 

@@ -20,4 +20,6 @@ Entre las 17:00 y las 21:00, muchos clientes abren el listado de ofertas desde c
 
 ## Consecuencias
 - ✅ El listado responde en menos de 2 s y la página pesa menos de 1 MB (medida de AC01).
-- ⚠️ El listado puede mostrar datos con hasta 30 s de retraso. Es aceptable, porque la verificación real ocurre al pedir.
+- ⚠️ El listado puede mostrar datos con hasta 30 s de retraso si se activa la caché. Es aceptable, porque la verificación real ocurre al pedir.
+
+> **Estado real en el MVP:** Las imágenes se sirven desde el bucket público CDN de Supabase Storage y la base de datos tiene índices en `(estado, hora_limite)`. El decorador de caché en memoria (30 s) y la paginación se mantienen como patrón preparado ([`patrones-de-diseno.md`](../../03-diseno-de-software/diseno-interno/patrones-de-diseno.md)), ya que para el volumen del piloto de Huamanga la consulta indexada directa responde por debajo del umbral sin introducir latencia de invalidación.

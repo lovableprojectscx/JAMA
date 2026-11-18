@@ -9,14 +9,14 @@ Hoy, el pedido se inicia con un enlace `wa.me` y las fotos se guardan en un serv
 ## Decisión
 El dominio define **puertos** (interfaces) y la infraestructura los implementa con **adaptadores**:
 
-| Puerto (dominio) | Adaptador actual (infraestructura) | Posible adaptador futuro |
+| Puerto (dominio) | Adaptador implementado (infraestructura) | Posible adaptador futuro |
 |---|---|---|
 | `EnlaceMensajeria` → `generarEnlace(telefono, mensaje)` | `WaMeEnlaceAdapter` (construye `https://wa.me/…?text=…`) | `WhatsAppBusinessAdapter` |
-| `AlmacenImagenes` → `subir(archivo)`, `urlOptimizada(id)` | `CloudinaryAdapter` | `S3Adapter` o almacenamiento local |
-| `GeneradorCodigo` → `nuevo()` | `CodigoAleatorioAdapter` | — |
+| `AlmacenImagenes` → `subir(archivo)`, `urlOptimizada(id)` | `SupabaseStorageAdapter` *(reemplazó la propuesta inicial de `CloudinaryAdapter`)* | `S3Adapter` o CDN dedicado |
+| `GeneradorCodigo` → `nuevo()` | `GeneradorCodigoAleatorio` | — |
 | `Reloj` → `ahora()` | `RelojSistema` | `RelojFijo` (para pruebas) |
 
-**Yape no se integra:** el dominio solo guarda el número Yape del negocio como un dato de su perfil (RC06).
+**Evolución respecto a Yape:** inicialmente el dominio solo guardaba el número Yape del negocio (RC06). En noviembre de 2026, mediante [ADR-013](ADR-013-flujo-concierge-cobro-yape-y-publicacion-asistida.md), se adoptó el **Flujo Concierge de Cobro Centralizado con Yape a JAMA**, manteniendo la arquitectura sin pasarela bancaria de tarjetas.
 
 ## Alternativas consideradas
 | Alternativa | Por qué se descartó |

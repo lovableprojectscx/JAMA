@@ -139,7 +139,7 @@ Cada atributo de [`04-atributos-de-calidad.md`](04-atributos-de-calidad.md) se c
 | **Medida** | Archivos modificados: 1 adaptador nuevo + 1 línea en la raíz de composición; 0 cambios en `dominio/` y `aplicacion/`; las pruebas existentes pasan |
 | **Verificación** | Revisar el *diff* del cambio; revisar que ningún archivo de `dominio/` importe `express`, `pg` ni adaptadores |
 | **Táctica asociada** | Clean Architecture con puertos y adaptadores ([ADR-002](../02-arquitectura-software/decisiones/ADR-002-clean-architecture.md), [ADR-007](../02-arquitectura-software/decisiones/ADR-007-integraciones-puertos-adaptadores.md)) |
-| **Estado** | Demostrable con el ejemplo de [`tecnologia/`](../../tecnologia/ejemplo-clean-architecture/README.md) |
+| **Estado** | Implementado y verificado automáticamente en [`api/tests/arquitectura/`](../../api/tests/arquitectura/arquitectura.test.js) |
 
 ---
 

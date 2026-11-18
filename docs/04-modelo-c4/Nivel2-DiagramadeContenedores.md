@@ -30,7 +30,7 @@ flowchart TB
     subgraph SYS["Marketplace JAMA — [Sistema de software]"]
         WEB["<b>Aplicación web</b><br/><small>[Contenedor: SPA · React + Vite]</small><br/>Vitrina pública con cobro concierge en 3 pasos,<br/>tiendas públicas /t/:slug, panel del negocio (/panel)<br/>y panel de administración concierge (/admin).<br/>Responsive mobile-first"]
         API["<b>API Marketplace</b><br/><small>[Contenedor: Node.js + Express]</small><br/>API REST /api/v1 y lógica de negocio.<br/>Monolito modular con Clean Architecture.<br/>Incluye expiración de reservas y soporte serverless"]
-        DB[("<b>Base de datos</b><br/><small>[Contenedor: PostgreSQL · Supabase]</small><br/>Negocios, ofertas, códigos de canje,<br/>administradores y ciudades")]
+        DB[("<b>Base de datos</b><br/><small>[Contenedor: PostgreSQL · Supabase]</small><br/>Negocios, ofertas, códigos de canje<br/>y administradores")]
     end
 
     WA["WhatsApp<br/><small>[Sistema externo · wa.me]</small>"]
@@ -63,7 +63,7 @@ flowchart TB
 |---|---|---|---|
 | **Aplicación web** | SPA · React 18 + Vite, *mobile-first*, Tailwind/CSS modular nativo | Vitrina de ofertas con categorías dinámicas, modal de cobro concierge con Yape en 3 pasos, tienda pública `/t/:slug` con redes y kit QR, panel del negocio (`/panel`) con métricas de impacto comercial y panel de administración (`/admin`) | Estado reactivo en memoria y tokens JWT en `localStorage` |
 | **API Marketplace** | Node.js 20 + Express · **Monolito modular** con Clean Architecture | Endpoints `/api/v1`: Acceso, Negocios, Ofertas, Pedidos, tarea de expiración de reservas y manejo de concurrencia | Lógica de dominio pura; delega persistencia a PostgreSQL |
-| **Base de datos** | PostgreSQL (Supabase) | Almacenamiento relacional con restricciones transaccionales, índices parciales y claves foráneas | `ciudades`, `negocios`, `ofertas`, `codigos_canje`, `administradores` |
+| **Base de datos** | PostgreSQL (Supabase) | Almacenamiento relacional con restricciones transaccionales, índices parciales y claves foráneas (ver [ERD](../03-diseno-de-software/modelo-datos-erd.md)) | `negocios`, `ofertas`, `codigos_canje`, `administradores` |
 
 ---
 

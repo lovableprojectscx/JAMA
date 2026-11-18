@@ -15,13 +15,12 @@ flowchart TB
     subgraph API["API Marketplace — [Contenedor: Node.js + Express · Monolito Modular]"]
         REST["API REST<br/><small>[Componente: rutas + middlewares]</small><br/>/api/v1 · JWT · validación · rate limiting"]
 
-        subgraph MOD["Módulos de negocio (Clean Architecture)"]
-            ACC["Acceso<br/><small>[Componente: módulo]</small><br/>Login, tokens JWT y roles NEGOCIO / ADMIN"]
-            NEG["Negocios<br/><small>[Componente: módulo]</small><br/>Solicitud, aprobación, perfil /t/:slug, redes y kit QR"]
-            OFE["Ofertas<br/><small>[Componente: módulo]</small><br/>Publicar, editar, stock, vigencia<br/>y publicación asistida admin"]
-            PED["Pedidos<br/><small>[Componente: módulo]</small><br/>Código de canje, reserva, cobro Yape,<br/>validación admin y métricas de impacto"]
-            REP["Reportes<br/><small>[Componente: módulo / Pedidos]</small><br/>Métricas comerciales y ecológicas"]
-            MODR["Moderación<br/><small>[Componente: módulo]</small><br/>Denuncias y suspensiones"]
+        subgraph MOD["Módulos de negocio reales (Clean Architecture)"]
+            ACC["Acceso<br/><small>[Módulo implementado]</small><br/>Login, tokens JWT y roles NEGOCIO / ADMIN"]
+            NEG["Negocios<br/><small>[Módulo implementado]</small><br/>Solicitud, aprobación, perfil /t/:slug, redes y kit QR"]
+            OFE["Ofertas<br/><small>[Módulo implementado]</small><br/>Publicar, editar, stock, vigencia<br/>y publicación asistida admin"]
+            PED["Pedidos y Métricas<br/><small>[Módulo implementado]</small><br/>Código de canje, reserva, cobro Yape,<br/>validación admin y KPIs de impacto"]
+            MODR["Moderación<br/><small>[Planificado post-piloto]</small><br/>Denuncias ciudadanas y alertas"]
         end
 
         JOB["Tarea programada<br/><small>[Componente: node-cron / Vercel Cron, cada 1 min]</small>"]
@@ -47,7 +46,6 @@ flowchart TB
     PED -->|"Reserva y libera unidades (tx)"| OFE
     PED -->|"Obtiene contacto del negocio"| NEG
     NEG -->|"Publicación asistida admin"| OFE
-    REP -->|"Lee historial y agregaciones de canje"| PED
     JOB -->|"ExpirarReservas"| PED
     MOD -->|"Persistencia relacional [SQL]"| DB
     OFE -->|"Sube fotos [HTTPS/REST]"| IMG

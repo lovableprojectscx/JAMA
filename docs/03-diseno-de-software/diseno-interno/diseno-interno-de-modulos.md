@@ -2,7 +2,7 @@
 
 > **Proyecto:** Marketplace de Ofertas de Cierre · **Backend:** Node.js + Express (JavaScript, ES Modules)
 > **Enfoque:** Clean Architecture dentro de cada módulo del monolito modular · **Módulo de referencia:** Pedidos
-> **Nivel C4:** 4 – Código · **Código ejecutable:** [`tecnologia/ejemplo-clean-architecture/`](../../../tecnologia/ejemplo-clean-architecture/README.md)
+> **Nivel C4:** 4 – Código · **Código real:** [`api/src/modulos/pedidos/`](../../../api/src/modulos/pedidos/) · **Pruebas:** [`api/tests/`](../../../api/tests/)
 
 ---
 
@@ -296,12 +296,12 @@ sequenceDiagram
         OF-->>RS: stock - 1
         UC->>CC: CodigoCanje.reservar(...)  → RESERVADO, expira en 30 min (RN-06)
         UC->>RP: guardar(codigo, tx)
-        UC->>MS: generarEnlace(whatsapp, mensaje)
-        MS-->>UC: https://wa.me/51…?text=…K7P2
+        UC->>MS: generarEnlace(jamaWhatsapp, msgComprobante) y tienda
+        MS-->>UC: enlaceWhatsapp y enlaceWhatsappTienda
         UW-->>UC: [COMMIT]
-        UC-->>CT: { codigo, enlace, expiraEn }
+        UC-->>CT: { codigo, enlaceWhatsapp, enlaceWhatsappTienda, expiraEn, precio, pago }
         CT-->>C: 201 Created
-        C->>C: abre WhatsApp con el mensaje prellenado
+        C->>C: Modal 3 pasos: Yape a JAMA → WhatsApp comprobante → Código recojo
     else Sin stock
         OF-->>RS: OfertaAgotadaError
         UW-->>UC: [ROLLBACK]
@@ -314,18 +314,18 @@ sequenceDiagram
 | 1–2 | Cliente → Controller → Caso de uso | `POST` sin cuerpo; el cliente es anónimo | Presentación → Aplicación |
 | 3 | Caso de uso → UnidadDeTrabajo | Abre la transacción | Aplicación → Dominio (puerto) |
 | 4–5 | ReservaDeStock → Ofertas | Bloquea la fila y descuenta 1 unidad (RN-05) | Infraestructura → API pública de Ofertas |
-| 6 | Caso de uso → `CodigoCanje` | Crea el código RESERVADO con vencimiento (RN-06) | Aplicación → Dominio |
+| 6 | Caso de uso → `CodigoCanje` | Crea el código RESERVADO con precio vigente y vencimiento (RN-06) | Aplicación → Dominio |
 | 7 | Caso de uso → Repositorio | Guarda el código dentro de la transacción | Aplicación → Dominio (puerto) |
-| 8–9 | Caso de uso → EnlaceMensajeria | Arma la URL `wa.me` con el código | Aplicación → Dominio (puerto) |
+| 8–9 | Caso de uso → EnlaceMensajeria | Arma los enlaces `wa.me` Concierge (comprobante JAMA y aviso tienda) | Aplicación → Dominio (puerto) |
 | 10 | UnidadDeTrabajo | `COMMIT`: el stock y el código se confirman juntos | Infraestructura |
-| 11–12 | Controller → Cliente | `201` con `codigo`, `enlace` y `expiraEn` | Presentación |
+| 11–12 | Controller → Cliente | `201` con `codigo`, `pago` (Yape JAMA), `enlaceWhatsapp` y `expiraEn` | Presentación |
 | Alt. | Sin stock | `ROLLBACK`; nada se modifica; `409 Oferta agotada` | Dominio → Presentación |
 
 ---
 
 ## 7. Código de referencia
 
-El código completo y probado está en [`tecnologia/ejemplo-clean-architecture/`](../../../tecnologia/ejemplo-clean-architecture/README.md). Fragmentos clave:
+El código completo y probado está en [`api/src/modulos/pedidos/`](../../../api/src/modulos/pedidos/). Fragmentos clave:
 
 ### 7.1 Dominio: la entidad protege sus reglas
 
@@ -350,18 +350,18 @@ static reservar({ id, codigo, ofertaId, negocioId }, ahora) {
 ### 7.2 Aplicación: el caso de uso solo conoce puertos
 
 ```js
-// pedidos/aplicacion/pedir-oferta.caso-uso.js
+// pedidos/aplicacion/pedir-oferta.caso-uso.js (resumen del flujo Concierge)
 async ejecutar({ ofertaId }) {
   return this.unidadDeTrabajo.ejecutar(async (tx) => {
     const ahora = this.reloj.ahora();
     const reserva = await this.reservaDeStock.reservar(ofertaId, tx, ahora);   // puerto, no Ofertas
     const codigo = await this.#codigoUnico(tx);
-    const codigoCanje = CodigoCanje.reservar({ id: randomUUID(), codigo, ofertaId, negocioId: reserva.negocioId }, ahora);
+    const codigoCanje = CodigoCanje.reservar({ id: randomUUID(), codigo, ofertaId, negocioId: reserva.negocioId, precio: reserva.precio }, ahora);
     await this.codigos.guardar(codigoCanje, tx);                               // puerto, no PostgreSQL
     const contacto = await this.contactoNegocio.obtenerContacto(reserva.negocioId);
-    const mensaje = `Hola ${contacto.nombre}, vi tu oferta "${reserva.titulo}"… Mi código es ${codigo}.`;
-    const enlace = this.mensajeria.generarEnlace(contacto.whatsapp, mensaje);  // puerto, no wa.me
-    return { codigo, enlace, expiraEn: codigoCanje.expiraEn.toISOString() };
+    const enlaceWhatsapp = this.mensajeria.generarEnlace(jamaWhatsapp, mensajeComprobante);
+    const enlaceWhatsappTienda = this.mensajeria.generarEnlace(contacto.whatsapp, mensajeTienda);
+    return { codigo, enlaceWhatsapp, enlaceWhatsappTienda, expiraEn: codigoCanje.expiraEn, precio: codigoCanje.precio, pago: { yapeNumero: jamaYapeNumero, yapeTitular: jamaYapeTitular, monto: codigoCanje.precio } };
   });
 }
 ```

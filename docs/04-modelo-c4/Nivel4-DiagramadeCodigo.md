@@ -1,7 +1,7 @@
 # Nivel 4 · Diagrama de código
 
 > **Proyecto:** Marketplace de Ofertas de Cierre · **Módulos detallados:** Pedidos y Ofertas
-> **Modelo:** C4 · Nivel 4 de 4 · **Notación:** UML · **Versión:** 1.0
+> **Modelo:** C4 · Nivel 4 de 4 · **Notación:** UML · **Versión:** 1.2 (Actualizado a Flujo Concierge)
 
 ---
 
@@ -15,7 +15,7 @@ Mostrar **cómo está organizado el código** de los componentes más críticos 
 | Audiencia | Desarrolladores |
 | Notación | UML: diagrama de clases, de secuencia y de estados |
 | Por qué solo dos módulos | El nivel 4 es opcional en C4 y se dibuja solo para lo más complejo. Pedidos y Ofertas concentran DA01 (trazabilidad), DA02 (concurrencia) y DA03 (expiración) |
-| Código ejecutable | [`tecnologia/ejemplo-clean-architecture/`](../../tecnologia/ejemplo-clean-architecture/README.md), con 15 pruebas que pasan |
+| Código ejecutable | [`api/src/modulos/pedidos/`](../../api/src/modulos/pedidos/) y [`api/tests/`](../../api/tests/), con **128 pruebas unitarias** pasando al 100 % |
 | Nivel anterior | [`Nivel3-Diagrama-de-Componentes.md`](Nivel3-Diagrama-de-Componentes.md) |
 
 ---
@@ -121,8 +121,8 @@ classDiagram
 ```mermaid
 stateDiagram-v2
     [*] --> RESERVADO: PedirOferta<br/>stock − 1
-    RESERVADO --> VENDIDO: ResolverPedido(concretado)<br/>actor NEGOCIO
-    RESERVADO --> NO_CONCRETADO: ResolverPedido(no concretado)<br/>stock + 1 · actor NEGOCIO
+    RESERVADO --> VENDIDO: ResolverPedido(concretado)<br/>actor NEGOCIO o ADMIN (Yape Concierge)
+    RESERVADO --> NO_CONCRETADO: ResolverPedido(no concretado)<br/>stock + 1 · actor NEGOCIO o ADMIN
     RESERVADO --> EXPIRADO: ExpirarReservas (≥ 30 min)<br/>stock + 1 · actor SISTEMA
     VENDIDO --> [*]
     NO_CONCRETADO --> [*]
@@ -138,36 +138,42 @@ stateDiagram-v2
 
 ---
 
-## 4. Secuencia: el negocio confirma o rechaza un código
+## 4. Secuencia: confirmación del código (Negocio o Admin Concierge)
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor N as Negocio (panel)
-    participant MW as Middleware JWT
+    actor O as Negocio (/panel) o Admin (/admin)
+    participant MW as Middleware JWT + Rol
     participant CT as PedidosController
     participant UC as ResolverPedido
     participant RP as CodigoCanjeRepository
     participant CC as CodigoCanje
     participant RS as ReservaDeStock
 
-    N->>MW: PATCH /api/v1/pedidos/K7P2 { accion }
-    MW->>MW: valida el token → req.usuario.negocioId
-    MW->>CT: resolver(req)
-    CT->>UC: ejecutar({ codigo, negocioId, concretado })
+    alt Negocio en /panel
+        O->>MW: PATCH /api/v1/pedidos/K7P2 { concretado }
+        MW->>MW: valida token NEGOCIO → esAdmin = false
+        MW->>CT: resolver(req)
+    else Operador JAMA en /admin (Concierge Yape)
+        O->>MW: PATCH /api/v1/admin/pedidos/K7P2 { concretado }
+        MW->>MW: valida token ADMIN → esAdmin = true
+        MW->>CT: resolverAdmin(req)
+    end
+    CT->>UC: ejecutar({ codigo, negocioId, concretado, esAdmin })
     UC->>RP: buscarPorCodigo("K7P2", tx)
-    alt Código de otro negocio o inexistente (RN-10)
+    alt Código inexistente o de otro negocio sin esAdmin (RN-10)
         UC-->>CT: NoEncontradoError
-        CT-->>N: 404 (no revela que existe)
-    else accion = confirmar
+        CT-->>O: 404 (no revela que existe)
+    else concretado = true (Yape validado / entregado)
         UC->>CC: marcarVendido(ahora)
         UC->>RP: guardar(codigo, tx)
-        CT-->>N: 200 { estado: VENDIDO }
-    else accion = rechazar
+        CT-->>O: 200 { estado: VENDIDO }
+    else concretado = false
         UC->>CC: marcarNoConcretado(ahora)
-        UC->>RS: liberar(ofertaId, tx)  → stock + 1
+        UC->>RS: liberar(ofertaId, tx) → stock + 1
         UC->>RP: guardar(codigo, tx)
-        CT-->>N: 200 { estado: NO_CONCRETADO }
+        CT-->>O: 200 { estado: NO_CONCRETADO }
     end
 ```
 

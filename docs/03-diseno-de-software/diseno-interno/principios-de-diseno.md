@@ -7,7 +7,7 @@ Documentar cómo se aplican los principios SOLID en el backend del Marketplace d
 - **Estilo:** monolito modular (Node.js + Express), según [ADR-001](../../02-arquitectura-software/decisiones/ADR-001-monolito-modular.md).
 - **Enfoque interno:** Clean Architecture (presentación, aplicación, dominio e infraestructura), según [ADR-002](../../02-arquitectura-software/decisiones/ADR-002-clean-architecture.md).
 - **Módulo de referencia:** Pedidos, porque integra la transacción sobre el stock, el módulo Ofertas, WhatsApp y la expiración.
-- **Código:** [`tecnologia/ejemplo-clean-architecture/`](../../../tecnologia/ejemplo-clean-architecture/README.md).
+- **Código real:** [`api/src/modulos/pedidos/`](../../../api/src/modulos/pedidos/) y pruebas en [`api/tests/`](../../../api/tests/).
 
 ## SOLID en el módulo Pedidos
 
