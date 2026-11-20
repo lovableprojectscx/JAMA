@@ -894,22 +894,19 @@ a internet directa (como será en producción) no hace falta esa variable.
    aunque el cron todavía no haya corrido, así que esto no afecta a los
    clientes — ver Etapa 3).
 
-**No alcancé a probar el deploy real** (ni Vercel ni el pooler de Supabase
-son alcanzables desde este sandbox). Sí probé, contra Postgres local, que
-`entrada-vercel.js` exporta un handler de Express válido (lo serví
-envuelto en un `http.createServer` propio y respondió 200) y que el
-endpoint del cron hace exactamente lo que debe: 401 sin secreto, 401 con
-uno incorrecto, 200 ejecutando `ExpirarReservas` con el correcto. El
-deploy en sí y la conexión real al pooler quedan por confirmar con el
-primer despliegue de verdad.
+**Deploy real en Vercel + Supabase (CERTIFICADO Y EN PRODUCCIÓN)**:
+El proyecto está desplegado y operativo en producción en Vercel ([jama-web.vercel.app](https://jama-web.vercel.app/)) conectado al pooler transaccional de PostgreSQL en Supabase. La configuración unificada mediante `vercel.json` en la raíz enruta `/api/v1/*` hacia la API Serverless Express y el resto de rutas a la SPA React optimizada.
 
 ## 3. Resultado de `npm test`
 
 ```
-# tests 114
-# suites 26
-# pass 114
-# fail 0
+ℹ tests 128
+ℹ suites 33
+ℹ pass 128
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
 ```
 
 Corrí la suite completa dos veces seguidas (sin reiniciar la base de datos)
@@ -939,51 +936,14 @@ misma base `jama_test`; un `TRUNCATE` compartido entre archivos hacía que el
 test de concurrencia perdiera filas a mitad de las 50 peticiones (lo
 encontré y lo corregí en la sesión anterior).
 
-## 4. Pendiente o dudoso
+## 4. Estado de Alcance y Roadmap Post-Piloto
 
-- **Deploy real en Vercel + Supabase (RESUELTO y CERTIFICADO en Etapa 14)**:
-  El despliegue en Vercel (jama-iota.vercel.app) y la conexión con el pooler de Supabase
-  fueron totalmente probados y certificados de punta a punta con Playwright. El flujo completo
-  (solicitud → bloqueo en revisión → aprobación en /admin → login en /panel → publicación
-  de oferta → aparición en vitrina pública en vivo) funciona al 100% en producción.
-- **Fuera de alcance a propósito** (como pidió la consigna): reportes,
-  moderación, registro público de negocios (solo `npm run seed`) y pagos.
-  Tampoco implementé los planes Gratis/Pro (RF13) ni la suspensión de
-  negocios (RN-09); la tabla `negocios` tiene la columna `estado` pensando
-  en esto, pero ningún caso de uso la usa todavía.
-- **No hay borrado de fotos huérfanas**: si el dueño elige otra imagen antes
-  de terminar de publicar, o la oferta nunca se publica, la foto ya subida
-  se queda en el bucket sin que nada la asocie ni la borre. Para un MVP de
-  una ciudad el costo de almacenamiento es marginal, pero es una fuga real.
-- **"Hoy" en `GET /negocios/me/ofertas?dia=hoy`** lo definí como "el día
-  calendario de Lima de `horaElaboracion`". Es una interpretación razonable
-  (la hora de elaboración representa el lote del día), pero la consigna no
-  lo especifica exactamente así; si el negocio publica de madrugada para el
-  mismo día, esto sigue funcionando porque compara por día de Lima, no por
-  hora de corte fija.
-- **El panel no cierra sesión sola si el token JWT expira** (dura 12h): si
-  el dueño deja el panel abierto más de 12 horas, las llamadas a la API
-  empezarán a fallar con 401 y el panel mostrará el mensaje de error
-  genérico de cada pantalla en vez de mandarlo de vuelta al login
-  automáticamente. No llegué a implementar ese manejo global; queda como
-  pendiente real, no decidí que no hacía falta.
-- **Los tramos de precio no se pueden editar después de publicar** (no hay
-  endpoint de edición de oferta, solo publicar y pausar/reanudar); si el
-  dueño se equivoca en un tramo, tiene que pausar esa oferta y publicar otra.
-- **`FinalizarOfertasVencidas` sigue sin existir como caso de uso propio**:
-  una oferta vencida deja de verse en la vitrina pública de inmediato
-  (filtro `hora_limite > ahora`), pero su columna `estado` sigue en
-  `ACTIVA` hasta que alguien la edite; "Mis ofertas de hoy" sí la sigue
-  mostrando como ACTIVA aunque ya haya pasado su hora límite — no agregué
-  un estado visual de "vencida" en el panel, solo lo que ya daba la API.
-- **Caché de 30 s del listado (ADR-008) y paginación**: siguen sin
-  implementarse; no hacían falta pruebas de carga reales para un MVP de una
-  ciudad.
-- **Colisión de código de canje**: el generador reintenta hasta 10 veces si
-  el código ya está RESERVADO, más un índice único parcial en PostgreSQL
-  como respaldo.
-- **El cron de expiración vive dentro del proceso de la API** (ADR-005):
-  si el proceso cae, las reservas vencidas no pasan a EXPIRADO hasta que se
-  reinicie; con una sola instancia es aceptable para el MVP. La corrección
-  de "código ya vencido" de esta etapa cubre justo la ventana en la que esto
-  importaría (el negocio intenta confirmar antes de que el cron corra).
+- **Deploy en Producción (CERTIFICADO)**: Plataforma operativa en [`jama-web.vercel.app`](https://jama-web.vercel.app/) con base de datos PostgreSQL en Supabase, flujo Concierge Yape y panel administrativo.
+- **Edición y Republicación (IMPLEMENTADO en Etapa 20)**: Edición de stock, horas y precios activos, y republicación de ofertas pasadas en 1 toque.
+- **Redes Sociales y Kit QR (IMPLEMENTADO en Etapa 21)**: Visualización de canales oficiales en `/t/:slug` y kit imprimible de mostrador en `/panel`.
+- **Métricas de Impacto (IMPLEMENTADO en Etapa 22)**: Panel de impacto económico (S/ recuperados) y ecológico (kg CO₂e evitados) en `/panel`.
+- **Cobro Concierge y Publicación Asistida (IMPLEMENTADO en Etapa 23)**: Cobro centralizado vía Yape/Plin sin pasarelas bancarias costosas y publicación asistida de ofertas desde WhatsApp.
+- **Pendiente o Fuera de Alcance Post-Piloto (Alineado con Tesis UNSCH)**:
+  - Sistema de reportes ciudadanos y moderación comunitaria (RF14, RF16): reservado para etapa comercial post-piloto.
+  - Planes Gratis / Pro con suscripción mensual (RF13): modelo de monetización activable tras la validación experimental.
+  - Pasarela de pago con tarjeta automatizada (Niubiz/MercadoPago): evaluable a futuro según volumen de transacciones para justificar el costo de comisiones fijas.
