@@ -1,0 +1,247 @@
+{
+  "info": {
+    "_postman_id": "jama-sprint2-collection",
+    "name": "JAMA API - Sprint 2 (IS-488 Arquitectura de Software)",
+    "description": "Colección completa de pruebas para la API REST de JAMA (UNSCH). Incluye aserciones automatizadas de status code, tiempo de respuesta y estructura de payload.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://jama-web.vercel.app/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "tokenNegocio",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "tokenAdmin",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Ofertas Públicas",
+      "item": [
+        {
+          "name": "Listar Ofertas Vigentes (Vitrina)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ofertas/vigentes",
+              "host": ["{{baseUrl}}"],
+              "path": ["ofertas", "vigentes"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Respuesta en menos de 500ms (EQ-01)', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "pm.test('Retorna un arreglo de ofertas', function () {",
+                  "    var data = pm.response.json();",
+                  "    pm.expect(data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Tiendas Públicas",
+      "item": [
+        {
+          "name": "Obtener Perfil Público por Slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/negocios/publico/panaderia-ejemplo",
+              "host": ["{{baseUrl}}"],
+              "path": ["negocios", "publico", "panaderia-ejemplo"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Contiene slug y nombre de tienda', function () {",
+                  "    var data = pm.response.json();",
+                  "    pm.expect(data.slug).to.eql('panaderia-ejemplo');",
+                  "    pm.expect(data.nombre).to.be.a('string');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Autenticación",
+      "item": [
+        {
+          "name": "Login Comercio",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"panaderia@jama.pe\",\n  \"password\": \"demo1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Retorna token JWT', function () {",
+                  "    var data = pm.response.json();",
+                  "    pm.expect(data.token).to.be.a('string');",
+                  "    pm.collectionVariables.set('tokenNegocio', data.token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Administrador",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@jama.pe\",\n  \"password\": \"admin1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/admin/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "admin", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Retorna token con rol ADMIN', function () {",
+                  "    var data = pm.response.json();",
+                  "    pm.expect(data.admin.rol).to.eql('ADMIN');",
+                  "    pm.collectionVariables.set('tokenAdmin', data.token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Métricas de Impacto",
+      "item": [
+        {
+          "name": "Obtener Métricas del Negocio (Hoy)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenNegocio}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/negocios/me/metricas?periodo=hoy",
+              "host": ["{{baseUrl}}"],
+              "path": ["negocios", "me", "metricas"],
+              "query": [{ "key": "periodo", "value": "hoy" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Contiene métricas económicas y ecológicas', function () {",
+                  "    var data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('dineroRecuperado');",
+                  "    pm.expect(data).to.have.property('racionesRescatadas');",
+                  "    pm.expect(data).to.have.property('co2EvitadoKg');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5. Documentación Swagger",
+      "item": [
+        {
+          "name": "Swagger UI Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/docs",
+              "host": ["{{baseUrl}}"],
+              "path": ["docs"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code es 200 o redirect', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 301, 302]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

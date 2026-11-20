@@ -1,0 +1,618 @@
+openapi: 3.0.3
+info:
+  title: JAMA API · Marketplace de Ofertas de Cierre
+  description: |
+    API REST para la plataforma JAMA en Huamanga, Ayacucho (2026).
+    Implementa Clean Architecture y Monolito Modular para rescate de excedentes alimentarios en comercios locales.
+  version: 1.0.0
+  contact:
+    name: Jack Franklin Quispe Luján
+    email: jack@jama.pe
+servers:
+  - url: https://jama-web.vercel.app/api/v1
+    description: Servidor de Producción (Vercel)
+  - url: http://localhost:3000/api/v1
+    description: Servidor Local de Desarrollo
+
+tags:
+  - name: Autenticación
+    description: Inicio de sesión para comercios y administradores
+  - name: Negocios - Público
+    description: Consultas públicas de comercios y solicitudes de alta
+  - name: Negocios - Panel
+    description: Gestión del perfil, redes sociales y fotos del comercio aliado
+  - name: Ofertas - Vitrina Pública
+    description: Catálogo en tiempo real de excedentes con precios decrecientes
+  - name: Ofertas - Comercio
+    description: Publicación, edición y control de stock de ofertas
+  - name: Pedidos y Canjes
+    description: Reserva atómica de stock y validación en mostrador
+  - name: Métricas e Impacto
+    description: KPIs de dinero recuperado e impacto ecológico
+  - name: Administración y Concierge
+    description: Aprobación de comercios, publicación asistida y validación de pagos Yape
+  - name: Tareas Programadas
+    description: Tareas en segundo plano (expiración de pedidos)
+
+paths:
+  /auth/login:
+    post:
+      tags: [Autenticación]
+      summary: Iniciar sesión como comercio aliado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: panaderia@jama.pe
+                password:
+                  type: string
+                  example: demo1234
+      responses:
+        '200':
+          description: Autenticación exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsIn...
+                  negocio:
+                    type: object
+                    properties:
+                      id: { type: string, format: uuid }
+                      nombre: { type: string, example: Panadería Ejemplo }
+                      slug: { type: string, example: panaderia-ejemplo }
+                      tipo: { type: string, example: PANADERIA }
+        '401':
+          description: Credenciales inválidas
+        '403':
+          description: Negocio no activo (PENDIENTE, RECHAZADO o SUSPENDIDO)
+
+  /auth/admin/login:
+    post:
+      tags: [Autenticación]
+      summary: Iniciar sesión como administrador JAMA
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  example: admin@jama.pe
+                password:
+                  type: string
+                  example: admin1234
+      responses:
+        '200':
+          description: Autenticación administrativa exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+                  admin:
+                    type: object
+                    properties:
+                      id: { type: string, format: uuid }
+                      nombre: { type: string, example: Administrador JAMA }
+                      rol: { type: string, example: ADMIN }
+
+  /negocios/solicitudes:
+    post:
+      tags: [Negocios - Público]
+      summary: Solicitar registro de comercio aliado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nombre, responsable, tipo, whatsapp, email, password, declaracionAceptada]
+              properties:
+                nombre: { type: string, example: "Pastelería Lalos" }
+                responsable: { type: string, example: "Carlos Quispe" }
+                tipo:
+                  type: string
+                  enum: [PANADERIA, PASTELERIA, POLLERIA, RESTAURANTE, CAFETERIA, OTRO]
+                  example: PASTELERIA
+                tipoDetalle:
+                  type: string
+                  description: Obligatorio si tipo = OTRO
+                  example: "Heladería artesanal"
+                whatsapp: { type: string, example: "966123456" }
+                email: { type: string, format: email, example: "contacto@lalos.pe" }
+                password: { type: string, minLength: 8, example: "claveSegura2026" }
+                direccion: { type: string, example: "Jr. Asamblea 220, Huamanga" }
+                yape: { type: string, example: "966123456" }
+                declaracionAceptada: { type: boolean, example: true }
+      responses:
+        '201':
+          description: Solicitud registrada exitosamente en estado PENDIENTE
+        '400':
+          description: Datos inválidos
+        '409':
+          description: Correo o WhatsApp ya registrado
+
+  /negocios/publico/{slugOrId}:
+    get:
+      tags: [Negocios - Público]
+      summary: Obtener perfil público de tienda por slug o id
+      parameters:
+        - name: slugOrId
+          in: path
+          required: true
+          schema: { type: string }
+          example: panaderia-ejemplo
+      responses:
+        '200':
+          description: Datos públicos del negocio y sus ofertas activas
+        '404':
+          description: Negocio no encontrado o no activo
+
+  /negocios/me/perfil:
+    get:
+      tags: [Negocios - Panel]
+      summary: Obtener perfil privado del comercio autenticado
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Datos del perfil del comercio
+    patch:
+      tags: [Negocios - Panel]
+      summary: Actualizar perfil, redes sociales y dirección
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                descripcion: { type: string }
+                direccion: { type: string }
+                yape: { type: string }
+                horarioAtencion: { type: string }
+                tipo: { type: string, enum: [PANADERIA, PASTELERIA, POLLERIA, RESTAURANTE, CAFETERIA, OTRO] }
+                tipoDetalle: { type: string }
+                instagram: { type: string }
+                facebook: { type: string }
+                tiktok: { type: string }
+      responses:
+        '200':
+          description: Perfil actualizado correctamente
+
+  /negocios/me/fotos/portada:
+    post:
+      tags: [Negocios - Panel]
+      summary: Subir foto panorámica de portada a Supabase Storage
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [foto]
+              properties:
+                foto:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Foto de portada subida y actualizada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  portadaUrl: { type: string, format: uri }
+
+  /negocios/me/fotos/logo:
+    post:
+      tags: [Negocios - Panel]
+      summary: Subir logotipo del comercio
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [foto]
+              properties:
+                foto: { type: string, format: binary }
+      responses:
+        '200':
+          description: Logotipo subido exitosamente
+
+  /ofertas/vigentes:
+    get:
+      tags: [Ofertas - Vitrina Pública]
+      summary: Listar catálogo público de ofertas de cierre activas
+      responses:
+        '200':
+          description: Lista de ofertas vigentes en la Zona Centro de Huamanga
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OfertaPublica'
+
+  /ofertas/{id}:
+    get:
+      tags: [Ofertas - Vitrina Pública]
+      summary: Detalle de una oferta pública
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Detalle de la oferta
+
+  /negocios/me/ofertas:
+    get:
+      tags: [Ofertas - Comercio]
+      summary: Listar ofertas del comercio autenticado
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: dia
+          in: query
+          required: false
+          schema: { type: string, enum: [hoy, todas] }
+          example: hoy
+      responses:
+        '200':
+          description: Lista de ofertas
+    post:
+      tags: [Ofertas - Comercio]
+      summary: Publicar nueva oferta de cierre con foto real
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [titulo, precioCarta, precioOferta, stock, horaElaboracion, horaLimite]
+              properties:
+                titulo: { type: string, example: "Pack 6 Croissants de Mantequilla" }
+                descripcion: { type: string }
+                fotoUrl: { type: string, format: uri }
+                precioCarta: { type: number, example: 18.00 }
+                precioOferta: { type: number, example: 9.00 }
+                stock: { type: integer, example: 4 }
+                horaElaboracion: { type: string, format: date-time }
+                horaLimite: { type: string, format: date-time }
+                tramosPrecio:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      hora: { type: string, example: "18:30" }
+                      descuento: { type: integer, example: 50 }
+                      precio: { type: number, example: 9.00 }
+      responses:
+        '201':
+          description: Oferta publicada exitosamente
+
+  /negocios/me/ofertas/{id}:
+    patch:
+      tags: [Ofertas - Comercio]
+      summary: Editar oferta activa o cambiar estado (pausar/reanudar)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                titulo: { type: string }
+                descripcion: { type: string }
+                fotoUrl: { type: string }
+                precioCarta: { type: number }
+                precioOferta: { type: number }
+                stock: { type: integer }
+                horaLimite: { type: string }
+                estado: { type: string, enum: [ACTIVA, PAUSADA] }
+                tramosPrecio: { type: array }
+      responses:
+        '200':
+          description: Oferta modificada exitosamente
+
+  /negocios/me/ofertas/fotos:
+    post:
+      tags: [Ofertas - Comercio]
+      summary: Subir fotografía real de oferta a Supabase Storage
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [foto]
+              properties:
+                foto: { type: string, format: binary }
+      responses:
+        '201':
+          description: Foto subida con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  fotoUrl: { type: string, format: uri }
+
+  /pedidos:
+    post:
+      tags: [Pedidos y Canjes]
+      summary: Crear reserva temporal de oferta (código único de 4 caracteres)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ofertaId]
+              properties:
+                ofertaId: { type: string, format: uuid }
+      responses:
+        '201':
+          description: Reserva creada con éxito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservaConfirmacion'
+        '409':
+          description: Oferta agotada o fuera de horario
+
+  /pedidos/{codigo}:
+    patch:
+      tags: [Pedidos y Canjes]
+      summary: Resolver pedido en mostrador por el comercio
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: codigo
+          in: path
+          required: true
+          schema: { type: string, example: "KXDS" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [accion]
+              properties:
+                accion:
+                  type: string
+                  enum: [VENDIDO, NO_CONCRETADO]
+                  example: VENDIDO
+      responses:
+        '204':
+          description: Pedido resuelto exitosamente
+        '400':
+          description: Código ya vencido o acción inválida
+        '404':
+          description: Código no encontrado
+
+  /negocios/me/pedidos:
+    get:
+      tags: [Pedidos y Canjes]
+      summary: Listar pedidos del comercio autenticado
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: estado
+          in: query
+          required: false
+          schema: { type: string, enum: [RESERVADO, VENDIDO, EXPIRADO, NO_CONCRETADO] }
+      responses:
+        '200':
+          description: Lista de pedidos
+
+  /negocios/me/metricas:
+    get:
+      tags: [Métricas e Impacto]
+      summary: Obtener métricas de impacto comercial y ecológico del negocio
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: periodo
+          in: query
+          required: false
+          schema: { type: string, enum: [hoy, semana, mes, historico] }
+          example: hoy
+      responses:
+        '200':
+          description: KPIs de impacto comercial y ecológico
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricasImpacto'
+
+  /admin/negocios:
+    get:
+      tags: [Administración y Concierge]
+      summary: Listar solicitudes de comercios para revisión
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: estado
+          in: query
+          required: false
+          schema: { type: string, enum: [PENDIENTE, ACTIVO, RECHAZADO, SUSPENDIDO] }
+      responses:
+        '200':
+          description: Lista de solicitudes
+    patch:
+      tags: [Administración y Concierge]
+      summary: Aprobar o rechazar solicitud de comercio
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [negocioId, accion]
+              properties:
+                negocioId: { type: string, format: uuid }
+                accion: { type: string, enum: [APROBAR, RECHAZAR] }
+                motivo: { type: string, description: "Obligatorio si accion = RECHAZAR" }
+      responses:
+        '200':
+          description: Solicitud resuelta exitosamente
+
+  /admin/negocios/{id}/ofertas:
+    post:
+      tags: [Administración y Concierge]
+      summary: Publicación asistida de oferta a nombre de un comercio
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [titulo, precioCarta, precioOferta, stock, horaElaboracion, horaLimite]
+              properties:
+                titulo: { type: string }
+                descripcion: { type: string }
+                fotoUrl: { type: string }
+                precioCarta: { type: number }
+                precioOferta: { type: number }
+                stock: { type: integer }
+                horaElaboracion: { type: string }
+                horaLimite: { type: string }
+      responses:
+        '201':
+          description: Oferta asistida publicada exitosamente
+
+  /admin/pedidos:
+    get:
+      tags: [Administración y Concierge]
+      summary: Listar todos los pedidos para supervisión y validación de pago Yape Concierge
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: estado
+          in: query
+          schema: { type: string, enum: [RESERVADO, VENDIDO, NO_CONCRETADO, EXPIRADO] }
+      responses:
+        '200':
+          description: Lista global de pedidos
+
+  /admin/pedidos/{codigo}:
+    patch:
+      tags: [Administración y Concierge]
+      summary: Validar pago Yape y resolver pedido de cualquier comercio como Administrador
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: codigo
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [accion]
+              properties:
+                accion: { type: string, enum: [VENDIDO, NO_CONCRETADO] }
+      responses:
+        '204':
+          description: Pedido validado exitosamente
+
+  /cron/expirar-reservas:
+    get:
+      tags: [Tareas Programadas]
+      summary: Ejecutar liberación automática de pedidos vencidos (> 30 min)
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Tarea completada con número de reservas expiradas
+        '401':
+          description: Secreto de cron no autorizado
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    OfertaPublica:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        titulo: { type: string, example: "Pack 6 Croissants de Mantequilla" }
+        descripcion: { type: string }
+        fotoUrl: { type: string, format: uri }
+        precioCarta: { type: number, example: 18.00 }
+        precioOferta: { type: number, example: 9.00 }
+        precioVigente: { type: number, example: 9.00 }
+        porcentajeDescuento: { type: integer, example: 50 }
+        stockDisponible: { type: integer, example: 4 }
+        horaLimite: { type: string, format: date-time }
+        negocioNombre: { type: string, example: "Panadería Ejemplo" }
+        negocioSlug: { type: string, example: "panaderia-ejemplo" }
+        negocioDireccion: { type: string, example: "Jr. Asamblea 220, Huamanga" }
+        enlaceMaps: { type: string, format: uri }
+
+    ReservaConfirmacion:
+      type: object
+      properties:
+        codigo: { type: string, example: "KXDS" }
+        expiraEn: { type: string, format: date-time }
+        monto: { type: number, example: 9.00 }
+        yapeNumero: { type: string, example: "987654321" }
+        yapeTitular: { type: string, example: "JAMA Huamanga" }
+        whatsappOperaciones: { type: string, example: "51987654321" }
+        enlaceWhatsapp: { type: string, format: uri }
+        negocioNombre: { type: string, example: "Panadería Ejemplo" }
+        negocioDireccion: { type: string, example: "Jr. Asamblea 220, Huamanga" }
+
+    MetricasImpacto:
+      type: object
+      properties:
+        dineroRecuperado: { type: number, example: 125.50 }
+        racionesRescatadas: { type: integer, example: 14 }
+        tasaEfectividad: { type: number, example: 87.5 }
+        co2EvitadoKg: { type: number, example: 35.0 }
+        aguaPreservadaLitros: { type: number, example: 11200 }
+        rankingProductos:
+          type: array
+          items:
+            type: object
+            properties:
+              titulo: { type: string }
+              raciones: { type: integer }
+              monto: { type: number }

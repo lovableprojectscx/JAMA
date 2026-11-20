@@ -1,6 +1,20 @@
 import express from 'express';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { manejarErrores } from './middlewares/error-handler.middleware.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const swaggerPath = path.join(__dirname, '../../docs/openapi.yaml');
+let swaggerDocument = null;
+try {
+  swaggerDocument = YAML.load(swaggerPath);
+} catch (e) {
+  // En caso de que no se encuentre el archivo en entornos aislados
+}
 
 export function crearApp({
   apiAcceso,
@@ -64,6 +78,12 @@ export function crearApp({
       return next(error);
     }
   });
+
+  if (swaggerDocument) {
+    app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+    v1.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+    v1.get('/docs.json', (req, res) => res.json(swaggerDocument));
+  }
 
   app.use('/api/v1', v1);
 
