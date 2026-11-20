@@ -73,6 +73,7 @@ flowchart TB
 
 | Documento | Contenido principal |
 |---|---|
+| [`README.md (SDD Master)`](03-diseno-de-software/README.md) | **Documento de Diseño de Software Oficial (SDD · IEEE Std 1016-2009)**: especificación integral de arquitectura, datos, componentes, secuencias, UI/UX, seguridad y matriz de trazabilidad. |
 | [`modelo-datos-erd.md`](03-diseno-de-software/modelo-datos-erd.md) | **Diagrama Entidad-Relación (ERD)** oficial de PostgreSQL (`negocios`, `ofertas`, `codigos_canje`, `administradores`) y migraciones `001–006`. |
 | [`diseno-interno/diseno-interno-de-modulos.md`](03-diseno-de-software/diseno-interno/diseno-interno-de-modulos.md) | Reglas de negocio (`RN-01` a `RN-18`), estructura de carpetas y diagrama de clases de los módulos. |
 | [`diseno-interno/patrones-de-diseno.md`](03-diseno-de-software/diseno-interno/patrones-de-diseno.md) | Catálogo de patrones aplicados: Repository, Adapter, Unit of Work, State Machine, Facade, Composition Root. |
