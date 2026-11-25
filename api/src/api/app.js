@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -14,6 +13,67 @@ try {
   swaggerDocument = YAML.load(swaggerPath);
 } catch (e) {
   // En caso de que no se encuentre el archivo en entornos aislados
+}
+
+/**
+ * Renderiza la interfaz de Swagger UI de forma autocontenida usando CDN global.
+ * Esto evita el fallo común de `swagger-ui-express` en entornos serverless
+ * (Vercel / AWS Lambda) donde los assets locales de `swagger-ui-dist` no son
+ * rastreados por NFT y causan el error "Unexpected token '<'".
+ */
+function renderizarSwaggerHtml(spec) {
+  return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JAMA API · Documentación Swagger UI (OpenAPI 3.0)</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui.min.css" />
+  <link rel="icon" type="image/png" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/favicon-32x32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/favicon-16x16.png" sizes="16x16" />
+  <style>
+    html {
+      box-sizing: border-box;
+      overflow-y: scroll;
+    }
+    *, *:before, *:after {
+      box-sizing: inherit;
+    }
+    body {
+      margin: 0;
+      background: #fafafa;
+    }
+    .swagger-ui .topbar {
+      background-color: #1E2B4D;
+    }
+    .swagger-ui .topbar .download-url-wrapper {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-standalone-preset.min.js"></script>
+  <script>
+    window.onload = function() {
+      window.ui = SwaggerUIBundle({
+        spec: ${JSON.stringify(spec)},
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout"
+      });
+    };
+  </script>
+</body>
+</html>`;
 }
 
 export function crearApp({
@@ -80,9 +140,17 @@ export function crearApp({
   });
 
   if (swaggerDocument) {
-    app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-    v1.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-    v1.get('/docs.json', (req, res) => res.json(swaggerDocument));
+    const swaggerHtml = renderizarSwaggerHtml(swaggerDocument);
+    const servirDocs = (req, res) => res.type('html').send(swaggerHtml);
+    const servirDocsJson = (req, res) => res.json(swaggerDocument);
+
+    app.get('/api/docs', servirDocs);
+    app.get('/api/docs/', servirDocs);
+    app.get('/api/docs.json', servirDocsJson);
+
+    v1.get('/docs', servirDocs);
+    v1.get('/docs/', servirDocs);
+    v1.get('/docs.json', servirDocsJson);
   }
 
   app.use('/api/v1', v1);
