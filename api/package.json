@@ -15,7 +15,8 @@
     "test": "node --env-file=.env --test tests/**/*.test.js",
     "test:unit": "node --test tests/dominio/**/*.test.js tests/expiracion/**/*.test.js tests/arquitectura/**/*.test.js",
     "test:coverage": "c8 --reporter=text --reporter=html --reporter=lcov node --test tests/dominio/**/*.test.js tests/expiracion/**/*.test.js tests/arquitectura/**/*.test.js",
-    "test:integracion": "node --env-file=.env --test tests/concurrencia/**/*.test.js tests/seguridad/**/*.test.js"
+    "test:integracion": "node --env-file=.env --test tests/concurrencia/**/*.test.js tests/seguridad/**/*.test.js",
+    "test:qa": "node --test tests/qa/**/*.qa.test.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
