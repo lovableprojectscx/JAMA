@@ -88,18 +88,19 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+  background: #16a34a;
   color: var(--blanco);
   text-decoration: none;
   padding: 16px 18px;
   border-radius: 22px;
-  box-shadow: 0 16px 32px -12px rgba(21, 128, 61, 0.52);
-  transition: transform 150ms ease, box-shadow 150ms ease;
+  box-shadow: 0 12px 24px -12px rgba(22, 163, 74, 0.45);
+  transition: transform 150ms ease, background 150ms ease, box-shadow 150ms ease;
 }
 
 .bio-wa:hover {
   transform: translateY(-2px);
-  box-shadow: 0 20px 36px -12px rgba(21, 128, 61, 0.62);
+  background: #15803d;
+  box-shadow: 0 16px 28px -12px rgba(21, 128, 61, 0.55);
 }
 
 .bio-wa__icon {
