@@ -6,6 +6,12 @@ function formatearPrecio(valor) {
 
 export default function EjemploCard({ ejemplo }) {
   const { recorteFoto } = ejemplo;
+  // Contenedor 4:3 (alto = 0.75 * ancho). Con height: auto la imagen conserva
+  // su proporción natural (0% distorsión) y centramos verticalmente cada celda.
+  const RATIO_CONTENEDOR = 3 / 4;
+  const topPorcentaje =
+    -((recorteFoto.top + recorteFoto.height / 2) / (recorteFoto.width * RATIO_CONTENEDOR) - 0.5) * 100;
+
   return (
     <article className="ejemplo-card" aria-hidden="true">
       <div className="ejemplo-card__foto-contenedor">
@@ -16,9 +22,9 @@ export default function EjemploCard({ ejemplo }) {
           loading="lazy"
           style={{
             width: `${(100 * recorteFoto.sheetAncho) / recorteFoto.width}%`,
-            height: `${(100 * recorteFoto.sheetAlto) / recorteFoto.height}%`,
+            height: 'auto',
             left: `${(-100 * recorteFoto.left) / recorteFoto.width}%`,
-            top: `${(-100 * recorteFoto.top) / recorteFoto.height}%`,
+            top: `${topPorcentaje}%`,
           }}
         />
         <div className="oferta-card__badges-flotantes">

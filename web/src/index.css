@@ -547,11 +547,19 @@ body {
   opacity: 0.75;
 }
 
-.oferta-card__foto-contenedor,
-.ejemplo-card__foto-contenedor {
+.oferta-card__foto-contenedor {
   position: relative;
   width: 100%;
   height: 180px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.ejemplo-card__foto-contenedor {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  height: auto;
   overflow: hidden;
   background: #f8fafc;
 }

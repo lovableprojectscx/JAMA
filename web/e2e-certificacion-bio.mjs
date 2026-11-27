@@ -76,18 +76,27 @@ async function ejecutar() {
       const recortes = await page.locator('.ejemplo-card__foto').evaluateAll((imgs) =>
         imgs.map((el) => {
           const st = getComputedStyle(el);
-          return { position: st.position, left: st.left, top: st.top };
+          const rect = el.getBoundingClientRect();
+          const naturalRatio = el.naturalWidth / el.naturalHeight;
+          const renderedRatio = rect.width / rect.height;
+          return {
+            position: st.position,
+            left: st.left,
+            top: st.top,
+            distorsion: Math.abs(renderedRatio / naturalRatio - 1),
+          };
         })
       );
       for (const r of recortes) {
         assert.equal(r.position, 'absolute', `ejemplo-card__foto debe ser position:absolute (fue ${r.position})`);
+        assert.ok(r.distorsion < 0.02, `Foto de ejemplo estirada (distorsión ${(r.distorsion * 100).toFixed(1)}%)`);
       }
       const clavesUnicas = new Set(recortes.map((r) => `${r.left}|${r.top}`));
       assert.equal(clavesUnicas.size, 6, `Todas las fotos de ejemplo deben ser distintas (únicas: ${clavesUnicas.size})`);
       const badges = await page.locator('.ejemplo-card .oferta-card__descuento-pill').count();
       assert.equal(badges, 6, `Cada tarjeta de ejemplo debe mostrar su badge de descuento (hubo ${badges})`);
-      if (vp.nombre === 'escritorio-1280x800' && process.env.CAPTURE_EJEMPLOS_SHOT) {
-        await page.locator('.ejemplos__lista').screenshot({ path: process.env.CAPTURE_EJEMPLOS_SHOT });
+      if (vp.nombre === 'movil-390x844' && process.env.CAPTURE_EJEMPLOS_SHOT) {
+        await page.locator('.ejemplo-card').nth(4).screenshot({ path: process.env.CAPTURE_EJEMPLOS_SHOT });
       }
 
       // 2. Verificar rutas Link-in-Bio (/bio, /hola, /links)
