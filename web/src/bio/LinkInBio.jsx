@@ -19,9 +19,8 @@ export default function LinkInBio() {
 
   return (
     <div className="bio-shell">
-      {/* Header full-bleed sin cajas innecesarias */}
+      {/* Cabecera limpia sobre lienzo crema institucional (60% Crema · 30% Marino · 10% Lima) */}
       <header className="bio-top">
-        <div className="bio-top__glow" aria-hidden="true" />
         <div className="bio-top__inner">
           <a href="/" className="bio-brand" aria-label="Ir al catálogo JAMA">
             <img src={logoJama} alt="JAMA" className="bio-brand__logo" />

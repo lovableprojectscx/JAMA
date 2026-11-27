@@ -6,39 +6,20 @@
   flex-direction: column;
 }
 
-/* ---------- Header Full-Bleed ---------- */
+/* ---------- Header limpio sobre Crema ---------- */
 
 .bio-top {
-  position: relative;
-  overflow: hidden;
-  background: var(--azul-marino);
-  color: var(--blanco);
-  padding: 40px 22px 68px;
-  border-bottom-left-radius: 32px;
-  border-bottom-right-radius: 32px;
-}
-
-.bio-top__glow {
-  position: absolute;
-  top: -90px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 420px;
-  height: 240px;
-  background: radial-gradient(ellipse, rgba(212, 220, 49, 0.22) 0%, transparent 70%);
-  pointer-events: none;
+  padding: 44px 20px 24px;
 }
 
 .bio-top__inner {
-  position: relative;
-  z-index: 1;
   max-width: 440px;
   margin: 0 auto;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .bio-brand {
@@ -49,51 +30,51 @@
 
 .bio-brand__logo {
   display: block;
-  width: 132px;
+  width: 126px;
   height: auto;
-  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.28));
 }
 
 .bio-loc {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  color: var(--lima);
-  font-size: 12.5px;
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  color: var(--azul-marino);
+  font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.02em;
+  padding: 5px 12px;
+  border-radius: 999px;
 }
 
 .bio-title {
-  margin: 0;
-  font-size: 27px;
+  margin: 4px 0 0;
+  font-size: 28px;
   font-weight: 900;
   line-height: 1.12;
   letter-spacing: -0.025em;
-  color: var(--blanco);
+  color: var(--azul-marino);
 }
 
 .bio-subtitle {
   margin: 0;
   font-size: 14.5px;
   line-height: 1.48;
-  color: rgba(255, 255, 255, 0.82);
-  max-width: 340px;
+  color: var(--gris-texto);
+  max-width: 350px;
 }
 
 .bio-subtitle strong {
-  color: var(--lima);
+  color: var(--azul-marino);
   font-weight: 800;
 }
 
 /* ---------- Main Container ---------- */
 
 .bio-main {
-  position: relative;
-  z-index: 2;
   width: 100%;
   max-width: 460px;
-  margin: -38px auto 0;
+  margin: 0 auto;
   padding: 0 18px 28px;
   display: flex;
   flex-direction: column;
@@ -368,12 +349,10 @@
 
 @media (min-width: 640px) {
   .bio-top {
-    padding: 48px 24px 76px;
-    border-bottom-left-radius: 44px;
-    border-bottom-right-radius: 44px;
+    padding: 52px 24px 28px;
   }
 
   .bio-title {
-    font-size: 30px;
+    font-size: 32px;
   }
 }
