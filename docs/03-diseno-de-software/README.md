@@ -52,6 +52,7 @@
    - 7.4. Página de Tienda y Kit de Mostrador QR (`/t/:slug`)
    - 7.5. Panel de Gestión del Comercio (`/panel`)
    - 7.6. Panel de Administración y Supervisión (`/admin`)
+   - 7.7. Página Link-in-Bio y Comunidad WhatsApp (`/bio`, `/hola`, `/links`)
 8. [Diseño de Seguridad y Control de Acceso](#8-diseño-de-seguridad-y-control-de-acceso)
    - 8.1. Hashing de Contraseñas y Cifrado
    - 8.2. Autenticación Stateless y Tokens JWT
@@ -110,6 +111,7 @@ Siguiendo **ADR-001**, el backend de JAMA adopta el estilo de **Monolito Modular
 flowchart TD
     subgraph SPA_CLIENT["Frontend Cliente (SPA React / Vite)"]
         V["Vitrina Pública (/)"]
+        B["Link-in-Bio (/bio)"]
         T["Tienda /t/:slug"]
         P["Panel Comercio (/panel)"]
         A["Panel Admin (/admin)"]
@@ -636,6 +638,7 @@ El diseño frontend fue concebido estrictamente para resolver las fricciones de 
 - **Cabecera Sticky:** Logo oficial con sonrisa, indicador de zona con pulso sutil y enlace de acceso a negocios.
 - **Barra de Filtros de Categoría (`FiltroCategorias.jsx`):** Selector horizontal táctil de pills que solo muestra los rubros que actualmente tienen ofertas disponibles (evita estados vacíos frustrantes). Soporta agrupación semántica para comercios de tipo `OTRO` (ej. `🍦 Heladería artesanal (1)`, `🍕 Pizzerías (1)`).
 - **Tarjeta de Oferta (`OfertaCard.jsx`):** Fotografía real de 220px de alto, badge de ahorro porcentual (`-40%`), badge de escasez automática (`¡Quedan 2!` cuando el stock $\le 3$), fila del comercio con enlace directo a Google Maps, precio de oferta en negrita grande con precio de carta tachado y hora límite de recojo.
+- **Sección de Comunidad WhatsApp (`ComunidadWhatsapp.jsx`):** Bloque de captación comunitaria ubicado tras `ComoFunciona` en `/`, con badge de alertas diarias, beneficios clave y botones directos hacia el grupo oficial de WhatsApp y la página de Facebook (`enlaces-jama.js`).
 
 ### 7.3. Modal Bottom-Sheet de Cobro Concierge Yape en 3 Pasos
 Al presionar el botón "Pedir oferta", emerge un Bottom Sheet troquelado con efecto `backdrop-filter: blur(8px)` estructurado en 3 pasos secuenciales:
@@ -661,6 +664,14 @@ Navegación inferior fija thumb-friendly con 5 secciones:
 - **Gestión de Solicitudes B2B:** Bandeja de comercios en estado `PENDIENTE` para aprobar o rechazar con motivo.
 - **Canjes Yape Concierge:** Bandeja de pedidos con filtro de pago pendiente, botón de validación `VENDIDO` y botón para emitir la orden de recojo a la tienda por WhatsApp.
 - **Publicación Asistida:** Botón `➕ Publicar oferta asistida` que permite al equipo JAMA cargar productos al catálogo a nombre de comercios que envían sus fotos por WhatsApp.
+
+### 7.7. Página Link-in-Bio y Comunidad WhatsApp (`/bio`, `/hola`, `/links`)
+- **Propósito:** Punto de aterrizaje móvil ligero diseñado como destino de códigos QR en presentaciones, redes sociales y material impreso, sin requerir descargas ni registro previo.
+- **Arquitectura de Componentes:** Módulo `src/bio/LinkInBio.jsx` + `src/bio/linkinbio.css` alimentado por la fuente única de enlaces oficiales `src/compartido/enlaces-jama.js` y enrutado en `src/main.jsx` bajo las rutas equivalentes `/bio`, `/hola` y `/links`.
+- **Estructura Visual Mobile-First (`max-width: 480px`):**
+  1. **Cabecera de Marca:** Fondo azul marino institucional (`#1E2B4D`) con logotipo JAMA, badge territorial (`Huamanga, Ayacucho`), eslogan oficial y 3 insignias de confianza (`1 solo link web`, `Fresco del día`, `Pago con Yape`).
+  2. **Tarjeta Destacada de Comunidad:** Acceso principal al grupo oficial de WhatsApp de alertas diarias de ofertas de cierre.
+  3. **Accesos Rápidos:** Vitrina de ofertas de hoy (`/`), afiliación gratuita de comercios (`/negocios`), página oficial de Facebook (`@jamaofertas`) y contacto directo por WhatsApp.
 
 ---
 

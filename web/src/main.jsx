@@ -11,10 +11,14 @@ import RegistroNegocio from './negocios/RegistroNegocio.jsx';
 import AdminApp from './admin/AdminApp.jsx';
 import TerminosCondiciones from './terminos/TerminosCondiciones.jsx';
 import PerfilTienda from './tienda/PerfilTienda.jsx';
+import LinkInBio from './bio/LinkInBio.jsx';
 
 function enrutar() {
   const path = window.location.pathname.replace(/\/+$/, '') || '/';
 
+  if (path === '/bio' || path === '/hola' || path === '/links') {
+    return <LinkInBio />;
+  }
   if (path.startsWith('/admin')) {
     return <AdminApp />;
   }

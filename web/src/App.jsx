@@ -12,8 +12,10 @@ import {
 } from './compartido/categorias.js';
 import EjemplosIlustrativos from './components/EjemplosIlustrativos.jsx';
 import ComoFunciona from './components/ComoFunciona.jsx';
+import ComunidadWhatsapp from './components/ComunidadWhatsapp.jsx';
 import Faq from './components/Faq.jsx';
 import CtaNegocio from './components/CtaNegocio.jsx';
+import { ENLACES_JAMA } from './compartido/enlaces-jama.js';
 import { obtenerOfertas, pedirOferta } from './api.js';
 import logoJama from './assets/jama-logo.png';
 
@@ -333,6 +335,7 @@ export default function App() {
       })()}
 
       <ComoFunciona />
+      <ComunidadWhatsapp />
       <Faq />
       <CtaNegocio />
 
@@ -343,9 +346,38 @@ export default function App() {
             <p className="pie__eslogan">La comida más rica de Ayacucho, sin desperdicios.</p>
           </div>
           <div className="pie__enlaces">
-            <a href="/terminos" className="pie__enlace">Términos y Condiciones</a>
+            <a href="/bio" className="pie__enlace">Conoce JAMA</a>
+            <span aria-hidden="true"> · </span>
+            <a
+              href={ENLACES_JAMA.grupoWhatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pie__enlace"
+            >
+              Grupo WhatsApp
+            </a>
+            <span aria-hidden="true"> · </span>
+            <a
+              href={ENLACES_JAMA.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pie__enlace"
+            >
+              Facebook
+            </a>
+            <span aria-hidden="true"> · </span>
+            <a
+              href={ENLACES_JAMA.tiktok}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pie__enlace"
+            >
+              TikTok
+            </a>
             <span aria-hidden="true"> · </span>
             <a href="/negocios" className="pie__enlace">Para Negocios</a>
+            <span aria-hidden="true"> · </span>
+            <a href="/terminos" className="pie__enlace">Términos</a>
           </div>
           <p className="pie__legal">
             © {ANIO_ACTUAL} JAMA · Huamanga, Ayacucho. Todos los derechos reservados.

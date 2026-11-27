@@ -1488,6 +1488,157 @@ body {
   }
 }
 
+/* ---------- Comunidad WhatsApp ---------- */
+
+.comunidad-wa {
+  padding: 20px 20px 8px;
+}
+
+.comunidad-wa__caja {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: var(--blanco);
+  border: 1.5px solid var(--borde);
+  border-radius: var(--radio-grande);
+  padding: 28px 24px;
+  box-shadow: var(--sombra-suave);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.comunidad-wa__contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comunidad-wa__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  align-self: flex-start;
+  background: #eaf8ef;
+  color: #157338;
+  border: 1px solid #c3ebd0;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+
+.comunidad-wa__punto {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #25d366;
+  box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.25);
+}
+
+.comunidad-wa__titulo {
+  margin: 0;
+  font-size: 23px;
+  font-weight: 900;
+  line-height: 1.2;
+  color: var(--azul-marino);
+}
+
+.comunidad-wa__texto {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--gris-texto);
+  max-width: 580px;
+}
+
+.comunidad-wa__texto strong {
+  color: var(--azul-marino);
+}
+
+.comunidad-wa__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.comunidad-wa__chips span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--crema);
+  border: 1px solid var(--borde);
+  color: var(--azul-marino);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 999px;
+}
+
+.comunidad-wa__acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comunidad-wa__boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  background: #1b9e4b;
+  color: var(--blanco);
+  border-radius: 999px;
+  padding: 15px 24px;
+  font-weight: 900;
+  font-size: 15.5px;
+  text-decoration: none;
+  box-shadow: 0 12px 24px -12px rgba(27, 158, 75, 0.65);
+}
+
+.comunidad-wa__boton:hover {
+  background: #16803d;
+}
+
+.comunidad-wa__redes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.comunidad-wa__fb {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: var(--crema);
+  border: 1px solid var(--borde);
+  color: var(--azul-marino);
+  border-radius: 999px;
+  padding: 11px 18px;
+  font-weight: 800;
+  font-size: 13.5px;
+  text-decoration: none;
+}
+
+@media (min-width: 760px) {
+  .comunidad-wa__caja {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 36px 42px;
+  }
+
+  .comunidad-wa__titulo {
+    font-size: 26px;
+  }
+
+  .comunidad-wa__acciones {
+    flex-shrink: 0;
+    min-width: 270px;
+  }
+}
+
 /* ---------- Pie ---------- */
 
 .pie {
@@ -1524,9 +1675,10 @@ body {
   font-size: 13px;
   color: var(--gris-texto);
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px 8px;
 }
 
 .pie__enlace {
