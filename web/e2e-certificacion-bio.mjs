@@ -81,6 +81,10 @@ async function ejecutar() {
         await page.locator(`a[href="${TIKTOK}"]`).waitFor({ state: 'visible', timeout: 5000 });
         await page.locator('a[href="/"]').first().waitFor({ state: 'visible', timeout: 5000 });
         await page.locator('a[href="/negocios"]').waitFor({ state: 'visible', timeout: 5000 });
+
+        if (ruta === '/bio' && vp.nombre === 'movil-390x844' && process.env.CAPTURE_BIO_SHOT) {
+          await page.screenshot({ path: process.env.CAPTURE_BIO_SHOT, fullPage: true });
+        }
       }
 
       assert.equal(erroresConsola.length, 0, `Errores de página en ${vp.nombre}: ${erroresConsola.join('; ')}`);

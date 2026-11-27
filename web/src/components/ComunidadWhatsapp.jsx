@@ -1,6 +1,6 @@
-import { ArrowUpRight, BellRing, MessageCircle, Sparkles } from 'lucide-react';
+import { ArrowUpRight, BellRing, Sparkles } from 'lucide-react';
 import { ENLACES_JAMA } from '../compartido/enlaces-jama.js';
-import { FacebookIcon, TikTokIcon } from '../compartido/iconos-redes.jsx';
+import { FacebookIcon, TikTokIcon, WhatsAppIcon } from '../compartido/iconos-redes.jsx';
 
 export default function ComunidadWhatsapp() {
   return (
@@ -38,7 +38,7 @@ export default function ComunidadWhatsapp() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <MessageCircle size={20} aria-hidden="true" />
+            <WhatsAppIcon size={20} />
             <span>Unirme al grupo de WhatsApp</span>
             <ArrowUpRight size={18} aria-hidden="true" />
           </a>

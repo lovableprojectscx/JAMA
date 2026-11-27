@@ -1,210 +1,150 @@
 import { useEffect } from 'react';
 import {
-  ArrowUpRight,
-  Clock,
+  ChevronRight,
   MapPin,
-  MessageCircle,
-  Send,
-  ShieldCheck,
-  Smartphone,
-  Sparkles,
   Store,
   UtensilsCrossed,
 } from 'lucide-react';
 import logoJama from '../assets/jama-logo.png';
 import { ENLACES_JAMA } from '../compartido/enlaces-jama.js';
-import { FacebookIcon, TikTokIcon } from '../compartido/iconos-redes.jsx';
+import { FacebookIcon, TikTokIcon, WhatsAppIcon } from '../compartido/iconos-redes.jsx';
 import './linkinbio.css';
 
 const ANIO_ACTUAL = new Date().getFullYear();
 
 export default function LinkInBio() {
   useEffect(() => {
-    document.title = 'JAMA · Conócenos y únete a la comunidad';
+    document.title = 'JAMA · Ofertas de cierre en Huamanga';
   }, []);
 
   return (
-    <div className="bio-pagina">
-      <div className="bio-contenedor">
-        {/* Cabecera de marca */}
-        <header className="bio-hero">
-          <div className="bio-hero__brillo" aria-hidden="true" />
-
-          <a href="/" className="bio-hero__logo-wrap" aria-label="Ir al inicio de JAMA">
-            <img src={logoJama} alt="JAMA" className="bio-hero__logo" />
+    <div className="bio-shell">
+      {/* Header full-bleed sin cajas innecesarias */}
+      <header className="bio-top">
+        <div className="bio-top__glow" aria-hidden="true" />
+        <div className="bio-top__inner">
+          <a href="/" className="bio-brand" aria-label="Ir al catálogo JAMA">
+            <img src={logoJama} alt="JAMA" className="bio-brand__logo" />
           </a>
 
-          <div className="bio-hero__ubicacion">
+          <div className="bio-loc">
             <MapPin size={13} aria-hidden="true" />
             <span>Huamanga, Ayacucho</span>
           </div>
 
-          <h1 className="bio-hero__titulo">La jama de hoy, al precio de cierre.</h1>
-
-          <p className="bio-hero__desc">
-            Conectamos negocios de comida local con personas que buscan platos, postres y packs
-            frescos del día con <strong>30% a 50% de descuento</strong>. Sin descargar apps.
+          <h1 className="bio-title">La jama de hoy, al precio de cierre.</h1>
+          <p className="bio-subtitle">
+            Platos, postres y packs frescos del día con <strong>30% a 50% de descuento</strong>.
+            Sin app ni registro.
           </p>
+        </div>
+      </header>
 
-          <div className="bio-hero__pills">
-            <span>
-              <Smartphone size={13} aria-hidden="true" /> 1 solo link web
+      {/* Contenido principal elevado sobre la curva del header */}
+      <main className="bio-main" aria-label="Accesos oficiales de JAMA">
+        {/* CTA Principal: Grupo WhatsApp con ícono oficial */}
+        <a
+          href={ENLACES_JAMA.grupoWhatsapp}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bio-wa press"
+        >
+          <span className="bio-wa__icon" aria-hidden="true">
+            <WhatsAppIcon size={26} />
+          </span>
+          <div className="bio-wa__body">
+            <span className="bio-wa__kicker">
+              <span className="bio-wa__dot" aria-hidden="true" />
+              Comunidad · Alertas diarias
             </span>
-            <span>
-              <Clock size={13} aria-hidden="true" /> Fresco del día
-            </span>
-            <span>
-              <ShieldCheck size={13} aria-hidden="true" /> Pago con Yape
-            </span>
+            <strong className="bio-wa__title">Unirme al grupo de WhatsApp</strong>
+            <span className="bio-wa__meta">Entérate primero antes de que se agoten</span>
           </div>
-        </header>
+          <ChevronRight size={20} className="bio-wa__chev" aria-hidden="true" />
+        </a>
 
-        {/* Tarjeta destacada: Grupo de WhatsApp */}
-        <main className="bio-enlaces" aria-label="Enlaces oficiales de JAMA">
-          <a
-            href={ENLACES_JAMA.grupoWhatsapp}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bio-card bio-card--destacada press"
-          >
-            <div className="bio-card__top-badge">
-              <span className="bio-card__punto" aria-hidden="true" />
-              <Sparkles size={12} aria-hidden="true" />
-              <span>Únete ahora · Comunidad de ofertas</span>
-            </div>
-            <div className="bio-card__fila">
-              <span className="bio-card__icono bio-card__icono--wa" aria-hidden="true">
-                <MessageCircle size={24} />
-              </span>
-              <div className="bio-card__texto">
-                <strong className="bio-card__titulo">Grupo de WhatsApp JAMA</strong>
-                <span className="bio-card__subtitulo">
-                  Recibe alertas diarias de ofertas de cierre antes de que se agoten
-                </span>
-              </div>
-              <span className="bio-card__flecha" aria-hidden="true">
-                <ArrowUpRight size={20} />
-              </span>
-            </div>
+        {/* Bento de 2 acciones clave */}
+        <section className="bio-bento" aria-label="Explorar JAMA">
+          <a href="/" className="bio-tile bio-tile--lima press">
+            <span className="bio-tile__icon">
+              <UtensilsCrossed size={21} aria-hidden="true" />
+            </span>
+            <strong className="bio-tile__title">Ver ofertas de hoy</strong>
+            <span className="bio-tile__meta">Catálogo en vivo · 1 link</span>
           </a>
 
-          {/* Enlace 2: Vitrina web de ofertas */}
-          <a href="/" className="bio-card press">
-            <div className="bio-card__fila">
-              <span className="bio-card__icono bio-card__icono--lima" aria-hidden="true">
-                <UtensilsCrossed size={22} />
-              </span>
-              <div className="bio-card__texto">
-                <strong className="bio-card__titulo">Ver ofertas de cierre de hoy</strong>
-                <span className="bio-card__subtitulo">
-                  Explora el catálogo web en vivo y reserva sin crear cuenta
-                </span>
-              </div>
-              <span className="bio-card__flecha" aria-hidden="true">
-                <ArrowUpRight size={19} />
-              </span>
-            </div>
+          <a href="/negocios" className="bio-tile bio-tile--navy press">
+            <span className="bio-tile__icon">
+              <Store size={21} aria-hidden="true" />
+            </span>
+            <strong className="bio-tile__title">Afilia tu negocio</strong>
+            <span className="bio-tile__meta">Piloto gratis (S/ 0)</span>
           </a>
+        </section>
 
-          {/* Enlace 3: Afiliar negocio */}
-          <a href="/negocios" className="bio-card press">
-            <div className="bio-card__fila">
-              <span className="bio-card__icono bio-card__icono--azul" aria-hidden="true">
-                <Store size={22} />
+        {/* Redes oficiales y contacto directo */}
+        <section className="bio-section" aria-label="Redes oficiales">
+          <h2 className="bio-section__label">Síguenos y escríbenos</h2>
+
+          <div className="bio-list">
+            <a
+              href={ENLACES_JAMA.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bio-row press"
+            >
+              <span className="bio-row__icon bio-row__icon--fb">
+                <FacebookIcon size={20} />
               </span>
-              <div className="bio-card__texto">
-                <strong className="bio-card__titulo">¿Tienes un negocio de comida?</strong>
-                <span className="bio-card__subtitulo">
-                  Afíliate gratis al piloto (S/ 0) y vende hoy lo de hoy
-                </span>
+              <div className="bio-row__text">
+                <strong>Facebook</strong>
+                <span>@jamaofertas</span>
               </div>
-              <span className="bio-card__flecha" aria-hidden="true">
-                <ArrowUpRight size={19} />
-              </span>
-            </div>
-          </a>
-
-          {/* Enlace 4: Facebook oficial */}
-          <a
-            href={ENLACES_JAMA.facebook}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bio-card press"
-          >
-            <div className="bio-card__fila">
-              <span className="bio-card__icono bio-card__icono--fb" aria-hidden="true">
-                <FacebookIcon size={21} />
-              </span>
-              <div className="bio-card__texto">
-                <strong className="bio-card__titulo">Síguenos en Facebook</strong>
-                <span className="bio-card__subtitulo">
-                  @jamaofertas · Novedades, comercios aliados y avances
-                </span>
-              </div>
-              <span className="bio-card__flecha" aria-hidden="true">
-                <ArrowUpRight size={19} />
-              </span>
-            </div>
-          </a>
-
-          {/* Enlace 5: TikTok oficial */}
-          <a
-            href={ENLACES_JAMA.tiktok}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bio-card press"
-          >
-            <div className="bio-card__fila">
-              <span className="bio-card__icono bio-card__icono--tt" aria-hidden="true">
-                <TikTokIcon size={21} />
-              </span>
-              <div className="bio-card__texto">
-                <strong className="bio-card__titulo">Síguenos en TikTok</strong>
-                <span className="bio-card__subtitulo">
-                  @jama.app · Videos cortos de ofertas y comercios en Huamanga
-                </span>
-              </div>
-              <span className="bio-card__flecha" aria-hidden="true">
-                <ArrowUpRight size={19} />
-              </span>
-            </div>
-          </a>
-
-          {/* Enlace 5: Contacto directo */}
-          <a
-            href={ENLACES_JAMA.whatsappDirecto}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bio-card bio-card--suave press"
-          >
-            <div className="bio-card__fila">
-              <span className="bio-card__icono bio-card__icono--neutro" aria-hidden="true">
-                <Send size={20} />
-              </span>
-              <div className="bio-card__texto">
-                <strong className="bio-card__titulo">Hablar con el equipo JAMA</strong>
-                <span className="bio-card__subtitulo">
-                  Alianzas comerciales, consultas o soporte por WhatsApp
-                </span>
-              </div>
-              <span className="bio-card__flecha" aria-hidden="true">
-                <ArrowUpRight size={19} />
-              </span>
-            </div>
-          </a>
-        </main>
-
-        {/* Pie de página */}
-        <footer className="bio-pie">
-          <p className="bio-pie__lema">Aquí nada bueno se bota.</p>
-          <p className="bio-pie__meta">
-            © {ANIO_ACTUAL} JAMA · Huamanga, Ayacucho ·{' '}
-            <a href="/terminos" className="bio-pie__link">
-              Términos
+              <ChevronRight size={18} className="bio-row__chev" aria-hidden="true" />
             </a>
-          </p>
-        </footer>
-      </div>
+
+            <a
+              href={ENLACES_JAMA.tiktok}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bio-row press"
+            >
+              <span className="bio-row__icon bio-row__icon--tt">
+                <TikTokIcon size={19} />
+              </span>
+              <div className="bio-row__text">
+                <strong>TikTok</strong>
+                <span>@jama.app</span>
+              </div>
+              <ChevronRight size={18} className="bio-row__chev" aria-hidden="true" />
+            </a>
+
+            <a
+              href={ENLACES_JAMA.whatsappDirecto}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bio-row press"
+            >
+              <span className="bio-row__icon bio-row__icon--wa">
+                <WhatsAppIcon size={19} />
+              </span>
+              <div className="bio-row__text">
+                <strong>WhatsApp directo</strong>
+                <span>Alianzas y soporte · 925 176 472</span>
+              </div>
+              <ChevronRight size={18} className="bio-row__chev" aria-hidden="true" />
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer className="bio-footer">
+        <p className="bio-footer__tagline">Aquí nada bueno se bota.</p>
+        <p className="bio-footer__legal">
+          © {ANIO_ACTUAL} JAMA · Huamanga, Ayacucho ·{' '}
+          <a href="/terminos">Términos</a>
+        </p>
+      </footer>
     </div>
   );
 }

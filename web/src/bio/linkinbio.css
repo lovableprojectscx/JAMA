@@ -1,247 +1,139 @@
-.bio-pagina {
+.bio-shell {
   min-height: 100svh;
-  background:
-    radial-gradient(circle at 18% 8%, rgba(212, 220, 49, 0.22) 0%, transparent 42%),
-    radial-gradient(circle at 86% 18%, rgba(30, 43, 77, 0.08) 0%, transparent 38%),
-    var(--crema);
-  padding: 24px 16px 40px;
-  display: flex;
-  justify-content: center;
-}
-
-.bio-contenedor {
-  width: 100%;
-  max-width: 480px;
+  background: var(--crema);
+  color: var(--azul-marino);
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
-/* ---------- Hero / Perfil de marca ---------- */
+/* ---------- Header Full-Bleed ---------- */
 
-.bio-hero {
+.bio-top {
   position: relative;
   overflow: hidden;
   background: var(--azul-marino);
   color: var(--blanco);
-  border-radius: 28px;
-  padding: 28px 22px 24px;
-  text-align: center;
-  box-shadow: var(--sombra-alta);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
+  padding: 40px 22px 68px;
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
 }
 
-.bio-hero__brillo {
+.bio-top__glow {
   position: absolute;
-  top: -70px;
-  right: -60px;
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(212, 220, 49, 0.28) 0%, transparent 70%);
+  top: -90px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 420px;
+  height: 240px;
+  background: radial-gradient(ellipse, rgba(212, 220, 49, 0.22) 0%, transparent 70%);
   pointer-events: none;
 }
 
-.bio-hero__logo-wrap {
+.bio-top__inner {
   position: relative;
   z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  padding: 12px 22px;
-  border-radius: 20px;
-  text-decoration: none;
-}
-
-.bio-hero__logo {
-  display: block;
-  width: 112px;
-  height: auto;
-}
-
-.bio-hero__ubicacion {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(212, 220, 49, 0.16);
-  border: 1px solid rgba(212, 220, 49, 0.34);
-  color: var(--lima);
-  font-size: 12px;
-  font-weight: 800;
-  padding: 5px 12px;
-  border-radius: 999px;
-}
-
-.bio-hero__titulo {
-  position: relative;
-  z-index: 1;
-  margin: 2px 0 0;
-  font-size: 25px;
-  font-weight: 900;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  color: var(--blanco);
-}
-
-.bio-hero__desc {
-  position: relative;
-  z-index: 1;
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.84);
-  max-width: 380px;
-}
-
-.bio-hero__desc strong {
-  color: var(--lima);
-  font-weight: 800;
-}
-
-.bio-hero__pills {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 7px;
-  margin-top: 4px;
-}
-
-.bio-hero__pills span {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: rgba(255, 255, 255, 0.92);
-  font-size: 11.5px;
-  font-weight: 700;
-  padding: 5px 10px;
-  border-radius: 999px;
-}
-
-/* ---------- Lista de enlaces ---------- */
-
-.bio-enlaces {
+  max-width: 440px;
+  margin: 0 auto;
+  text-align: center;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 12px;
 }
 
-.bio-card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background: var(--blanco);
-  border: 1.5px solid var(--borde);
-  border-radius: 22px;
-  padding: 15px 16px;
-  text-decoration: none;
-  color: var(--azul-marino);
-  box-shadow: 0 6px 20px -12px rgba(30, 43, 77, 0.25);
-  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+.bio-brand {
+  display: inline-block;
+  line-height: 0;
+  margin-bottom: 4px;
 }
 
-.bio-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(30, 43, 77, 0.25);
-  box-shadow: 0 12px 26px -14px rgba(30, 43, 77, 0.32);
+.bio-brand__logo {
+  display: block;
+  width: 132px;
+  height: auto;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.28));
 }
 
-.bio-card--destacada {
-  background: linear-gradient(135deg, #1b9e4b 0%, #16803d 100%);
-  border-color: #16803d;
-  color: var(--blanco);
-  box-shadow: 0 16px 32px -14px rgba(22, 128, 61, 0.55);
-}
-
-.bio-card--destacada:hover {
-  border-color: #126b32;
-  box-shadow: 0 20px 36px -14px rgba(22, 128, 61, 0.65);
-}
-
-.bio-card--suave {
-  background: rgba(255, 255, 255, 0.72);
-}
-
-.bio-card__top-badge {
+.bio-loc {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  align-self: flex-start;
-  background: rgba(255, 255, 255, 0.18);
-  color: #ffffff;
-  font-size: 11.5px;
+  gap: 5px;
+  color: var(--lima);
+  font-size: 12.5px;
   font-weight: 800;
-  padding: 4px 10px;
-  border-radius: 999px;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
 }
 
-.bio-card__punto {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--lima);
-  box-shadow: 0 0 0 3px rgba(212, 220, 49, 0.35);
+.bio-title {
+  margin: 0;
+  font-size: 27px;
+  font-weight: 900;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  color: var(--blanco);
 }
 
-.bio-card__fila {
+.bio-subtitle {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.48;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 340px;
+}
+
+.bio-subtitle strong {
+  color: var(--lima);
+  font-weight: 800;
+}
+
+/* ---------- Main Container ---------- */
+
+.bio-main {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 460px;
+  margin: -38px auto 0;
+  padding: 0 18px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+/* ---------- Hero CTA: Grupo WhatsApp ---------- */
+
+.bio-wa {
   display: flex;
   align-items: center;
-  gap: 13px;
+  gap: 14px;
+  background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+  color: var(--blanco);
+  text-decoration: none;
+  padding: 16px 18px;
+  border-radius: 22px;
+  box-shadow: 0 16px 32px -12px rgba(21, 128, 61, 0.52);
+  transition: transform 150ms ease, box-shadow 150ms ease;
 }
 
-.bio-card__icono {
+.bio-wa:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 36px -12px rgba(21, 128, 61, 0.62);
+}
+
+.bio-wa__icon {
   flex-shrink: 0;
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   border-radius: 15px;
+  background: rgba(255, 255, 255, 0.2);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-.bio-card__icono--wa {
-  background: rgba(255, 255, 255, 0.2);
   color: var(--blanco);
 }
 
-.bio-card__icono--lima {
-  background: var(--lima);
-  color: var(--azul-marino);
-}
-
-.bio-card__icono--azul {
-  background: var(--azul-marino);
-  color: var(--lima);
-}
-
-.bio-card__icono--fb {
-  background: #e7f0ff;
-  color: #1877f2;
-}
-
-.bio-card__icono--tt {
-  background: #111111;
-  color: #ffffff;
-}
-
-.bio-card__icono--neutro {
-  background: var(--crema);
-  color: var(--azul-marino);
-  border: 1px solid var(--borde);
-}
-
-.bio-card__texto {
+.bio-wa__body {
   flex: 1;
   min-width: 0;
   display: flex;
@@ -249,62 +141,239 @@
   gap: 2px;
 }
 
-.bio-card__titulo {
-  font-size: 15.5px;
+.bio-wa__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.bio-wa__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lima);
+  box-shadow: 0 0 0 3px rgba(212, 220, 49, 0.35);
+}
+
+.bio-wa__title {
+  font-size: 16.5px;
   font-weight: 900;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 
-.bio-card__subtitulo {
+.bio-wa__meta {
   font-size: 12.5px;
-  line-height: 1.38;
-  color: var(--gris-texto);
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 600;
 }
 
-.bio-card--destacada .bio-card__subtitulo {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.bio-card__flecha {
+.bio-wa__chev {
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
+  opacity: 0.9;
+}
+
+/* ---------- Bento 2 Columnas ---------- */
+
+.bio-bento {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.bio-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 18px 16px;
+  border-radius: 22px;
+  text-decoration: none;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.bio-tile:hover {
+  transform: translateY(-2px);
+}
+
+.bio-tile--lima {
+  background: var(--lima);
+  color: var(--azul-marino);
+  box-shadow: 0 12px 24px -14px rgba(30, 43, 77, 0.32);
+}
+
+.bio-tile--navy {
+  background: var(--azul-marino);
+  color: var(--blanco);
+  box-shadow: 0 12px 24px -14px rgba(30, 43, 77, 0.45);
+}
+
+.bio-tile__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(30, 43, 77, 0.06);
+  margin-bottom: 4px;
+}
+
+.bio-tile--lima .bio-tile__icon {
+  background: var(--azul-marino);
+  color: var(--lima);
+}
+
+.bio-tile--navy .bio-tile__icon {
+  background: rgba(212, 220, 49, 0.16);
+  color: var(--lima);
+}
+
+.bio-tile__title {
+  font-size: 15.5px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.bio-tile__meta {
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.78;
+}
+
+/* ---------- Lista limpia de redes ---------- */
+
+.bio-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.bio-section__label {
+  margin: 0 0 0 6px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gris-texto);
+}
+
+.bio-list {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 8px 22px -14px rgba(30, 43, 77, 0.2);
+}
+
+.bio-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  text-decoration: none;
   color: var(--azul-marino);
+  border-bottom: 1px solid var(--borde);
+  transition: background 140ms ease;
 }
 
-.bio-card--destacada .bio-card__flecha {
-  background: rgba(255, 255, 255, 0.2);
-  color: var(--blanco);
+.bio-row:last-child {
+  border-bottom: none;
 }
 
-/* ---------- Pie ---------- */
+.bio-row:hover {
+  background: rgba(250, 248, 239, 0.7);
+}
 
-.bio-pie {
+.bio-row__icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bio-row__icon--fb {
+  background: #1877f2;
+  color: #ffffff;
+}
+
+.bio-row__icon--tt {
+  background: #0f0f0f;
+  color: #ffffff;
+}
+
+.bio-row__icon--wa {
+  background: #25d366;
+  color: #ffffff;
+}
+
+.bio-row__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.bio-row__text strong {
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.bio-row__text span {
+  font-size: 12.5px;
+  color: var(--gris-texto);
+  font-weight: 600;
+}
+
+.bio-row__chev {
+  flex-shrink: 0;
+  color: var(--gris-texto);
+  opacity: 0.65;
+}
+
+/* ---------- Footer ---------- */
+
+.bio-footer {
   text-align: center;
-  padding: 10px 8px 4px;
+  padding: 8px 18px 28px;
 }
 
-.bio-pie__lema {
+.bio-footer__tagline {
   margin: 0;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 900;
   color: var(--azul-marino);
 }
 
-.bio-pie__meta {
+.bio-footer__legal {
   margin: 4px 0 0;
   font-size: 12px;
   color: var(--gris-texto);
 }
 
-.bio-pie__link {
+.bio-footer__legal a {
   color: var(--azul-marino);
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+@media (min-width: 640px) {
+  .bio-top {
+    padding: 48px 24px 76px;
+    border-bottom-left-radius: 44px;
+    border-bottom-right-radius: 44px;
+  }
+
+  .bio-title {
+    font-size: 30px;
+  }
 }
