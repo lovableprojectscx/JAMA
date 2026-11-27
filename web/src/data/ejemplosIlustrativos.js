@@ -1,30 +1,15 @@
 // Contenido de demostración para cuando todavía no hay ofertas reales
 // publicadas: nunca se mezcla con datos de la API, y la UI siempre lo marca
 // como "ejemplo / foto ilustrativa" para no confundirlo con una oferta real.
-// Las fotos vienen de jama-demo-foods.webp (brand kit del equipo): una sola
-// imagen en cuadrícula de 5x4 recortada por posición, para no cargar 20
-// archivos sueltos.
+// Las fotos vienen de jama-demo-foods.webp (cuadrícula 5x4): cada ítem
+// conserva su `indiceSprite` original para mantener el recorte exacto.
 const EJEMPLOS = [
-  { categoria: 'Sazón', titulo: 'Arroz con pollo', descripcion: 'Arroz verde con pollo y ensalada.', precioOferta: 10, precioCarta: 18 },
-  { categoria: 'Sazón', titulo: 'Lomo saltado', descripcion: 'Carne salteada, papas fritas y arroz.', precioOferta: 15, precioCarta: 25 },
-  { categoria: 'Sazón', titulo: 'Ají de gallina', descripcion: 'Pollo en salsa cremosa con arroz y papa.', precioOferta: 10, precioCarta: 18 },
-  { categoria: 'Sazón', titulo: 'Milanesa de pollo', descripcion: 'Milanesa acompañada de arroz y ensalada.', precioOferta: 11, precioCarta: 20 },
-  { categoria: 'Sazón', titulo: 'Tallarines rojos', descripcion: 'Pasta con salsa de tomate.', precioOferta: 9, precioCarta: 16 },
-  { categoria: 'Dulce', titulo: 'Torta de chocolate', descripcion: 'Una porción de torta de chocolate.', precioOferta: 7, precioCarta: 12 },
-  { categoria: 'Dulce', titulo: 'Torta tres leches', descripcion: 'Una porción de bizcocho con tres leches.', precioOferta: 7, precioCarta: 12 },
-  { categoria: 'Dulce', titulo: 'Cheesecake de fresa', descripcion: 'Una porción con cobertura de fresas.', precioOferta: 8, precioCarta: 14 },
-  { categoria: 'Dulce', titulo: 'Torta de zanahoria', descripcion: 'Una porción de torta de zanahoria.', precioOferta: 7, precioCarta: 12 },
-  { categoria: 'Ñam', titulo: 'Pie de limón', descripcion: 'Una porción de pie de limón.', precioOferta: 6, precioCarta: 10 },
-  { categoria: 'Ñam', titulo: 'Alfajores', descripcion: 'Alfajores con manjar y azúcar en polvo.', precioOferta: 5, precioCarta: 9 },
-  { categoria: 'Ñam', titulo: 'Brownies', descripcion: 'Brownies de chocolate.', precioOferta: 5, precioCarta: 9 },
-  { categoria: 'Ñam', titulo: 'Cupcakes surtidos', descripcion: 'Cupcakes con distintas coberturas.', precioOferta: 6, precioCarta: 11 },
-  { categoria: 'Ñam', titulo: 'Arroz con leche', descripcion: 'Postre cremoso de arroz con leche.', precioOferta: 4, precioCarta: 7 },
-  { categoria: 'Ñam', titulo: 'Mazamorra morada', descripcion: 'Postre tradicional de maíz morado.', precioOferta: 4, precioCarta: 7 },
-  { categoria: 'Miga', titulo: 'Panecillos surtidos', descripcion: 'Una selección de panes.', precioOferta: 4, precioCarta: 7 },
-  { categoria: 'Miga', titulo: 'Empanadas al horno', descripcion: 'Empanadas recién horneadas.', precioOferta: 6, precioCarta: 10 },
-  { categoria: 'Taza', titulo: 'Sándwich de pollo', descripcion: 'Pan relleno con pollo y vegetales.', precioOferta: 7, precioCarta: 12 },
-  { categoria: 'Verde', titulo: 'Ensalada fresca', descripcion: 'Una ensalada de vegetales variados.', precioOferta: 8, precioCarta: 14 },
-  { categoria: 'Verde', titulo: 'Ensalada de frutas', descripcion: 'Una mezcla de frutas de temporada.', precioOferta: 6, precioCarta: 10 },
+  { indiceSprite: 5, categoria: 'Pastelería', titulo: 'Torta de chocolate', descripcion: 'Porción fresca del día con ganache de cacao.', precioOferta: 7, precioCarta: 12 },
+  { indiceSprite: 16, categoria: 'Panadería', titulo: 'Empanadas al horno', descripcion: 'Pack de empanadas recién horneadas del día.', precioOferta: 6, precioCarta: 10 },
+  { indiceSprite: 7, categoria: 'Pastelería', titulo: 'Cheesecake de fresa', descripcion: 'Porción fría en vitrina con cobertura de fresas.', precioOferta: 8, precioCarta: 14 },
+  { indiceSprite: 17, categoria: 'Cafetería', titulo: 'Sándwich de pollo', descripcion: 'Pan artesanal relleno con pollo y vegetales frescos.', precioOferta: 7, precioCarta: 12 },
+  { indiceSprite: 19, categoria: 'Juguería', titulo: 'Ensalada de frutas', descripcion: 'Mezcla fresca de frutas de temporada lista para llevar.', precioOferta: 6, precioCarta: 10 },
+  { indiceSprite: 1, categoria: 'Restaurante', titulo: 'Lomo saltado', descripcion: 'Plato del día preparado con papas fritas y arroz.', precioOferta: 15, precioCarta: 25 },
 ];
 
 // Límites reales de cada foto dentro de jama-demo-foods.webp (alturas de fila
@@ -51,8 +36,8 @@ function recorteFoto(indice) {
   return { left, top, width: right - left, height: bottom - top, sheetAncho: SHEET_ANCHO, sheetAlto: SHEET_ALTO };
 }
 
-export const EJEMPLOS_ILUSTRATIVOS = EJEMPLOS.map((ej, indice) => ({
+export const EJEMPLOS_ILUSTRATIVOS = EJEMPLOS.map((ej) => ({
   ...ej,
   porcentajeDescuento: Math.round((1 - ej.precioOferta / ej.precioCarta) * 100),
-  recorteFoto: recorteFoto(indice),
+  recorteFoto: recorteFoto(ej.indiceSprite),
 }));

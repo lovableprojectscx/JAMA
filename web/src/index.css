@@ -485,6 +485,68 @@ body {
   box-shadow: 0 10px 24px -4px rgba(30, 43, 77, 0.12);
 }
 
+.ejemplo-card__cat-pill {
+  background: rgba(30, 43, 77, 0.86);
+  color: var(--blanco);
+  font-weight: 800;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.ejemplo-card__cuerpo {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.ejemplo-card__titulo {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--azul-marino);
+  line-height: 1.25;
+}
+
+.ejemplo-card__descripcion {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--gris-texto);
+  line-height: 1.4;
+}
+
+.ejemplo-card__precios {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.ejemplo-card__precio-oferta {
+  font-size: 21px;
+  font-weight: 900;
+  color: var(--azul-marino);
+  letter-spacing: -0.02em;
+}
+
+.ejemplo-card__precio-carta {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gris-texto);
+  text-decoration: line-through;
+  opacity: 0.78;
+}
+
+.ejemplo-card__etiqueta {
+  margin: 4px 0 0;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--gris-texto);
+  opacity: 0.75;
+}
+
 .oferta-card__foto-contenedor,
 .ejemplo-card__foto-contenedor {
   position: relative;

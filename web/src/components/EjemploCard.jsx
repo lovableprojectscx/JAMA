@@ -21,14 +21,17 @@ export default function EjemploCard({ ejemplo }) {
             top: `${(-100 * recorteFoto.top) / recorteFoto.height}%`,
           }}
         />
-        <span className="oferta-card__descuento">-{ejemplo.porcentajeDescuento}%</span>
+        <div className="oferta-card__badges-top">
+          <span className="oferta-card__descuento-pill">-{ejemplo.porcentajeDescuento}%</span>
+          <span className="ejemplo-card__cat-pill">{ejemplo.categoria}</span>
+        </div>
       </div>
       <div className="ejemplo-card__cuerpo">
         <h3 className="ejemplo-card__titulo">{ejemplo.titulo}</h3>
         <p className="ejemplo-card__descripcion">{ejemplo.descripcion}</p>
         <div className="ejemplo-card__precios">
-          <span className="ejemplo-card__precio-carta">{formatearPrecio(ejemplo.precioCarta)}</span>
           <span className="ejemplo-card__precio-oferta">{formatearPrecio(ejemplo.precioOferta)}</span>
+          <span className="ejemplo-card__precio-carta">{formatearPrecio(ejemplo.precioCarta)}</span>
         </div>
         <p className="ejemplo-card__etiqueta">Ejemplo · foto ilustrativa</p>
       </div>
