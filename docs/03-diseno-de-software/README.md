@@ -667,11 +667,12 @@ Navegación inferior fija thumb-friendly con 5 secciones:
 
 ### 7.7. Página Link-in-Bio y Comunidad WhatsApp (`/bio`, `/hola`, `/links`)
 - **Propósito:** Punto de aterrizaje móvil ligero diseñado como destino de códigos QR en presentaciones, redes sociales y material impreso, sin requerir descargas ni registro previo.
-- **Arquitectura de Componentes:** Módulo `src/bio/LinkInBio.jsx` + `src/bio/linkinbio.css` alimentado por la fuente única de enlaces oficiales `src/compartido/enlaces-jama.js` y enrutado en `src/main.jsx` bajo las rutas equivalentes `/bio`, `/hola` y `/links`.
-- **Estructura Visual Mobile-First (`max-width: 480px`):**
-  1. **Cabecera de Marca:** Fondo azul marino institucional (`#1E2B4D`) con logotipo JAMA, badge territorial (`Huamanga, Ayacucho`), eslogan oficial y 3 insignias de confianza (`1 solo link web`, `Fresco del día`, `Pago con Yape`).
-  2. **Tarjeta Destacada de Comunidad:** Acceso principal al grupo oficial de WhatsApp de alertas diarias de ofertas de cierre.
-  3. **Accesos Rápidos:** Vitrina de ofertas de hoy (`/`), afiliación gratuita de comercios (`/negocios`), página oficial de Facebook (`@jamaofertas`) y contacto directo por WhatsApp.
+- **Arquitectura de Componentes:** Módulo `src/bio/LinkInBio.jsx` + `src/bio/linkinbio.css` alimentado por la fuente única de enlaces oficiales `src/compartido/enlaces-jama.js` e íconos vectoriales oficiales (`WhatsAppIcon`, `FacebookIcon`, `TikTokIcon` en `src/compartido/iconos-redes.jsx`), enrutado en `src/main.jsx` bajo `/bio`, `/hola` y `/links`.
+- **Estructura Visual Mobile-First (`max-width: 460px`):**
+  1. **Cabecera sobre Lienzo Crema Unificado (`#FAF8EF`):** Logotipo JAMA libre sin recuadro, badge territorial (`Huamanga, Ayacucho`), eslogan oficial y propuesta de valor concisa (respetando la proporción 60% Crema · 30% Azul Marino · 10% Lima).
+  2. **CTA Principal de Comunidad:** Botón sólido en verde WhatsApp (`#16a34a`) con ícono SVG oficial hacia el grupo de alertas diarias de ofertas de cierre.
+  3. **Bento de 2 Columnas:** Accesos rápidos a la vitrina de ofertas de hoy (`/` en Lima `#D4DC31`) y afiliación gratuita de comercios (`/negocios` en Azul Marino `#1E2B4D`).
+  4. **Lista Agrupada de Redes Oficiales:** Facebook (`@jamaofertas`), TikTok (`@jama.app`) y WhatsApp directo.
 
 ---
 
@@ -733,13 +734,13 @@ Navegación inferior fija thumb-friendly con 5 secciones:
 El software ha sido sometido a una triple batería de verificación automatizada:
 
 1. **Suite de Pruebas Unitarias y de Aislamiento (`npm run test:unit` en `api/`):**
-   - **Total de pruebas:** **128 pruebas** organizadas en 33 suites.
+   - **Total de pruebas:** **131 pruebas** organizadas en 33 suites.
    - **Tasa de aprobación:** **100% aprobado (0 fallos, 0 errores, 0 cancelados)**.
    - **Pruebas de Arquitectura Pura:** Comprueba estáticamente que el directorio `dominio/` y `aplicacion/` no contengan ninguna importación de `express`, `pg`, `jsonwebtoken`, `bcrypt` ni librerías de infraestructura.
 2. **Pruebas de Estrés y Concurrencia sobre Base de Datos Real:**
    - Script `pedir-oferta.concurrencia.test.js`: Disparo simultáneo de 50 promesas asíncronas sobre un stock unitario de 3. Resultado verificado en PostgreSQL: 3 códigos `RESERVADO` generados, 47 excepciones capturadas, stock final en base de datos = 0.
 3. **Certificación E2E de Experiencia de Usuario con Navegador Playwright:**
-   - Inspección en viewport móvil real (390 x 844 px) y escritorio (1280 x 800 px).
-   - Verificación de desborde horizontal: $0\text{ px}$ de desborde horizontal (`scrollWidth <= clientWidth`).
+   - Scripts `e2e-certificacion*.mjs` y `e2e-certificacion-bio.mjs` en viewport móvil real (`390 × 844 px`) y escritorio (`1280 × 800 px`).
+   - Verificación de desborde horizontal: $0\text{ px}$ (`scrollWidth <= clientWidth`), $0$ errores de consola, validación de rutas (`/`, `/bio`, `/hola`, `/links`), enlaces oficiales (WhatsApp, Facebook, TikTok), 6 tarjetas ilustrativas distintas y $< 2\%$ de distorsión de aspecto en imágenes (`aspect-ratio: 4/3` con `height: auto`).
    - SUS Usability Score: **92.5 / 100** (Grado A+ Excelente).
    - Accesibilidad cromática WCAG 2.1: Ratio de contraste de **13.9:1** en textos y botones.
