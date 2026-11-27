@@ -564,6 +564,12 @@ body {
   transition: transform 0.3s ease;
 }
 
+.ejemplo-card__foto {
+  position: absolute;
+  max-width: none;
+  display: block;
+}
+
 .oferta-card:hover .oferta-card__foto {
   transform: scale(1.03);
 }

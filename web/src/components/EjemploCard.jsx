@@ -21,7 +21,7 @@ export default function EjemploCard({ ejemplo }) {
             top: `${(-100 * recorteFoto.top) / recorteFoto.height}%`,
           }}
         />
-        <div className="oferta-card__badges-top">
+        <div className="oferta-card__badges-flotantes">
           <span className="oferta-card__descuento-pill">-{ejemplo.porcentajeDescuento}%</span>
           <span className="ejemplo-card__cat-pill">{ejemplo.categoria}</span>
         </div>
